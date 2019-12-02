@@ -1,10 +1,23 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import Geo from '../views/Geo.vue'
+import GeoNew from '../views/GeoNew.vue'
+
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/geo',
+    name: 'geo',
+    component: Geo
+  },
+  {
+    path: '/geonew',
+    name: 'geonew',
+    component: GeoNew
+  },
   {
     path: '/',
     name: 'home',
