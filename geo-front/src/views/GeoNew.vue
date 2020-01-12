@@ -9,20 +9,19 @@
               <v-spacer></v-spacer>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue">GetCurPos</v-btn>
+                <v-btn @click="geo" color="blue">GetCurPos</v-btn>
               </v-card-actions>
             </v-toolbar>
             <v-card-text>
               <v-form>
-                <v-text-field label="Login" name="login" prepend-icon="person" type="text"></v-text-field>
+                <v-text-field label="lattitude" name="lat" type="text">{{lat}}</v-text-field>
 
                 <v-text-field
-                  id="password"
-                  label="Password"
-                  name="password"
-                  prepend-icon="lock"
-                  type="password"
-                ></v-text-field>
+                  id="long"
+                  label="longitude"
+                  name="long"
+                  type="text"
+                >{{long}}</v-text-field>
               </v-form>
             </v-card-text>
           </v-card>
@@ -33,5 +32,34 @@
 </template>
 
 <script>
-
+export default {
+  name: "Geo",
+  data() {
+    return {
+      namebutton: "get current position",
+      coordinates: {
+        longitude: "",
+        latitude: ""
+      }
+    };
+  },
+  methods: {
+    geo() {
+      navigator.geolocation.getCurrentPosition(position => {
+        this.coordinates.latitude = position.coords.latitude;
+        this.coordinates.longitude = position.coords.longitude;
+        // let HTML = {
+        //   accuracy: position.coords.accuracy,
+        //   altitude: position.coords.altitude,
+        //   altitudeAccuracy: position.coords.altitudeAccuracy,
+        //   heading: position.coords.heading,
+        //   latitude: position.coords.latitude,
+        //   longitude: position.coords.longitude,
+        //   speed: position.coords.speed
+        // };
+        
+      });
+    }
+  }
+};
 </script>
