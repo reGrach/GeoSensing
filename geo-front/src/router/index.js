@@ -1,35 +1,32 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Geo from '../views/Geo.vue'
-import GeoNew from '../views/GeoNew.vue'
-
+import Home from '@/views/Home.vue'
+import Authentication from '@/views/Authentication'
+import Geo from '@/views/Geo.vue'
+import About from '@/views/About.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/geo',
-    name: 'geo',
-    component: Geo
-  },
-  {
-    path: '/geonew',
-    name: 'geonew',
-    component: GeoNew
-  },
-  {
     path: '/',
-    name: 'home',
+    name: 'Мои данные',
     component: Home
   },
   {
+    path: '/geo',
+    name: 'Фиксация позиции',
+    component: Geo
+  },
+  {
+    path: '/login',
+    name: 'Authentication',
+    component: Authentication
+  },
+  {
     path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    name: 'О проекте',
+    component: About
   }
 ]
 

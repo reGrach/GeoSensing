@@ -4,13 +4,14 @@
       <v-layout align-left justify-left>
           <!-- <v-card class="elevation-12">
             <v-toolbar color="primary" dark flat>
-              <v-toolbar-title>Получение позиции</v-toolbar-title>
+              <v-switch v-model="flagAccuracy" label="Высокая точность"></v-switch>
               <v-spacer></v-spacer>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn @click="geo" color="blue">GetCurPos</v-btn>
               </v-card-actions>
             </v-toolbar>
+
             <v-card-text>
               <v-switch v-model="switch1" :label="`Mode: ${switch1.toString()}`"></v-switch>
               <v-form>
