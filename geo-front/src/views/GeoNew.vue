@@ -1,36 +1,47 @@
 <template>
   <v-content>
     <v-container fluid fill-height>
-      <v-layout align-center justify-center>
-        <v-flex xs12 sm8 md4>
-          <v-card class="elevation-12">
+      <v-layout align-left justify-left>
+          <!-- <v-card class="elevation-12">
             <v-toolbar color="primary" dark flat>
               <v-switch v-model="flagAccuracy" label="Высокая точность"></v-switch>
               <v-spacer></v-spacer>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue" @click="geo">Получить</v-btn>
+                <v-btn @click="geo" color="blue">GetCurPos</v-btn>
               </v-card-actions>
             </v-toolbar>
 
             <v-card-text>
+              <v-switch v-model="switch1" :label="`Mode: ${switch1.toString()}`"></v-switch>
               <v-form>
-                <v-text-field label="accuracy" type="text" v-model="geoInfo.accuracy"></v-text-field>
-                <v-text-field label="altitude" type="text" v-model="geoInfo.altitude"></v-text-field>
-                <v-text-field
-                  label="altitudeAccuracy"
-                  type="text"
-                  v-model="geoInfo.altitudeAccuracy"
-                ></v-text-field>
-                <v-text-field label="heading" type="text" v-model="geoInfo.heading"></v-text-field>
-                <v-text-field label="latitude" type="text" v-model="geoInfo.latitude"></v-text-field>
-                <v-text-field label="longitude" type="text" v-model="geoInfo.longitude"></v-text-field>
-                <v-text-field label="speed" type="text" v-model="geoInfo.speed"></v-text-field>
-                <v-text-field label="error" type="text" v-model="errorr"></v-text-field>
+                <v-text-field id="lat" label="lattitude" name="lat" type="text">{{lat}}</v-text-field>
+                <v-text-field id="long" label="longitude" name="long" type="text">{{long}}</v-text-field>
               </v-form>
             </v-card-text>
+          </v-card> -->
+
+          <v-card align='left' height="100%" width="200" class="mx-auto">
+            <v-navigation-drawer>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="title">GeoSensing</v-list-item-title>
+                  <v-list-item-subtitle>make maps sipmplier</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+              <v-divider></v-divider>
+              <v-list dense nav>
+                <v-list-item v-for="item in items" :key="item.title" link>
+                  <v-list-item-icon>
+                    <v-icon>{{ item.icon }}</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-navigation-drawer>
           </v-card>
-        </v-flex>
       </v-layout>
     </v-container>
   </v-content>
@@ -41,70 +52,47 @@ export default {
   name: "Geo",
   data() {
     return {
-      flagAccuracy: false,
-      errorr: "",
-      geoInfo: {
-        accuracy: "",
-        altitude: "",
-        altitudeAccuracy: "",
-        heading: "",
-        latitude: "",
+      namebutton: "get current position",
+      coordinates: {
         longitude: "",
-        speed: ""
+        latitude: ""
       }
     };
   },
+  name: "Switch",
+  data() {
+    return {
+      checkbox: true,
+      radioGroup: 1,
+      switch1: true
+    };
+  },
+  name: "Sidebar",
+  data() {
+    return {
+      items: [
+        { title: "Record coordinates", icon: "mdi-crosshairs-gps" },
+        { title: "Map", icon: "mdi-google-maps" }
+      ],
+      right: null
+    };
+  },
+
   methods: {
-
-    geo_success(position) {
-        console.log(position);
-        alert("Получил позицию")
-        this.geoInfo.accuracy = position.coords.accuracy;
-        this.geoInfo.altitude = position.coords.altitude;
-        this.geoInfo.altitudeAccuracy = position.coords.altitudeAccuracy;
-        this.geoInfo.heading = position.coords.heading;
-        this.geoInfo.latitude = position.coords.latitude;
-        this.geoInfo.longitude = position.coords.longitude;
-        this.geoInfo.speed = position.coords.speed;
-      },
-
-
-
-
-
-    
     geo() {
-      
-      function geo_error(err) {
-        console.log("Ошибка");
-        console.log(err);
-        alert(err.message);
-      }
-
-      let settings = {
-        enableHighAccuracy: this.flagAccuracy,
-        maximumAge: 30000,
-        timeout: 27000
-      };
-      var res = navigator.geolocation.getCurrentPosition(this.geo_success, geo_error, settings);
-
-      console.log(res);
-      // (position, error, settings) => {
-      //   if (position) {
-      //     console.log(position);
-      //     console.log(settings);
-      //     this.geoInfo.accuracy = position.coords.accuracy;
-      //     this.geoInfo.altitude = position.coords.altitude;
-      //     this.geoInfo.altitudeAccuracy = position.coords.altitudeAccuracy;
-      //     this.geoInfo.heading = position.coords.heading;
-      //     this.geoInfo.latitude = position.coords.latitude;
-      //     this.geoInfo.longitude = position.coords.longitude;
-      //     this.geoInfo.speed = position.coords.speed;
-      //   } else {
-      //     console.log(error);
-      //     this.errorr = error;
-      //   }
-      // });
+      navigator.geolocation.getCurrentPosition(position => {
+        lat = this.coordinates.latitude = position.coords.latitude;
+        long = this.coordinates.longitude = position.coords.longitude;
+        // let HTML = {
+        //   accuracy: position.coords.accuracy,
+        //   altitude: position.coords.altitude,
+        //   altitudeAccuracy: position.coords.altitudeAccuracy,
+        //   heading: position.coords.heading,
+        //   latitude: position.coords.latitude,
+        //   longitude: position.coords.longitude,
+        //   speed: position.coords.speed
+        // };
+      });
     }
   }
 };

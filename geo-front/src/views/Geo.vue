@@ -1,31 +1,47 @@
 <template>
-<v-app>
-  <div>
-    <h1 align="center">Get your current location in different ways!</h1>
-    <div style="text-align: center; padding-bottom: 20px;">
-      <div style="margin-bottom:20px;">
-        <button @click="geo">{{namebutton}}</button>
-        <!-- <input id="getcurpos" type="button" value="get current position" onclick="getcurpos" /> -->
-        <!-- <input id="watpos" type="button" value="watch position" onclick="watpos" /> -->
-        <input id="stopwatpos" type="button" value="stop watching position" onclick="stopwatpos" />
+  <v-app>
+    <div>
+      <h1 align="center">Get your current location in different ways!</h1>
+      <div style="text-align: center; padding-bottom: 20px;">
+        <div style="margin-bottom:20px;">
+          <button @click="geo">{{namebutton}}</button>
+          <!-- <input id="getcurpos" type="button" value="get current position" onclick="getcurpos" /> -->
+          <!-- <input id="watpos" type="button" value="watch position" onclick="watpos" /> -->
+          <input id="stopwatpos" type="button" value="stop watching position" onclick="stopwatpos" />
+        </div>
+        <form method="post" action="/sendpos">
+          <b>датчик:</b>
+          <input type="text" v-model="coordinates.latitude" />
+          <input type="text" v-model="coordinates.longitude" />
+          <input type="text" id="mark" name="mark" value />
+
+          <switch-button v-model="switch1">Lorem ipsum dolor sit amet</switch-button>
+          <div class="switch-button-control">
+            <div
+              class="switch-button"
+              :class="{ enabled: isEnabled }"
+              @click="toggle"
+              :style="{'--color': color}"
+            >
+              <div class="button"></div>
+            </div>
+            <div class="switch-button-label">
+              <slot></slot>
+            </div>
+          </div>
+
+          <button type="submit">Submit</button>
+        </form>
       </div>
-      <form method="post" action="/sendpos">
-        <b>датчик:</b>
-        <input type="text" v-model="coordinates.latitude" />
-        <input type="text" v-model="coordinates.longitude" />
-        <input type="text" id="mark" name="mark" value />
-        <button type="submit">Submit</button>
-      </form>
+      <div style="text-align: center">
+        <b>get point by mark:</b>
+        <form method="post" action="/getpos">
+          <input type="text" id="getpos" name="mark" value />
+          <button type="submit">GetPos</button>
+        </form>
+      </div>
     </div>
-    <div style="text-align: center">
-      <b>get point by mark:</b>
-      <form method="post" action="/getpos">
-        <input type="text" id="getpos" name="mark" value />
-        <button type="submit">GetPos</button>
-      </form>
-    </div>
-  </div>
-</v-app>
+  </v-app>
 </template>
 
 <script>
@@ -54,7 +70,6 @@ export default {
         //   longitude: position.coords.longitude,
         //   speed: position.coords.speed
         // };
-        
       });
     }
   }
