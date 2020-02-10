@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using GeoService.API.Auth;
+using GeoService.DAL;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +22,10 @@ namespace GeoService.API
 {
     public class Startup
     {
+
+        private string _signingSecurityKey = null;
+        private string _connection = null;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,18 +33,22 @@ namespace GeoService.API
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            const string signingSecurityKey = "0d5b3235a8b403ckldfjbnjnc3f4f65c07fcalskd234n1k41230";
-            var signingKey = new SigningSymmetricKey(signingSecurityKey);
-            services.AddSingleton<IJwtSigningEncodingKey>(signingKey);
-
-            var signingDecodingKey = (IJwtSigningDecodingKey)signingKey;
-
             services.AddControllers();
-            //services.AddCors();
+            services.AddCors();
 
+            #region Создаем узел подключения к БД
+            //"PasswordDb": "Password=geosensing2020",
+            _connection = $"{Configuration.GetConnectionString("TestContext")}{Configuration["PasswordDb"]}";
+            services.AddDbContext<GeoContext>(opt => opt.UseNpgsql(_connection));
+            #endregion
+
+            #region Создаем узел Аутентификации
+            _signingSecurityKey = Configuration["ServiceApiKey"];
+            var signingKey = new SigningSymmetricKey(_signingSecurityKey);
+            var signingDecodingKey = (IJwtSigningDecodingKey)signingKey;
+            services.AddSingleton<IJwtSigningEncodingKey>(signingKey);
             services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -51,9 +63,9 @@ namespace GeoService.API
                 });
 
             services.Configure<AuthOptions>(Configuration.GetSection("AuthOptions"));
+            #endregion
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
