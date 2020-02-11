@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using NpgsqlTypes;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GeoService.DAL
@@ -9,9 +10,8 @@ namespace GeoService.DAL
         [Required]
         public string Title { get; set; }
         public string Color { get; set; }
-        public List<User> Users { get; set; }
+        public NpgsqlPolygon? Polygon { get; set; }
 
-        /// <summary> Связь с полигоном (один к одному) </summary>
-        public Polygon Polygon { get; set; }
+        public List<User> Users { get; set; }
     }
 }

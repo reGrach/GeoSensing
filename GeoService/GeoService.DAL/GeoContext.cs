@@ -8,7 +8,6 @@ namespace GeoService.DAL
         public DbSet<User> Users { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<Coordinate> Coordinates { get; set; }
-        public DbSet<Polygon> Polygons { get; set; }
 
         public GeoContext(DbContextOptions<GeoContext> options) : base(options)
             => Database.EnsureCreated();
@@ -26,14 +25,6 @@ namespace GeoService.DAL
             builder.Entity<Team>()
                 .HasIndex(u => u.Color)
                 .IsUnique();
-
-            builder.Entity<Team>()
-                .HasOne(e => e.Polygon).WithOne(e => e.Team)
-                .HasForeignKey<Polygon>(e => e.Id);
-
-            builder.Entity<Team>().ToTable("Teams");
-
-            builder.Entity<Polygon>().ToTable("Teams");
 
             builder.HasPostgresEnum<RoleEnum>();
 

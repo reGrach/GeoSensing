@@ -5,10 +5,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GeoService.API.Auth;
+using GeoService.API.BusinessLogic;
 using GeoService.API.Models;
-using GeoService.BLL;
-using GeoService.BLL.DTO;
-using GeoService.BLL.Enums;
+using GeoService.DAL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,9 +22,11 @@ namespace GeoService.API.Controllers
     {
 
         private readonly IOptions<AuthOptions> authOptions;
-        public AuthController(IOptions<AuthOptions> config)
+        private GeoContext _ctx;
+        public AuthController(GeoContext context, IOptions<AuthOptions> config)
         {
             authOptions = config;
+            _ctx = context;
         }
 
         [HttpGet]
@@ -34,33 +35,34 @@ namespace GeoService.API.Controllers
             return Ok(JsonResultResponse.Ok(authOptions));
         }
 
-        [HttpPost("login")]
-        public ActionResult<string> Login(LoginModel model, [FromServices] IJwtSigningEncodingKey signingKey)
-        {
-            var identity = GetIdentity(model);
-            if (identity == null)
-                return BadRequest(new { errorText = "Логин или пароль указаны неверно" });
+        //[HttpPost("login")]
+        //public ActionResult<string> Login(LoginModel model, [FromServices] IJwtSigningEncodingKey signingKey)
+        //{
+        //    var identity = GetIdentity(model);
 
-            // создаем JWT-токен
-            var jwt = new JwtSecurityToken(
-                    issuer: authOptions.Value.ISSUER,
-                    audience: authOptions.Value.AUDIENCE,
-                    notBefore: DateTime.Now,
-                    claims: identity.Claims,
-                    expires: DateTime.Now.Add(TimeSpan.FromMinutes(authOptions.Value.LIFETIME)),
-                    signingCredentials: new SigningCredentials(signingKey.GetKey(), signingKey.SigningAlgorithm));
+        //    if (identity == null)
+        //        return BadRequest(new { errorText = "Логин или пароль указаны неверно" });
 
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+        //    // создаем JWT-токен
+        //    var jwt = new JwtSecurityToken(
+        //            issuer: authOptions.Value.ISSUER,
+        //            audience: authOptions.Value.AUDIENCE,
+        //            notBefore: DateTime.Now,
+        //            claims: identity.Claims,
+        //            expires: DateTime.Now.Add(TimeSpan.FromMinutes(authOptions.Value.LIFETIME)),
+        //            signingCredentials: new SigningCredentials(signingKey.GetKey(), signingKey.SigningAlgorithm));
 
-            return Ok(JsonResultResponse.Ok(encodedJwt));
-        }
+        //    var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+        //    return Ok(JsonResultResponse.Ok(encodedJwt));
+        //}
 
         [HttpPost("registration")]
-        public ActionResult<string> Registration(LoginModel model)
+        public ActionResult<string> Registration(RegistrationModel model)
         {
             try
             {
-                UserAction.TryRegisterUser(model.Login, model.Password);
+                UserActions.TryRegisterUser(_ctx, model);
                 return Ok();
             }
             catch(BusinessLogicException bblEx)
@@ -73,15 +75,15 @@ namespace GeoService.API.Controllers
             }
         }
 
-        private ClaimsIdentity GetIdentity(LoginModel model) =>
-            UserAction.LoginUser(model.Login, model.Password) is UserDTO user
-            ? new ClaimsIdentity(
-                new List<Claim>
-                {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString())
-                },
-                "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType)
-            : null;
+        //private ClaimsIdentity GetIdentity(LoginModel model) =>
+        //    UserAction.LoginUser(model.Login, model.Password) is User user
+        //    ? new ClaimsIdentity(
+        //        new List<Claim>
+        //        {
+        //            new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
+        //            new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString())
+        //        },
+        //        "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType)
+        //    : null;
     }
 }

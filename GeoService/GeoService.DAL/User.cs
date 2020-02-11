@@ -1,4 +1,5 @@
 ﻿using GeoService.DAL.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,6 +10,8 @@ namespace GeoService.DAL
         public int Id { get; set; }
         [Required]
         public string Login { get; set; }
+        [Required]
+        public DateTime RegistrationDate { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
         [Required]
