@@ -1,6 +1,6 @@
-﻿namespace GeoService.BLL.Enums
+﻿namespace GeoService.DAL.Enums
 {
-    public enum RoleType
+    public enum RoleEnum
     {
         Admin = 1,
         Leader,

@@ -1,17 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using GeoService.DAL.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace GeoService.DAL
 {
     public class GeoContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<Coordinate> Coordinates { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public GeoContext(DbContextOptions<GeoContext> options) : base(options)
+            => Database.EnsureCreated();
+
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=usersdb2;Username=postgres;Password=password");
+            builder.Entity<User>()
+                .HasIndex(u => u.Login)
+                .IsUnique();
+
+            builder.Entity<Team>()
+                .HasIndex(u => u.Title)
+                .IsUnique();
+
+            builder.Entity<Team>()
+                .HasIndex(u => u.Color)
+                .IsUnique();
+
+            builder.HasPostgresEnum<RoleEnum>();
+
+            builder.HasPostgresEnum<ModeEnum>();
         }
     }
 }

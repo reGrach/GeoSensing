@@ -1,5 +1,6 @@
 ﻿using System;
-namespace GeoService.BLL
+
+namespace GeoService.API.BusinessLogic
 {
     public class BusinessLogicException : Exception
     {
