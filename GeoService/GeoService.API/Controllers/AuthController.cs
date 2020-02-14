@@ -29,33 +29,37 @@ namespace GeoService.API.Controllers
             _ctx = context;
         }
 
-        [HttpGet]
-        public ActionResult<string> Get()
+        [HttpPost("login")]
+        public ActionResult<string> Login(LoginModel model, [FromServices] IJwtSigningEncodingKey signingKey)
         {
-            return Ok(JsonResultResponse.Ok(authOptions));
+            try
+            {
+                var identity = GetIdentity(model);
+                if (identity == null)
+                    return BadRequest(new { errorText = "Логин или пароль указаны неверно" });
+
+                // создаем JWT-токен
+                var jwt = new JwtSecurityToken(
+                        issuer: authOptions.Value.ISSUER,
+                        audience: authOptions.Value.AUDIENCE,
+                        notBefore: DateTime.Now,
+                        claims: identity.Claims,
+                        expires: DateTime.Now.Add(TimeSpan.FromMinutes(authOptions.Value.LIFETIME)),
+                        signingCredentials: new SigningCredentials(signingKey.GetKey(), signingKey.SigningAlgorithm));
+
+                var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+                return Ok(JsonResultResponse.Ok(encodedJwt));
+            }
+            catch (BusinessLogicException bblEx)
+            {
+                return Ok(JsonResultResponse.Bad(bblEx.Message));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { errorText = ex.Message });
+            }
         }
-
-        //[HttpPost("login")]
-        //public ActionResult<string> Login(LoginModel model, [FromServices] IJwtSigningEncodingKey signingKey)
-        //{
-        //    var identity = GetIdentity(model);
-
-        //    if (identity == null)
-        //        return BadRequest(new { errorText = "Логин или пароль указаны неверно" });
-
-        //    // создаем JWT-токен
-        //    var jwt = new JwtSecurityToken(
-        //            issuer: authOptions.Value.ISSUER,
-        //            audience: authOptions.Value.AUDIENCE,
-        //            notBefore: DateTime.Now,
-        //            claims: identity.Claims,
-        //            expires: DateTime.Now.Add(TimeSpan.FromMinutes(authOptions.Value.LIFETIME)),
-        //            signingCredentials: new SigningCredentials(signingKey.GetKey(), signingKey.SigningAlgorithm));
-
-        //    var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-        //    return Ok(JsonResultResponse.Ok(encodedJwt));
-        //}
 
         [HttpPost("registration")]
         public ActionResult<string> Registration(RegistrationModel model)
@@ -67,7 +71,7 @@ namespace GeoService.API.Controllers
             }
             catch(BusinessLogicException bblEx)
             {
-                return Ok(JsonResultResponse.Ok(bblEx.Message));
+                return Ok(JsonResultResponse.Bad(bblEx.Message));
             }
             catch(Exception ex)
             {
@@ -75,15 +79,15 @@ namespace GeoService.API.Controllers
             }
         }
 
-        //private ClaimsIdentity GetIdentity(LoginModel model) =>
-        //    UserAction.LoginUser(model.Login, model.Password) is User user
-        //    ? new ClaimsIdentity(
-        //        new List<Claim>
-        //        {
-        //            new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
-        //            new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString())
-        //        },
-        //        "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType)
-        //    : null;
+        private ClaimsIdentity GetIdentity(LoginModel model) =>
+            UserActions.AuthenticationUser(_ctx, model) is User user
+            ? new ClaimsIdentity(
+                new List<Claim>
+                {
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString())
+                },
+                "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType)
+            : null;
     }
 }
