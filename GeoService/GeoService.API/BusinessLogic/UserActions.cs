@@ -46,5 +46,14 @@ namespace GeoService.API.BusinessLogic
             else
                 throw new BusinessLogicException("Пользователь с таким логином не найден");
         }
+
+
+        public static User GetUserById(GeoContext ctx, int id)
+        {
+            if (ctx.Users.Find(id) is User us)
+                return us;
+            else
+                throw new BusinessLogicException("Фатальная ошибка, текущий пользователь не обнаружен");
+        }
     }
 }

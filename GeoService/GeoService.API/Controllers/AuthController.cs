@@ -22,7 +22,7 @@ namespace GeoService.API.Controllers
     {
 
         private readonly IOptions<AuthOptions> authOptions;
-        private GeoContext _ctx;
+        private readonly GeoContext _ctx;
         public AuthController(GeoContext context, IOptions<AuthOptions> config)
         {
             authOptions = config;
@@ -30,7 +30,7 @@ namespace GeoService.API.Controllers
         }
 
         [HttpPost("login")]
-        public ActionResult<string> Login(LoginModel model, [FromServices] IJwtSigningEncodingKey signingKey)
+        public ActionResult<JsonResultResponse> Login(LoginModel model, [FromServices] IJwtSigningEncodingKey signingKey)
         {
             try
             {
@@ -62,7 +62,7 @@ namespace GeoService.API.Controllers
         }
 
         [HttpPost("registration")]
-        public ActionResult<string> Registration(RegistrationModel model)
+        public ActionResult<JsonResultResponse> Registration(RegistrationModel model)
         {
             try
             {

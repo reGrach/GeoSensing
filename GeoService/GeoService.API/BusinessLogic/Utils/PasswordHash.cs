@@ -12,8 +12,6 @@ namespace GeoService.API.BusinessLogic.Utils
         private const int SaltSize = 128 / 8;
         private readonly byte[] salt;
 
-        internal readonly RandomNumberGenerator rng;
-
         public string Salt => Convert.ToBase64String(salt);
 
         public PasswordHash()
