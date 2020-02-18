@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
-import Authentication from '@/views/Authentication'
+import Login from '@/views/Login'
 import Geo from '@/views/Geo.vue'
 import About from '@/views/About.vue'
 
@@ -20,8 +20,8 @@ const routes = [
   },
   {
     path: '/login',
-    name: 'Authentication',
-    component: Authentication
+    name: 'Login',
+    component: Login
   },
   {
     path: '/about',
