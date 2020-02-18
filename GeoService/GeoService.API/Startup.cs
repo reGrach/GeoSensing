@@ -8,6 +8,7 @@ using GeoService.DAL;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +37,7 @@ namespace GeoService.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddCors();
+            //services.AddCors();
 
             #region Создаем узел подключения к БД
             //"PasswordDb": "Password=geosensing2020",
@@ -73,14 +74,21 @@ namespace GeoService.API
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.Use(async (context, next) =>
-            //{
-            //    var token = context.Request.Cookies[".Core.Geo.Auth"];
-            //    if (!string.IsNullOrEmpty(token))
-            //        context.Request.Headers.Add("Authorization", "Bearer " + token);
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.Strict,
+                HttpOnly = HttpOnlyPolicy.Always,
+                //Secure = CookieSecurePolicy.Always
+            });
 
-            //    await next();
-            //});
+            app.Use(async (context, next) =>
+            {
+                var token = context.Request.Cookies[".Core.Geo.Bear"];
+                if (!string.IsNullOrEmpty(token))
+                    context.Request.Headers.Add("Authorization", "Bearer " + token);
+
+                await next();
+            });
 
             app.UseRouting();
             app.UseAuthentication();

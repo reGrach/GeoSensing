@@ -30,7 +30,7 @@ namespace GeoService.API.Controllers
         }
 
         [HttpPost("login")]
-        public ActionResult<JsonResultResponse> Login(LoginModel model, [FromServices] IJwtSigningEncodingKey signingKey)
+        public IActionResult Login(LoginModel model, [FromServices] IJwtSigningEncodingKey signingKey)
         {
             try
             {
@@ -49,7 +49,13 @@ namespace GeoService.API.Controllers
 
                 var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-                return Ok(JsonResultResponse.Ok(encodedJwt));
+                HttpContext.Response.Cookies.Append(".Core.Geo.Bear", encodedJwt,
+                    new CookieOptions
+                    {
+                        MaxAge = TimeSpan.FromMinutes(authOptions.Value.LIFETIME)
+                    });
+
+                return Ok();
             }
             catch (BusinessLogicException bblEx)
             {
@@ -62,7 +68,7 @@ namespace GeoService.API.Controllers
         }
 
         [HttpPost("registration")]
-        public ActionResult<JsonResultResponse> Registration(RegistrationModel model)
+        public IActionResult Registration(RegistrationModel model)
         {
             try
             {

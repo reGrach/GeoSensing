@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-
-namespace GeoService.API.Models
+﻿namespace GeoService.API.Models
 {
-    public class JsonResultResponse : IActionResult
+    public class JsonResultResponse
     {
         public bool Success { get; set; }
         public object Result { get; set; }
@@ -22,11 +19,6 @@ namespace GeoService.API.Models
         public static JsonResultResponse Bad(string msg)
         {
             return new JsonResultResponse(false, msg);
-        }
-
-        public Task ExecuteResultAsync(ActionContext context)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

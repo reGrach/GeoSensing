@@ -32,7 +32,7 @@ namespace GeoService.API.Controllers
             }
             catch (BusinessLogicException bblEx)
             {
-                return JsonResultResponse.Bad(bblEx.Message);
+                return Ok(JsonResultResponse.Bad(bblEx.Message));
             }
             catch (Exception ex)
             {
@@ -46,11 +46,11 @@ namespace GeoService.API.Controllers
             try
             {
                 var dbTeam = TeamActions.GetTeamById(_ctx, idTeam);
-                return JsonResultResponse.Ok(dbTeam);
+                return Ok(JsonResultResponse.Ok(dbTeam));
             }
             catch (BusinessLogicException bblEx)
             {
-                return JsonResultResponse.Bad(bblEx.Message);
+                return Ok(JsonResultResponse.Bad(bblEx.Message));
             }
             catch (Exception ex)
             {
@@ -64,11 +64,11 @@ namespace GeoService.API.Controllers
             try
             {
                 var dbTeams = TeamActions.GetAllTeam(_ctx);
-                return JsonResultResponse.Ok(dbTeams);
+                return Ok(JsonResultResponse.Ok(dbTeams));
             }
             catch (BusinessLogicException bblEx)
             {
-                return JsonResultResponse.Bad(bblEx.Message);
+                return Ok(JsonResultResponse.Bad(bblEx.Message));
             }
             catch (Exception ex)
             {
@@ -91,7 +91,7 @@ namespace GeoService.API.Controllers
             }
             catch (BusinessLogicException bblEx)
             {
-                return JsonResultResponse.Bad(bblEx.Message);
+                return Ok(JsonResultResponse.Bad(bblEx.Message));
             }
             catch (Exception ex)
             {
@@ -111,7 +111,7 @@ namespace GeoService.API.Controllers
             }
             catch (BusinessLogicException bblEx)
             {
-                return JsonResultResponse.Bad(bblEx.Message);
+                return Ok(JsonResultResponse.Bad(bblEx.Message));
             }
             catch (Exception ex)
             {

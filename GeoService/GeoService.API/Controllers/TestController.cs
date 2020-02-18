@@ -14,7 +14,7 @@ namespace GeoService.API.Controllers
     [Route("api/[controller]")]
     public class TestController : ControllerBase
     {
-        private GeoContext _ctx;
+        private readonly GeoContext _ctx;
 
         public TestController(GeoContext context)
         {
@@ -22,12 +22,11 @@ namespace GeoService.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]        
         public ActionResult<IEnumerable<string>> Get()
         {
-            var nameIdentifier = HttpContext.User.Claims
-                .FirstOrDefault(x => x.Type == ClaimTypes.Name);
 
-            return new string[] { nameIdentifier?.Value, "value1", "value2" };
+            return new string[] { "value1", "value2" };
         }
 
         [HttpGet("db")]
