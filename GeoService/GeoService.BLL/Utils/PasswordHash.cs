@@ -2,7 +2,7 @@
 using System;
 using System.Security.Cryptography;
 
-namespace GeoService.API.BusinessLogic.Utils
+namespace GeoService.BLL.Utils
 {
     public class PasswordHash
     {

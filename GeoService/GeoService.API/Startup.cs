@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using GeoService.API.Extension;
 using GeoService.API.Auth;
+using GeoService.API.Middleware;
 using GeoService.DAL;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,14 +19,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using GeoService.API.Auth.JwtExtension;
 
 namespace GeoService.API
 {
     public class Startup
     {
-
-        private string _signingSecurityKey = null;
-        private string _connection = null;
+        private const string _signingSecurityKey = "123456seckretkey7890";
 
         public Startup(IConfiguration configuration)
         {
@@ -37,60 +37,39 @@ namespace GeoService.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            //services.AddCors();
 
-            #region Создаем узел подключения к БД
-            //"PasswordDb": "Password=geosensing2020",
-            _connection = $"{Configuration.GetConnectionString("TestContext")}{Configuration["PasswordDb"]}";
-            services.AddDbContext<GeoContext>(opt => opt.UseNpgsql(_connection));
-            #endregion
+
+            services.AddDbContext<GeoContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("GeoContext")));
 
             #region Создаем узел Аутентификации
-            _signingSecurityKey = Configuration["ServiceApiKey"];
-            var signingKey = new SigningSymmetricKey(_signingSecurityKey);
-            var signingDecodingKey = (IJwtSigningDecodingKey)signingKey;
-            services.AddSingleton<IJwtSigningEncodingKey>(signingKey);
-            services.AddAuthentication(opt =>
-            {
-                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                opt.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opt =>
-                {
-                    opt.RequireHttpsMetadata = false;
-                    opt.SaveToken = true;
-                    opt.TokenValidationParameters = GetTokenParameters(signingDecodingKey.GetKey());
-                });
+            var section = Configuration.GetSection("AuthOptions");
 
-            services.Configure<AuthOptions>(Configuration.GetSection("AuthOptions"));
+            var options = section.Get<AuthOptions>();
+
+            var jwtOptions = new JwtOptions(options.AUDIENCE, options.ISSUER, options.LIFETIME, _signingSecurityKey);
+
+            services.AddApiJwtAuthentication(jwtOptions);
+
+            services.Configure<AuthOptions>(section);
             #endregion
+
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
             app.UseCookiePolicy(new CookiePolicyOptions
             {
                 MinimumSameSitePolicy = SameSiteMode.Strict,
                 HttpOnly = HttpOnlyPolicy.Always,
-                //Secure = CookieSecurePolicy.Always
+                Secure = CookieSecurePolicy.Always
             });
 
-            app.Use(async (context, next) =>
-            {
-                var token = context.Request.Cookies[".Core.Geo.Bear"];
-                if (!string.IsNullOrEmpty(token))
-                    context.Request.Headers.Add("Authorization", "Bearer " + token);
+            app.UseMiddleware<SecureJwtMiddleware>();
 
-                await next();
-            });
+            app.UseHttpsRedirection();
 
             app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -99,20 +78,5 @@ namespace GeoService.API
                 endpoints.MapControllers();
             });
         }
-
-        private TokenValidationParameters GetTokenParameters(SecurityKey key) =>
-            new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = Configuration.GetSection("AuthOptions").GetValue<string>("ISSUER"),
-
-                ValidateAudience = true,
-                ValidAudience = Configuration.GetSection("AuthOptions").GetValue<string>("AUDIENCE"),
-
-                ValidateLifetime = true, 
-
-                IssuerSigningKey = key,
-                ValidateIssuerSigningKey = true,
-            };
     }
 }

@@ -28,9 +28,8 @@ namespace GeoService.API.Auth
             {
                 throw new ArgumentNullException("identity");
             }
-            var ci = identity as ClaimsIdentity;
             string role = "";
-            if (ci != null)
+            if (identity is ClaimsIdentity ci)
             {
                 var id = ci.FindFirst(ClaimsIdentity.DefaultRoleClaimType);
                 if (id != null)

@@ -7,7 +7,8 @@ namespace GeoService.DAL
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Team> Teams { get; set; }
-        public DbSet<Coordinate> Coordinates { get; set; }
+        public DbSet<Experiment> Experiments { get; set; }
+        public DbSet<GeoParameter> GeoParameters { get; set; }
 
         public GeoContext(DbContextOptions<GeoContext> options) : base(options)
             => Database.EnsureCreated();
@@ -25,6 +26,12 @@ namespace GeoService.DAL
             builder.Entity<Team>()
                 .HasIndex(u => u.Color)
                 .IsUnique();
+
+            //Создаем ForeginKey без navigation property 
+            builder.Entity<Experiment>()
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(p => p.CreatorUserId);
 
             builder.HasPostgresEnum<RoleEnum>();
 

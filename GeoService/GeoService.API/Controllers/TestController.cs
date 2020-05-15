@@ -1,46 +1,80 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using GeoService.API.Auth.Identity;
+using GeoService.API.Auth.JwtExtension;
+using GeoService.BLL.Actions;
 using GeoService.DAL;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using System;
+using static GeoService.API.Auth.Identity.Contracts;
 
 namespace GeoService.API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class TestController : ControllerBase
+    public class TestController : BaseApiController
     {
+        private readonly JwtTokenGenerator _jwtTokenGenerator;
         private readonly GeoContext _ctx;
 
-        public TestController(GeoContext context)
+        private const string login = "German";
+        private const string password = "12345";
+
+
+        public TestController(GeoContext context, JwtTokenGenerator jwtTokenGenerator)
         {
             _ctx = context;
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
 
         [HttpGet]
-        [Authorize]        
-        public ActionResult<IEnumerable<string>> Get()
-        {
-
-            return new string[] { "value1", "value2" };
-        }
-
-        [HttpGet("db")]
-        public ActionResult TestDb()
+        [Authorize(AdminPolicy)]
+        public IActionResult CreateTeam() => TryAction(() =>
         {
             var team = new Team
             {
-                Title = "Привет",
-                Color = "Цвет"
+                Title = "Тестовая команда 4",
+                Color = "Цвет 4"
             };
             _ctx.Teams.Add(team);
             _ctx.SaveChanges();
-
             return Ok();
-        }
+        });
+
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult SignUp() => TryAction(() =>
+        {
+            UserActions.TryRegisterUser(_ctx, login, password);
+            return Ok();
+        });
+
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult SignIn() => TryAction(() =>
+        {
+            var userDTO = UserActions.AuthenticationUser(_ctx, login, password);
+
+            var userIdentity = new UserIdentity
+            {
+                Id = userDTO.Id,
+                UserName = userDTO.Login
+            };
+
+            var tokenResult = _jwtTokenGenerator.Generate(userIdentity, userDTO.Role.ToString());
+
+            HttpContext.Response.Cookies.Append(
+                ".Core.Geo.Bear",
+                tokenResult.AccessToken,
+                new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) });
+
+            return Ok(tokenResult.AccessToken);
+
+        });
+
+        [HttpGet]
+        public IActionResult SignOut() => TryAction(() =>
+        {
+            HttpContext.Response.Cookies.Delete(".Core.Geo.Bear");
+            return Ok();
+        });
     }
 }

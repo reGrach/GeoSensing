@@ -2,7 +2,7 @@
 {
     public enum ModeEnum
     {
-        Manual,
+        Manual = 1,
         GPS,
         StreamGPS
     }

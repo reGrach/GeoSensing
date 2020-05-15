@@ -4,16 +4,22 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GeoService.DAL
 {
-    public class Coordinate
+    public class GeoParameter
     {
         public int Id { get; set; }
+
         [Required]
         public float Latitude { get; set; }
+
         [Required]
         public float Longitude { get; set; }
-        public float Altitude { get; set; }
+
         [Required]
-        public DateTime CreateTime { get; set; }
+        public float Altitude { get; set; }
+
+        [Required]
+        public TimeSpan CreateTime { get; set; }
+        
         [Required]
         public ModeEnum Mode { get; set; }
 

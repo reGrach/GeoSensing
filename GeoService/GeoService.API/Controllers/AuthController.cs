@@ -1,99 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using GeoService.API.Auth;
-using GeoService.API.BusinessLogic;
+﻿using GeoService.API.Auth.Identity;
+using GeoService.API.Auth.JwtExtension;
 using GeoService.API.Models;
+using GeoService.BLL.Actions;
+using GeoService.BLL.DTO;
 using GeoService.DAL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
+using System;
 
 namespace GeoService.API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseApiController
     {
-
-        private readonly IOptions<AuthOptions> authOptions;
         private readonly GeoContext _ctx;
-        public AuthController(GeoContext context, IOptions<AuthOptions> config)
+        private readonly JwtTokenGenerator _jwtTokenGenerator;
+
+        public AuthController(JwtTokenGenerator jwtTokenGenerator, GeoContext context)
         {
-            authOptions = config;
+            _jwtTokenGenerator = jwtTokenGenerator;
             _ctx = context;
         }
 
-        [HttpPost("login")]
-        public IActionResult Login(LoginModel model, [FromServices] IJwtSigningEncodingKey signingKey)
+        [AllowAnonymous]
+        [HttpPost]
+        public IActionResult SignUp(RegistrationModel model) => TryAction(() =>
         {
-            try
-            {
-                var identity = GetIdentity(model);
-                if (identity == null)
-                    return BadRequest(new { errorText = "Логин или пароль указаны неверно" });
+            UserActions.TryRegisterUser(_ctx, model.Login, model.Password);
+            return Ok();
+        });
 
-                // создаем JWT-токен
-                var jwt = new JwtSecurityToken(
-                        issuer: authOptions.Value.ISSUER,
-                        audience: authOptions.Value.AUDIENCE,
-                        notBefore: DateTime.Now,
-                        claims: identity.Claims,
-                        expires: DateTime.Now.Add(TimeSpan.FromMinutes(authOptions.Value.LIFETIME)),
-                        signingCredentials: new SigningCredentials(signingKey.GetKey(), signingKey.SigningAlgorithm));
-
-                var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-                HttpContext.Response.Cookies.Append(".Core.Geo.Bear", encodedJwt,
-                    new CookieOptions
-                    {
-                        MaxAge = TimeSpan.FromMinutes(authOptions.Value.LIFETIME)
-                    });
-
-                return Ok();
-            }
-            catch (BusinessLogicException bblEx)
-            {
-                return Ok(JsonResultResponse.Bad(bblEx.Message));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { errorText = ex.Message });
-            }
-        }
-
-        [HttpPost("registration")]
-        public IActionResult Registration(RegistrationModel model)
+        [AllowAnonymous]
+        [HttpPost]
+        public IActionResult SignIn(LoginModel model) => TryAction(() =>
         {
-            try
+            if (UserActions.AuthenticationUser(_ctx, model.Login, model.Password) is UserDTO userDTO)
             {
-                UserActions.TryRegisterUser(_ctx, model);
-                return Ok();
-            }
-            catch(BusinessLogicException bblEx)
-            {
-                return Ok(JsonResultResponse.Bad(bblEx.Message));
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(new { errorText = ex.Message });
-            }
-        }
-
-        private ClaimsIdentity GetIdentity(LoginModel model) =>
-            UserActions.AuthenticationUser(_ctx, model) is User user
-            ? new ClaimsIdentity(
-                new List<Claim>
+                var userIdentity = new UserIdentity
                 {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString())
-                },
-                "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType)
-            : null;
+                    Id = userDTO.Id,
+                    UserName = userDTO.Login
+                };
+
+
+                var tokenResult = _jwtTokenGenerator.Generate(userIdentity, userDTO.Role.ToString());
+
+                HttpContext.Response.Cookies.Append(
+                    ".Core.Geo.Bear",
+                    tokenResult.AccessToken,
+                    new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) });
+                return Ok();
+            }
+            else
+                return Unauthorized();
+        });
+
+        [HttpPost]
+        public IActionResult SignOut() => TryAction(() =>
+        {
+            HttpContext.Response.Cookies.Delete(".Core.Geo.Bear");
+            return Ok();
+        });
     }
 }
