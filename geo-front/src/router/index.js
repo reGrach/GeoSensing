@@ -1,32 +1,26 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
-import Login from '@/views/Login'
-import Geo from '@/views/Geo.vue'
-import About from '@/views/About.vue'
+import Signup from '@/views/Signup.vue'
+import Signin from '@/views/Signin.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Мои данные',
+    name: 'Home',
     component: Home
   },
   {
-    path: '/geo',
-    name: 'Фиксация позиции',
-    component: Geo
+    path: '/signin',
+    name: 'Вход',
+    component: Signin
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: Login
-  },
-  {
-    path: '/about',
-    name: 'О проекте',
-    component: About
+    path: '/signup',
+    name: 'Регистрация',
+    component: Signup
   }
 ]
 
