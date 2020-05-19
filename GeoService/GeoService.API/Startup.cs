@@ -21,6 +21,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using GeoService.API.Auth.JwtExtension;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
+using System.IO;
 
 namespace GeoService.API
 {
@@ -54,6 +57,14 @@ namespace GeoService.API
             services.Configure<AuthOptions>(section);
             #endregion
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API для работы приложения GeoSensing", Version = "v1" });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+
         }
 
         public void Configure(IApplicationBuilder app)
@@ -73,6 +84,14 @@ namespace GeoService.API
             app.UseMiddleware<SecureJwtMiddleware>();
 
             app.UseHttpsRedirection();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "GeoSensing API v1");
+                c.RoutePrefix = string.Empty;
+            });
+
 
             app.UseRouting();
 

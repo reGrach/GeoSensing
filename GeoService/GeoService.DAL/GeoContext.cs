@@ -23,10 +23,6 @@ namespace GeoService.DAL
                 .HasIndex(u => u.Title)
                 .IsUnique();
 
-            builder.Entity<Team>()
-                .HasIndex(u => u.Color)
-                .IsUnique();
-
             //Создаем ForeginKey без navigation property 
             builder.Entity<Experiment>()
                 .HasOne<User>()

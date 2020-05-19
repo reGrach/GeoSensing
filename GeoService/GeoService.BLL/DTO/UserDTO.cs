@@ -1,14 +1,10 @@
-﻿using GeoService.DAL.Enums;
-
-namespace GeoService.BLL.DTO
+﻿namespace GeoService.BLL.DTO
 {
     public class UserDTO
     {
-        public int Id { get; set; }
         public string Login { get; set; }
-        public RoleEnum Role { get; set; }
-        public string FullName { get; set; }
-        public string TeamTitle { get; set; }
-        public string TeamColor { get; set; }
+        public string Name { get; set; }
+        public string SurName { get; set; }
+        public int TeamId { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace GeoService.BLL.Actions
 {
     public static class UserActions
     {
-        public static void TryRegisterUser(GeoContext ctx, string login, string password)
+        public static void TryRegisterUser(this GeoContext ctx, string login, string password)
         {
             if (ctx.Users.Any(x => x.Login == login))
                 throw new ApiException("Пользователь с таким логином уже существует", nameof(TryRegisterUser), 400);
@@ -29,7 +29,7 @@ namespace GeoService.BLL.Actions
             ctx.SaveChanges();
         }
 
-        public static UserDTO AuthenticationUser(GeoContext ctx, string login, string password)
+        public static IdentityDTO AuthenticationUser(this GeoContext ctx, string login, string password)
         {
             if (ctx.Users.FirstOrDefault(x => x.Login == login) is User userDb)
             {
@@ -37,31 +37,40 @@ namespace GeoService.BLL.Actions
                 if (!hasher.Verify(userDb.PasswordHash, password))
                     throw new ApiException("Введен неверный пароль", nameof(AuthenticationUser), 401);
                 else
-                    return new UserDTO 
+                    return new IdentityDTO
                     {
                         Id = userDb.Id,
                         Login = userDb.Login,
-                        FullName = userDb.Role != RoleEnum.NonDefined ? $"{userDb.Surname} {userDb.Name}" : string.Empty,
                         Role = userDb.Role,
-                        TeamTitle = userDb.TeamId.HasValue ? userDb.Team.Title : string.Empty,
-                        TeamColor = userDb.TeamId.HasValue ? userDb.Team.Color : string.Empty
                     };
             }
             else
                 throw new ApiException("Пользователь с таким логином не найден", nameof(AuthenticationUser), 401);
         }
 
-        //public static void UpdateProfile(GeoContext ctx, UserDTO model)
-        //{
-        //    //if (ctx.Users.Any(x => x.Login == model.Login))
-        //    //    throw new ApiException("Пользователь с таким логином уже существует");
-
-        //}
-
-        public static User GetUserById(GeoContext ctx, int id)
+        public static void UpdateProfile(this GeoContext ctx, int id, UserDTO model)
         {
-            if (ctx.Users.Find(id) is User us)
-                return us;
+            if (ctx.Users.Find(id) is User dbUser)
+            {
+                dbUser.Name = model.Name;
+                dbUser.Surname = model.SurName;
+                dbUser.Login = model.Login;
+                if (dbUser.Role == RoleEnum.NonDefined)
+                    dbUser.Role = RoleEnum.Participant;
+            }
+            else
+                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
+        }
+
+        public static UserDTO GetProfile(this GeoContext ctx, int id)
+        {
+            if (ctx.Users.Find(id) is User dbUser)
+                return new UserDTO
+                {
+                    Login = dbUser.Login,
+                    Name = dbUser.Name,
+                    SurName = dbUser.Surname
+                };
             else
                 throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
         }
