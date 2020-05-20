@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using GeoService.DAL;
+using System.Collections.Generic;
 
 namespace GeoService.BLL.DTO
 {
@@ -6,7 +7,7 @@ namespace GeoService.BLL.DTO
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public string Color { get; set; }
+        public string Color { get; set; }       
     }
 
     public class TeamExtensionDTO : TeamDTO

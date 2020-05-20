@@ -55,8 +55,8 @@ namespace GeoService.BLL.Actions
 
         public static IEnumerable<TeamDTO> GetTeams(this GeoContext ctx, bool onlyIsActive = true) =>
             onlyIsActive
-            ? ctx.GetAllTeams().Select(x => new TeamDTO { Id = x.Id, Title = x.Title, Color = x.Color })
-            : ctx.GetActiveTeams().Select(x => new TeamDTO { Id = x.Id, Title = x.Title, Color = x.Color });
+            ? ctx.GetAllTeams().Select(x => x.ToDTO())
+            : ctx.GetActiveTeams().Select(x => x.ToDTO());
 
         public static TeamExtensionDTO GetTeamById(this GeoContext ctx, int id)
         {
@@ -109,9 +109,9 @@ namespace GeoService.BLL.Actions
                 throw new ApiException("Фатальная ошибка, команда не обнаружена", nameof(ChangeActiveTeam), 404);
         }
 
-        public static void AddUserToTeam(this GeoContext ctx, int userId, int teamId)
+        public static void AddUserToTeam(this GeoContext ctx, string login, int teamId)
         {
-            if (ctx.Users.Find(userId) is User dbUser)
+            if (ctx.Users.FirstOrDefault(x => x.Login.Equals(login, StringComparison.InvariantCultureIgnoreCase)) is User dbUser)
             {
                 if (dbUser.Role == RoleEnum.Leader)
                     throw new ApiException("Нельзя добавить лидера другой команды", nameof(AddUserToTeam), 400);
@@ -152,5 +152,13 @@ namespace GeoService.BLL.Actions
 
         private static IEnumerable<Team> GetActiveTeams(this GeoContext ctx) =>
             ctx.Teams.AsNoTracking().Where(x => x.IsActive).AsEnumerable();
+
+        internal static TeamDTO ToDTO(this Team team) =>
+            new TeamDTO
+            {
+                Id = team.Id,
+                Title = team.Title,
+                Color = team.Color
+            };
     }
 }

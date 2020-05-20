@@ -2,6 +2,7 @@
 using GeoService.BLL.Utils;
 using GeoService.DAL;
 using GeoService.DAL.Enums;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,11 +68,33 @@ namespace GeoService.BLL.Actions
             if (ctx.Users.Find(id) is User dbUser)
                 return new UserDTO
                 {
+                    Login = dbUser.Login,
                     Name = dbUser.Name,
-                    SurName = dbUser.Surname
+                    SurName = dbUser.Surname,
+                    IsLeader = dbUser.Role == RoleEnum.Admin,
+                    Team = dbUser.Team is Team team ? team.ToDTO() : null                  
                 };
             else
                 throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
+        }
+
+        public static IEnumerable<UserDTO> GetFreeUsers(this GeoContext ctx, string query)
+        {
+            var freeUsers = ctx.Users.AsNoTracking()
+                .Where(x => x.Role == RoleEnum.NonDefined)
+                .AsEnumerable();
+            if (string.IsNullOrEmpty(query))
+                freeUsers = freeUsers
+                    .Where(x => x.Login.Equals(query, StringComparison.InvariantCultureIgnoreCase)
+                    || x.Name.Equals(query, StringComparison.InvariantCultureIgnoreCase)
+                    || x.Surname.Equals(query, StringComparison.InvariantCultureIgnoreCase));
+
+            return freeUsers.Select(x => new UserDTO 
+            {
+                Login = x.Login,
+                Name = x.Name,
+                SurName = x.Surname
+            });
         }
     }
 }

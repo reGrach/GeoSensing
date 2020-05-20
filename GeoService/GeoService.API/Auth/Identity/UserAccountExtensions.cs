@@ -20,16 +20,24 @@ namespace GeoService.API.Auth.Identity
 
         public static int GetUserId(this IIdentity identity)
         {
-            if (identity == null)
-                throw new ArgumentNullException("Identity");
-
             if (identity is ClaimsIdentity ci)
             {
                 var idClaim = ci.FindFirst(ClaimTypes.NameIdentifier).Value;
-                if (int.TryParse(idClaim, out int id))              
+                if (int.TryParse(idClaim, out int id))
                     return id;
+                else
+                    throw new InvalidCastException("Id");
             }
-            return default;
+            else
+                throw new ArgumentNullException("Identity");
+        }
+
+        public static string GetUserLogin(this IIdentity identity)
+        {
+            if (identity is ClaimsIdentity ci)
+                return ci.FindFirst(ClaimTypes.Name).Value;
+            else
+                throw new ArgumentNullException("Identity");
         }
     }
 }

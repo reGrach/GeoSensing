@@ -27,6 +27,11 @@ namespace GeoService.API.Controllers
 
 
         /// <summary> Получить профиль авторизованного пользователя </summary>
+        [HttpGet("{id:int}")]
+        [Authorize(AdminPolicy)]
+        public IActionResult GetById(int id) => TryAction(() => Ok(_context.GetProfile(id)));
+
+        /// <summary> Получить профиль авторизованного пользователя </summary>
         [HttpGet]
         public IActionResult Get() => TryAction(() =>
         {
@@ -34,6 +39,11 @@ namespace GeoService.API.Controllers
             var profile = _context.GetProfile(id);
             return Ok(profile);
         });
+
+
+        /// <summary> Получить список пользователей </summary>
+        [HttpGet]
+        public IActionResult Search([FromQuery] string query) => TryAction(() => Ok(_context.GetFreeUsers(query)));
 
 
         /// <summary> Обновить профиль авторизованного пользователя </summary>

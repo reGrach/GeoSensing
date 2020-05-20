@@ -73,7 +73,7 @@ namespace GeoService.API.Controllers
         [Authorize(LeaderPolicy)]
         public IActionResult AddUser(UserInTeam model) => TryAction(() =>
         {
-            _context.AddUserToTeam(model.UserId, model.TeamId);
+            _context.AddUserToTeam(model.Login, model.TeamId);
             return Ok(_context.GetTeamById(model.TeamId));
         });
 
@@ -108,8 +108,8 @@ namespace GeoService.API.Controllers
         [HttpPost]
         public IActionResult AddMe([FromBody]int idTeam) => TryAction(() =>
         {
-            var id = User.Identity.GetUserId();
-            _context.AddUserToTeam(id, idTeam);
+            var login = User.Identity.GetUserLogin();
+            _context.AddUserToTeam(login, idTeam);
             return Ok(_context.GetTeamById(idTeam));
         });
 
