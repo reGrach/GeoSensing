@@ -10,6 +10,7 @@ using static GeoService.API.Auth.Identity.Contracts;
 
 namespace GeoService.API.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class TestController : BaseApiController
     {
         private readonly JwtTokenGenerator _jwtTokenGenerator;

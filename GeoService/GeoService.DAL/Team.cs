@@ -14,6 +14,8 @@ namespace GeoService.DAL
 
         public string Color { get; set; }
 
+        public bool IsActive { get; set; }
+
         public NpgsqlPolygon? Polygon { get; set; }
 
         public List<User> Users { get; set; }

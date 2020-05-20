@@ -54,7 +54,7 @@ namespace GeoService.BLL.Actions
             {
                 dbUser.Name = model.Name;
                 dbUser.Surname = model.SurName;
-                dbUser.Login = model.Login;
+
                 if (dbUser.Role == RoleEnum.NonDefined)
                     dbUser.Role = RoleEnum.Participant;
             }
@@ -67,7 +67,6 @@ namespace GeoService.BLL.Actions
             if (ctx.Users.Find(id) is User dbUser)
                 return new UserDTO
                 {
-                    Login = dbUser.Login,
                     Name = dbUser.Name,
                     SurName = dbUser.Surname
                 };

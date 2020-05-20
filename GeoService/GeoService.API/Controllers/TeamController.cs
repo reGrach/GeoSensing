@@ -13,8 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using static GeoService.API.Auth.Identity.Contracts;
 using static GeoService.BLL.Actions.TeamActions;
 
-
-
 namespace GeoService.API.Controllers
 {
     [Authorize(ParticipantPolicy)]
@@ -27,23 +25,24 @@ namespace GeoService.API.Controllers
             _context = context;
         }
 
-        /// <summary> Получение всех существующих команд </summary>
-        /// <returns></returns>
+        /// <summary> Получение всех активных команд </summary>
         [HttpGet]
-        public IActionResult GetAll() => TryAction(() => Ok(_context.GetAllTeams()));
+        public IActionResult GetActive() => TryAction(() => Ok(_context.GetTeams()));
+
+
+        /// <summary> Получение всех существующих команд (только для админов) </summary>
+        [HttpGet]
+        [Authorize(AdminPolicy)]
+        public IActionResult GetAll() => TryAction(() => Ok(_context.GetTeams(false)));
 
         /// <summary> Получение полной инфомации о команде </summary>
         /// <param name="id">Идентификатор команды</param>
-        /// <returns></returns>
         [HttpGet("{id:int}")]
         public IActionResult GetById(int id) => TryAction(() => Ok(_context.GetTeamById(id)));
 
         /// <summary>
-        /// Создание команды.
-        /// При этом текущий пользователь автоматически становится ее лидером.
+        /// Создание команды. Текущий пользователь автоматически становится ее лидером.
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
         [HttpPost]
         public IActionResult Create(TeamModel model) => TryAction(() =>
         {
@@ -56,8 +55,6 @@ namespace GeoService.API.Controllers
         /// Обновление данных команды.
         /// Текущий пользователь должен быть лидером.
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
         [HttpPost]
         [Authorize(LeaderPolicy)]
         public IActionResult Update(TeamModel model) => TryAction(() =>
@@ -71,16 +68,19 @@ namespace GeoService.API.Controllers
         /// <summary>
         /// Добавление текущего авторизованного пользователя в команду
         /// </summary>
-        /// <param name="idTeam"></param>
-        /// <returns></returns>
         [HttpPost]
-        public IActionResult AddMe(int idTeam) => TryAction(() =>
+        public IActionResult AddMe([FromBody]int idTeam) => TryAction(() =>
         {
             var id = User.Identity.GetUserId();
             _context.AddUserToTeam(id, idTeam);
             return Ok(_context.GetTeamById(idTeam));
         });
 
+
+        /// <summary>
+        /// Добавить выбранного пользователя в группу.
+        /// Добавляемый пользователь не должен быть лидером. 
+        /// </summary>
         [HttpPost]
         [Authorize(LeaderPolicy)]
         public IActionResult AddUser(UserInTeam model) => TryAction(() =>
@@ -89,5 +89,17 @@ namespace GeoService.API.Controllers
             return Ok(_context.GetTeamById(model.TeamId));
         });
 
+
+        /// <summary>
+        /// Добавить выбранного пользователя в группу.
+        /// Добавляемый пользователь не должен быть лидером. 
+        /// </summary>
+        [HttpPost]
+        [Authorize(AdminPolicy)]
+        public IActionResult ChangeActive([FromBody]int idTeam) => TryAction(() =>
+        {
+            _context.ChangeActiveTeam(idTeam);
+            return Ok();
+        });
     }
 }

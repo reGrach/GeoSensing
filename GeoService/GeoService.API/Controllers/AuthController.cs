@@ -23,17 +23,20 @@ namespace GeoService.API.Controllers
             _context = context;
         }
 
+        /// <summary> Регистрация пользователя </summary>
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult SignUp(RegistrationModel model) => TryAction(() =>
+        public IActionResult SignUp(AuthModel model) => TryAction(() =>
         {
             _context.TryRegisterUser(model.Login, model.Password);
             return Ok();
         });
 
+
+        /// <summary> Аутентификация пользователя </summary>
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult SignIn(LoginModel model) => TryAction(() =>
+        public IActionResult SignIn(AuthModel model) => TryAction(() =>
         {
             var userDTO = _context.AuthenticationUser(model.Login, model.Password);
             var userIdentity = new UserIdentity
@@ -51,6 +54,8 @@ namespace GeoService.API.Controllers
             return Ok();
         });
 
+
+        /// <summary> Выход пользователя из системы </summary>
         [HttpPost]
         public IActionResult SignOut() => TryAction(() =>
         {

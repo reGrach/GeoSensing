@@ -1,6 +1,7 @@
 ﻿using GeoService.BLL.DTO;
 using GeoService.DAL;
 using GeoService.DAL.Enums;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace GeoService.BLL.Actions
                 {
                     Title = title,
                     Color = color,
+                    IsActive = true,
                     Users = new List<User> { dbUser }
                 });
 
@@ -51,11 +53,10 @@ namespace GeoService.BLL.Actions
                 throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(UpdateTeamByLeader), 404);
         }
 
-
-        public static IEnumerable<TeamDTO> GetAllTeams(this GeoContext ctx) =>
-            ctx.Teams
-            .Select(x => new TeamDTO { Id = x.Id, Title = x.Title, Color = x.Color })
-            .AsEnumerable();
+        public static IEnumerable<TeamDTO> GetTeams(this GeoContext ctx, bool onlyIsActive = true) =>
+            onlyIsActive
+            ? ctx.GetAllTeams().Select(x => new TeamDTO { Id = x.Id, Title = x.Title, Color = x.Color })
+            : ctx.GetActiveTeams().Select(x => new TeamDTO { Id = x.Id, Title = x.Title, Color = x.Color });
 
         public static TeamExtensionDTO GetTeamById(this GeoContext ctx, int id)
         {
@@ -77,6 +78,14 @@ namespace GeoService.BLL.Actions
                 throw new ApiException("Фатальная ошибка, команда не обнаружена", nameof(GetTeamById), 404);
         }
 
+        public static void ChangeActiveTeam(this GeoContext ctx, int teamId)
+        {
+            if (ctx.Teams.Find(teamId) is Team dbTeam)
+                dbTeam.IsActive = !dbTeam.IsActive;
+            else
+                throw new ApiException("Фатальная ошибка, команда не обнаружена", nameof(ChangeActiveTeam), 404);
+        }
+
         public static void AddUserToTeam(this GeoContext ctx, int userId, int teamId)
         {
             if (ctx.Users.Find(userId) is User dbUser)
@@ -85,6 +94,9 @@ namespace GeoService.BLL.Actions
                     throw new ApiException("Нельзя добавить лидера другой команды", nameof(AddUserToTeam), 400);
                 else
                 {
+                    if (dbUser.Role == RoleEnum.NonDefined)
+                        dbUser.Role = RoleEnum.Participant;
+
                     if (ctx.Teams.Find(teamId) is Team dbTeam)
                         dbTeam.Users.Add(dbUser);
                     else
@@ -95,5 +107,12 @@ namespace GeoService.BLL.Actions
             else
                 throw new ApiException("Фатальная ошибка, пользователь не обнаружен", nameof(AddUserToTeam), 404);
         }
+
+
+        private static IEnumerable<Team> GetAllTeams(this GeoContext ctx) =>
+            ctx.Teams.AsNoTracking().AsEnumerable();
+
+        private static IEnumerable<Team> GetActiveTeams(this GeoContext ctx) =>
+            ctx.Teams.AsNoTracking().Where(x => x.IsActive).AsEnumerable();
     }
 }

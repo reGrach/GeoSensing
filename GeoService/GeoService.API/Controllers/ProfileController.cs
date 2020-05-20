@@ -26,6 +26,7 @@ namespace GeoService.API.Controllers
         }
 
 
+        /// <summary> Получить профиль авторизованного пользователя </summary>
         [HttpGet]
         public IActionResult Get() => TryAction(() =>
         {
@@ -35,6 +36,7 @@ namespace GeoService.API.Controllers
         });
 
 
+        /// <summary> Обновить профиль авторизованного пользователя </summary>
         [HttpPost]
         public IActionResult Update(ProfileModel model) => TryAction(() =>
         {
@@ -43,7 +45,6 @@ namespace GeoService.API.Controllers
             {
                 Name = model.Name,
                 SurName = model.SurName,
-                Login = model.Login
             };
             _context.UpdateProfile(id, user);
             return Ok();
