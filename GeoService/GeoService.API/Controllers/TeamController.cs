@@ -25,36 +25,36 @@ namespace GeoService.API.Controllers
             _context = context;
         }
 
-        /// <summary> Получение всех активных команд </summary>
-        [HttpGet]
-        public IActionResult GetActive() => TryAction(() => Ok(_context.GetTeams()));
+        #region Действия админа
 
-
-        /// <summary> Получение всех существующих команд (только для админов) </summary>
+        /// <summary> Получение всех существующих команд (для админов) </summary>
         [HttpGet]
         [Authorize(AdminPolicy)]
         public IActionResult GetAll() => TryAction(() => Ok(_context.GetTeams(false)));
 
-        /// <summary> Получение полной инфомации о команде </summary>
+
+        /// <summary> Получение полной инфомации о команде (для админа) </summary>
         /// <param name="id">Идентификатор команды</param>
         [HttpGet("{id:int}")]
+        [Authorize(AdminPolicy)]
         public IActionResult GetById(int id) => TryAction(() => Ok(_context.GetTeamById(id)));
 
-        /// <summary>
-        /// Создание команды. Текущий пользователь автоматически становится ее лидером.
-        /// </summary>
+
+        /// <summary> Активировать/деактивировать команду (для админа) </summary>
         [HttpPost]
-        public IActionResult Create(TeamModel model) => TryAction(() =>
+        [Authorize(AdminPolicy)]
+        public IActionResult ChangeActive([FromBody]int idTeam) => TryAction(() =>
         {
-            var id = User.Identity.GetUserId();
-            _context.CreateTeam(id, model.Title, model.Color);
+            _context.ChangeActiveTeam(idTeam);
             return Ok();
         });
 
-        /// <summary>
-        /// Обновление данных команды.
-        /// Текущий пользователь должен быть лидером.
-        /// </summary>
+        #endregion
+
+
+        #region Действия лидера
+
+        /// <summary> Обновление данных команды (для лидера) </summary>
         [HttpPost]
         [Authorize(LeaderPolicy)]
         public IActionResult Update(TeamModel model) => TryAction(() =>
@@ -62,18 +62,6 @@ namespace GeoService.API.Controllers
             var id = User.Identity.GetUserId();
             _context.UpdateTeamByLeader(id, model.Title, model.Color);
             return Ok();
-        });
-
-
-        /// <summary>
-        /// Добавление текущего авторизованного пользователя в команду
-        /// </summary>
-        [HttpPost]
-        public IActionResult AddMe([FromBody]int idTeam) => TryAction(() =>
-        {
-            var id = User.Identity.GetUserId();
-            _context.AddUserToTeam(id, idTeam);
-            return Ok(_context.GetTeamById(idTeam));
         });
 
 
@@ -89,17 +77,52 @@ namespace GeoService.API.Controllers
             return Ok(_context.GetTeamById(model.TeamId));
         });
 
+        #endregion
+
+
+        #region Действия участника
+
+        /// <summary> Получение всех активных команд </summary>
+        [HttpGet]
+        public IActionResult GetActive() => TryAction(() => Ok(_context.GetTeams()));
+
+
+        /// <summary> Получение полной инфомации о собственной команде </summary>
+        [HttpGet]
+        public IActionResult GetMy() => TryAction(() => Ok(_context.GetTeamByUser(User.Identity.GetUserId())));
+
 
         /// <summary>
-        /// Добавить выбранного пользователя в группу.
-        /// Добавляемый пользователь не должен быть лидером. 
+        /// Создание команды. Текущий пользователь автоматически становится ее лидером.
         /// </summary>
         [HttpPost]
-        [Authorize(AdminPolicy)]
-        public IActionResult ChangeActive([FromBody]int idTeam) => TryAction(() =>
+        public IActionResult Create(TeamModel model) => TryAction(() =>
         {
-            _context.ChangeActiveTeam(idTeam);
+            var id = User.Identity.GetUserId();
+            _context.CreateTeam(id, model.Title, model.Color);
             return Ok();
         });
+
+
+        /// <summary> Добавление текущего авторизованного пользователя в команду </summary>
+        [HttpPost]
+        public IActionResult AddMe([FromBody]int idTeam) => TryAction(() =>
+        {
+            var id = User.Identity.GetUserId();
+            _context.AddUserToTeam(id, idTeam);
+            return Ok(_context.GetTeamById(idTeam));
+        });
+
+
+        /// <summary> Выйти из команды </summary>
+        [HttpPost]
+        public IActionResult RemoveMe([FromBody]int idTeam) => TryAction(() =>
+        {
+            var id = User.Identity.GetUserId();
+            _context.RemoveUserFromTeam(id, idTeam);
+            return Ok(_context.GetTeamById(idTeam));
+        });
+
+        #endregion
     }
 }

@@ -78,6 +78,29 @@ namespace GeoService.BLL.Actions
                 throw new ApiException("Фатальная ошибка, команда не обнаружена", nameof(GetTeamById), 404);
         }
 
+        public static TeamExtensionDTO GetTeamByUser(this GeoContext ctx, int id)
+        {
+            if (ctx.Users.Find(id) is User dbUser)
+            {
+                if (dbUser.Team is Team dbTeam)
+                {
+                    return new TeamExtensionDTO
+                    {
+                        Id = dbTeam.Id,
+                        Title = dbTeam.Title,
+                        Color = dbTeam.Color,
+                        Participants = dbTeam.Users.Select(x => new UserDTO { Name = x.Name, SurName = x.Surname }).ToList(),
+                        Polygon = null
+                    };
+                }
+                else
+                    throw new ApiException("Вы еще не вступили ни в одну из команд", nameof(GetTeamByUser), 400);
+            }
+            else
+                throw new ApiException("Фатальная ошибка, пользователь не обнаружен", nameof(GetTeamByUser), 404);
+        }
+
+
         public static void ChangeActiveTeam(this GeoContext ctx, int teamId)
         {
             if (ctx.Teams.Find(teamId) is Team dbTeam)
@@ -106,6 +129,21 @@ namespace GeoService.BLL.Actions
             }
             else
                 throw new ApiException("Фатальная ошибка, пользователь не обнаружен", nameof(AddUserToTeam), 404);
+        }
+
+        public static void RemoveUserFromTeam(this GeoContext ctx, int userId, int teamId)
+        {
+            if (ctx.Teams.Find(teamId) is Team dbTeam)
+            {
+                if (dbTeam.Users.FirstOrDefault(x => x.Id == userId) is User dbUser && dbUser.Role != RoleEnum.Leader)
+                    dbTeam.Users.Remove(dbUser);
+                else
+                    throw new ApiException("Нельзя удалить пользователя из команды", nameof(RemoveUserFromTeam), 400);
+
+                ctx.SaveChanges();
+            }
+            else
+                throw new ApiException("Фатальная ошибка, команда не обнаружена", nameof(RemoveUserFromTeam), 404);
         }
 
 
