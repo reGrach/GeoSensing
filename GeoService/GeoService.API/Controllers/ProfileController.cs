@@ -25,8 +25,7 @@ namespace GeoService.API.Controllers
             _context = context;
         }
 
-
-        /// <summary> Получить профиль авторизованного пользователя </summary>
+        /// <summary> Получить профиль пользователя по id </summary>
         [HttpGet("{id:int}")]
         [Authorize(AdminPolicy)]
         public IActionResult GetById(int id) => TryAction(() => Ok(_context.GetProfile(id)));
