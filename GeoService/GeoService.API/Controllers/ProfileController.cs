@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using GeoService.API.Auth;
-using GeoService.API.Auth.Identity;
+﻿using GeoService.API.Auth.Identity;
 using GeoService.API.Models;
-using static GeoService.BLL.Actions.UserActions;
 using GeoService.BLL.DTO;
 using GeoService.DAL;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static GeoService.API.Auth.Identity.Contracts;
+using static GeoService.BLL.Actions.UserActions;
 
 
 namespace GeoService.API.Controllers

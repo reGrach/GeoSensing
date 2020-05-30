@@ -42,6 +42,10 @@ namespace GeoService.API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
+        public IActionResult TestAPI() => TryAction(() => Ok("ПРИПРИПРПИРПИРП"));
+
+        [AllowAnonymous]
+        [HttpGet]
         public IActionResult SignUp() => TryAction(() =>
         {
             UserActions.TryRegisterUser(_ctx, login, password);
