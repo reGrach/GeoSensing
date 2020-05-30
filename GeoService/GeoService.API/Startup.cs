@@ -45,7 +45,7 @@ namespace GeoService.API
 
             services.AddDbContext<GeoContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("GeoContext")));
 
-            #region ������� ���� ��������������
+            #region Подключение ацтентификации
             var section = Configuration.GetSection("AuthOptions");
 
             var options = section.Get<AuthOptions>();
@@ -74,11 +74,7 @@ namespace GeoService.API
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
-            app.UseCors(x => x
-            .AllowAnyOrigin()
-            .AllowCredentials()
-            .AllowAnyMethod()
-            .AllowAnyHeader());
+            app.UseCors(x => x.AllowAnyOrigin());
 
             app.UseCookiePolicy(new CookiePolicyOptions
             {
