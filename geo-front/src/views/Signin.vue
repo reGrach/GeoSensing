@@ -23,7 +23,7 @@
               <span>Вы еще не с нами?</span>
             </router-link>
             <v-spacer></v-spacer>
-            <v-btn color="info" @click.prevent="test">Войти</v-btn>
+            <v-btn color="info" @click.prevent="onSubmit">Войти</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -33,7 +33,7 @@
 
 <script>
 import TestApi from '../api/test'
-
+import { SIGN_IN } from '@/store/actionsType'
 export default {
   data: () => ({
     showPassword: false,
@@ -41,16 +41,21 @@ export default {
     password: ''
   }),
   methods: {
-    signin () {
-      this.$store.dispatch('SIGNIN', {
-        login: this.login,
-        password: this.password
-      })
+
+    onSubmit () {
+      this.$store
+        .dispatch(SIGN_IN, {
+          login: this.login,
+          password: this.password
+        })
+        .then(() => this.$router.push({ name: 'main' }))
     },
 
     test () {
       TestApi.default()
-        .then((resp) => console.log(resp.data))
+        .then((resp) => {
+          console.log(resp.data)
+        })
         .catch((error) => console.log(error))
     }
   }

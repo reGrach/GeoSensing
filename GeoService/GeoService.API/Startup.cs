@@ -74,7 +74,10 @@ namespace GeoService.API
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
-            app.UseCors(x => x.AllowAnyOrigin());
+            app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod());
 
             app.UseCookiePolicy(new CookiePolicyOptions
             {

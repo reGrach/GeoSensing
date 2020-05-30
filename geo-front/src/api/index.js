@@ -11,8 +11,9 @@ const ApiService = {
   init () {
     Vue.use(VueAxios, axios)
     Vue.axios.defaults.baseURL = 'https:/regrach.ru/api/'
+    // Vue.axios.defaults.withCredentials = true
     // Vue.axios.interceptors.request.use(request => requestInterceptor)
-    Vue.axios.request.withCredentials = true
+    // Vue.axios.request.withCredentials = true
   },
 
   //   setHeader () {
@@ -20,15 +21,11 @@ const ApiService = {
   //   },
 
   query (route, params) {
-    return Vue.axios.get(route, params).catch(error => {
-      throw new Error(`[RWV] ApiService ${error}`)
-    })
+    return Vue.axios.get(route, params)
   },
 
   get (route) {
-    return Vue.axios.get(route).catch(error => {
-      throw new Error(`[RWV] ApiService ${error}`)
-    })
+    return Vue.axios.get(route)
   },
 
   post (route, params) {
@@ -36,9 +33,7 @@ const ApiService = {
   },
 
   delete (resource) {
-    return Vue.axios.delete(resource).catch(error => {
-      throw new Error(`[RWV] ApiService ${error}`)
-    })
+    return Vue.axios.delete(resource)
   }
 }
 
