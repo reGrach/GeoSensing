@@ -41,11 +41,11 @@ namespace GeoService.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
+            services.AddCors();
 
             services.AddDbContext<GeoContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("GeoContext")));
 
-            #region Создаем узел Аутентификации
+            #region пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             var section = Configuration.GetSection("AuthOptions");
 
             var options = section.Get<AuthOptions>();
@@ -59,7 +59,7 @@ namespace GeoService.API
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API для работы приложения GeoSensing", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ GeoSensing", Version = "v1" });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
@@ -73,6 +73,12 @@ namespace GeoService.API
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
+
+            app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowCredentials()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 
             app.UseCookiePolicy(new CookiePolicyOptions
             {
