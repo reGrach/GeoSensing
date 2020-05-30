@@ -15,10 +15,6 @@ export default {
   components: {
     AppHeader,
     AppFooter
-  },
-
-  data: () => ({
-    //
-  })
+  }
 }
 </script>
