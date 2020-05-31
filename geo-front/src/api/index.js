@@ -13,7 +13,6 @@ const ApiService = {
     Vue.axios.defaults.baseURL = 'https:/regrach.ru/api/'
     // Vue.axios.defaults.withCredentials = true
     // Vue.axios.interceptors.request.use(request => requestInterceptor)
-    // Vue.axios.request.withCredentials = true
   },
 
   //   setHeader () {

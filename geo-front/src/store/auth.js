@@ -1,11 +1,10 @@
 import AuthApi from '../api/auth'
 import { SIGN_IN, SIGN_UP, SIGN_OUT } from './actionsType'
-import { SET_AUTH, PURGE_AUTH, SET_ERROR } from './mutationsType'
+import { SET_AUTH, PURGE_AUTH, SET_ERROR, SET_PROCESSING } from './mutationsType'
 
 const state = {
   userId: null,
-  isAuthenticated: false,
-  errors: null
+  isAuthenticated: false
 }
 
 const getters = {
@@ -18,37 +17,72 @@ const getters = {
 }
 
 const actions = {
-  [SIGN_IN] (context, credentials) {
+  [SIGN_IN] ({ commit }, credentials) {
+    commit(SET_PROCESSING, true)
     return new Promise(resolve => {
       AuthApi.signin(credentials)
         .then(({ data }) => {
-          context.commit(SET_AUTH)
+          commit(SET_AUTH)
           resolve(data)
         })
         .catch(({ response }) => {
-          console.log('---------------')
-          console.log(response)
-          // context.commit(SET_ERROR, response.data.errors)
+          if (response.status === 401) {
+            commit(SET_ERROR, response.data)
+          } else {
+            console.error('Фатальная ошибка')
+            console.log(response.data)
+            commit(SET_ERROR, response.data)
+          }
+        })
+        .finally(() => {
+          commit(SET_PROCESSING, false)
         })
     })
   },
-  [SIGN_UP] (context, credentials) {
+  [SIGN_UP] ({ commit }, credentials) {
+    commit(SET_PROCESSING, true)
     return new Promise((resolve, reject) => {
       AuthApi.signup(credentials)
         .then(({ data }) => {
-          context.commit(SET_AUTH)
           resolve(data)
         })
         .catch(({ response }) => {
-          context.commit(SET_ERROR, response.data.errors)
+          if (response.status === 401) {
+            commit(SET_ERROR, response.data)
+          } else {
+            console.error('Фатальная ошибка')
+            console.log(response.data)
+            commit(SET_ERROR, response.data)
+          }
           reject(response)
+        })
+        .finally(() => {
+          commit(SET_PROCESSING, false)
         })
     })
   },
-  [SIGN_OUT] (context) {
-    context.commit(PURGE_AUTH)
+  [SIGN_OUT] ({ commit }, context) {
+    return new Promise((resolve, reject) => {
+      AuthApi.signout()
+        .then(({ data }) => {
+          commit(PURGE_AUTH)
+          resolve(data)
+        })
+        .catch(({ response }) => {
+          if (response.status === 401) {
+            commit(SET_ERROR, response.data)
+          } else {
+            console.error('Фатальная ошибка')
+            console.log(response.data)
+            commit(SET_ERROR, response.data)
+          }
+          reject(response)
+        })
+        .finally(() => {
+          commit(SET_PROCESSING, false)
+        })
+    })
   }
-
   // [CHECK_AUTH] (context) {
   //   if (JwtService.getToken()) {
   //     ApiService.setHeader()
@@ -66,19 +100,14 @@ const actions = {
 }
 
 const mutations = {
-  [SET_ERROR] (state, error) {
-    state.errors = error
-  },
   [SET_AUTH] (state, user) {
     state.isAuthenticated = true
     // state.userId = user
-    state.errors = {}
     // JwtService.saveToken(state.user.token)
   },
   [PURGE_AUTH] (state) {
     state.isAuthenticated = false
-    state.userId = {}
-    state.errors = {}
+    // state.userId = {}
     // JwtService.destroyToken()
   }
 }
