@@ -17,7 +17,7 @@
               />
             </v-form>
           </v-card-text>
-          <v-alert text border="top" type="warning" v-model="error">{{error}}</v-alert>
+          <v-alert text border="top" type="warning" v-model="showError">{{error}}</v-alert>
           <v-divider></v-divider>
           <v-card-actions class="footerForm">
             <router-link to="/signup">
@@ -41,6 +41,9 @@ export default {
     password: ''
   }),
   computed: {
+    showError () {
+      return this.$store.getters.getError != null
+    },
     error () {
       return this.$store.getters.getError
     },
