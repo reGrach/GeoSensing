@@ -11,7 +11,7 @@ const ApiService = {
   init () {
     Vue.use(VueAxios, axios)
     Vue.axios.defaults.baseURL = 'https:/regrach.ru/api/'
-    // Vue.axios.defaults.withCredentials = true
+    Vue.axios.defaults.withCredentials = true
     // Vue.axios.interceptors.request.use(request => requestInterceptor)
   },
 

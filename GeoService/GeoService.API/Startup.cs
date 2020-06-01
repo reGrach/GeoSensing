@@ -75,9 +75,8 @@ namespace GeoService.API
             });
 
             app.UseCors(x => x
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod());
+            .WithOrigins("http://localhost:8080")
+            .AllowCredentials());
 
             app.UseCookiePolicy(new CookiePolicyOptions
             {
