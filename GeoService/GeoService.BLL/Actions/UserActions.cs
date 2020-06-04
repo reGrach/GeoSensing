@@ -49,6 +49,11 @@ namespace GeoService.BLL.Actions
                 throw new ApiException("Пользователь с таким логином не найден", nameof(AuthenticationUser), 401);
         }
 
+        public static string GetLoginById(this GeoContext ctx, int id) =>
+            ctx.Users.Find(id) is User userDb
+            ? userDb.Login
+            : throw new ApiException("Пользователь не найден", nameof(AuthenticationUser), 404);
+
         public static void UpdateProfile(this GeoContext ctx, int id, UserDTO model)
         {
             if (ctx.Users.Find(id) is User dbUser)
@@ -72,7 +77,7 @@ namespace GeoService.BLL.Actions
                     Name = dbUser.Name,
                     SurName = dbUser.Surname,
                     IsLeader = dbUser.Role == RoleEnum.Admin,
-                    Team = dbUser.Team is Team team ? team.ToDTO() : null                  
+                    Team = dbUser.Team is Team team ? team.ToDTO() : null
                 };
             else
                 throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
@@ -89,7 +94,7 @@ namespace GeoService.BLL.Actions
                     || x.Name.Equals(query, StringComparison.InvariantCultureIgnoreCase)
                     || x.Surname.Equals(query, StringComparison.InvariantCultureIgnoreCase));
 
-            return freeUsers.Select(x => new UserDTO 
+            return freeUsers.Select(x => new UserDTO
             {
                 Login = x.Login,
                 Name = x.Name,

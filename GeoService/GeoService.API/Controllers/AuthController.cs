@@ -63,8 +63,8 @@ namespace GeoService.API.Controllers
             return Ok();
         });
 
-        /// <summary> Проверка того, что пользователь авторизован </summary>
+        /// <summary> Проверка того, что пользователь авторизован, если да - возвращает логин </summary>
         [HttpGet]
-        public IActionResult Check() => TryAction(() => Ok());
+        public IActionResult Check() => TryAction(() => Ok(_context.GetLoginById(User.Identity.GetUserId())));
     }
 }
