@@ -50,8 +50,8 @@ namespace GeoService.API.Controllers
             HttpContext.Response.Cookies.Append(
                 ".Core.Geo.Bear",
                 tokenResult.AccessToken,
-                new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) });
-            return Ok();
+                new CookieOptions { MaxAge = tokenResult.Expires });
+            return Ok(new { login = userDTO.Login });
         });
 
 
@@ -62,5 +62,9 @@ namespace GeoService.API.Controllers
             HttpContext.Response.Cookies.Delete(".Core.Geo.Bear");
             return Ok();
         });
+
+        /// <summary> Проверка того, что пользователь авторизован </summary>
+        [HttpGet]
+        public IActionResult Check() => TryAction(() => Ok());
     }
 }
