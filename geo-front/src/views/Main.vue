@@ -1,7 +1,7 @@
 <template>
   <div>
       MAIN
-      catch the flag
+      max_features
   </div>
 </template>
 
