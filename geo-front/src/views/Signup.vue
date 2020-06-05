@@ -21,7 +21,12 @@
           <v-divider></v-divider>
           <v-card-actions class="footerForm">
             <v-spacer></v-spacer>
-            <v-btn min-width="15%" color="info" @click.prevent="onSubmit" :loading="processing">Зарегистрироваться</v-btn>
+            <v-btn
+              min-width="15%"
+              color="info"
+              @click.prevent="onSubmit"
+              :loading="processing"
+            >Зарегистрироваться</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -53,10 +58,6 @@ export default {
           password: this.password
         })
         .then(() => this.$router.push({ name: 'signin' }))
-    },
-
-    test () {
-      console.log('TEST')
     }
   }
 }

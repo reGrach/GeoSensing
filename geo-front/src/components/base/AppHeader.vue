@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-navigation-drawer v-if="showNavigator" app clipped v-model="drawer">
+    <v-navigation-drawer v-if="isAuthenticated" app clipped v-model="drawer">
       <v-list dense>
         <v-list-item
           v-for="(item, i) in navigateMenu"
@@ -19,7 +19,7 @@
     </v-navigation-drawer>
     <v-app-bar app clipped-left color="indigo" dark>
       <v-app-bar-nav-icon
-        v-if="showNavigator"
+        v-if="isAuthenticated"
         @click.stop="drawer = !drawer"
         class="hidden-lg-and-up"
       />
@@ -30,19 +30,20 @@
         </v-toolbar-title>
       </router-link>
       <v-spacer></v-spacer>
-      <v-toolbar-items v-if="!showNavigator">
+      <v-toolbar-items v-if="!isAuthenticated">
         <v-btn text :to="signinItem.route">
           <v-icon v-html="signinItem.icon"></v-icon>
           <span v-html="signinItem.title" class="hidden-sm-and-down"></span>
         </v-btn>
       </v-toolbar-items>
       <v-toolbar-items v-else>
+        <!-- <v-toolbar-title>{{currentLogin}}</v-toolbar-title> -->
         <v-btn icon large>
           <v-avatar color="primary" item>
-            <span class="white--text headline">TT</span>
+            <span class="white--text headline">{{getLoginToIcon}}</span>
           </v-avatar>
         </v-btn>
-        <v-btn text @click.prevent="signout" :loading="processing">
+        <v-btn text @click.prevent="signout" :loading="getProcessing">
           <v-icon v-html="signoutItem.icon"></v-icon>
           <span v-html="signoutItem.title" class="hidden-sm-and-down"></span>
         </v-btn>
@@ -53,6 +54,7 @@
 
 <script>
 import { SIGN_OUT } from '@/store/actionsType'
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -63,17 +65,10 @@ export default {
     title: 'GeoSensing',
     menuItems: [
       {
-        name: 'home',
-        icon: 'mdi-home',
-        title: 'Домашняя страница',
-        route: '/',
-        isNavigate: true
-      },
-      {
         name: 'main',
         icon: 'mdi-home',
         title: 'Главная',
-        route: '/main',
+        route: '/',
         isNavigate: true
       },
       {
@@ -92,6 +87,7 @@ export default {
     ]
   }),
   computed: {
+    ...mapGetters(['currentLogin', 'isAuthenticated', 'getProcessing']),
     navigateMenu () {
       return this.menuItems.filter(el => el.isNavigate)
     },
@@ -101,18 +97,15 @@ export default {
     signoutItem () {
       return this.menuItems.find(item => item.name === 'logout')
     },
-    showNavigator () {
-      return this.$store.getters.isAuthenticated
-    },
-    processing () {
-      return this.$store.getters.getProcessing
+    getLoginToIcon () {
+      return this.currentLogin[0]
     }
   },
   methods: {
     signout () {
       this.$store
         .dispatch(SIGN_OUT)
-        .then(() => this.$router.push({ name: 'signin' }))
+        .then(() => this.$router.push('/signin'))
     }
   }
 }

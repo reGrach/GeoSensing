@@ -1,32 +1,38 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '@/views/Home.vue'
 import Signup from '@/views/Signup.vue'
 import Signin from '@/views/Signin.vue'
 import Main from '@/views/Main.vue'
+import store from '../store/index'
 
 Vue.use(VueRouter)
+
+function AuthGuard (from, to, next) {
+  if (store.getters.isAuthenticated) { next() } else { next('/signin') }
+}
+
+function ifAuthenticated (from, to, next) {
+  if (store.getters.isAuthenticated) { next('/') } else { next() }
+}
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'Главная',
+    component: Main,
+    beforeEnter: AuthGuard
   },
   {
     path: '/signin',
     name: 'Вход',
-    component: Signin
+    component: Signin,
+    beforeEnter: ifAuthenticated
   },
   {
     path: '/signup',
     name: 'Регистрация',
-    component: Signup
-  },
-  {
-    path: '/main',
-    name: 'Главная',
-    component: Main
+    component: Signup,
+    beforeEnter: ifAuthenticated
   }
 ]
 

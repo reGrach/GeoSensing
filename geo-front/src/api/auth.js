@@ -11,6 +11,9 @@ const AuthApi = {
   },
   signout () {
     return ApiService.post(prefix + 'signout')
+  },
+  check () {
+    return ApiService.get(prefix + 'check')
   }
 }
 

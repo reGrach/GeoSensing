@@ -1,19 +1,10 @@
 import AuthApi from '../api/auth'
-import { SIGN_IN, SIGN_UP, SIGN_OUT } from './actionsType'
+import { SIGN_IN, SIGN_UP, SIGN_OUT, CHECK_AUTH } from './actionsType'
 import { SET_AUTH, PURGE_AUTH, SET_ERROR, SET_PROCESSING } from './mutationsType'
 
 const state = {
-  userId: null,
+  userLogin: null,
   isAuthenticated: false
-}
-
-const getters = {
-  currentUserId (state) {
-    return state.userId
-  },
-  isAuthenticated (state) {
-    return state.isAuthenticated
-  }
 }
 
 const actions = {
@@ -22,7 +13,7 @@ const actions = {
     return new Promise(resolve => {
       AuthApi.signin(credentials)
         .then(({ data }) => {
-          commit(SET_AUTH)
+          commit(SET_AUTH, data.login)
           resolve(data)
         })
         .catch(({ response }) => {
@@ -82,33 +73,39 @@ const actions = {
           commit(SET_PROCESSING, false)
         })
     })
+  },
+
+  [CHECK_AUTH] ({ commit }) {
+    return new Promise(resolve => {
+      AuthApi.check()
+        .then(({ data }) => {
+          commit(SET_AUTH, data)
+          resolve(data)
+        })
+        .catch(({ response }) => {
+          console.log(response)
+        })
+    })
   }
-  // [CHECK_AUTH] (context) {
-  //   if (JwtService.getToken()) {
-  //     ApiService.setHeader()
-  //     ApiService.get('user')
-  //       .then(({ data }) => {
-  //         context.commit(SET_AUTH, data.user)
-  //       })
-  //       .catch(({ response }) => {
-  //         context.commit(SET_ERROR, response.data.errors)
-  //       })
-  //   } else {
-  //     context.commit(PURGE_AUTH)
-  //   }
-  // },
 }
 
 const mutations = {
-  [SET_AUTH] (state, user) {
+  [SET_AUTH] (state, login) {
     state.isAuthenticated = true
-    // state.userId = user
-    // JwtService.saveToken(state.user.token)
+    state.userLogin = login
   },
   [PURGE_AUTH] (state) {
     state.isAuthenticated = false
-    // state.userId = {}
-    // JwtService.destroyToken()
+    state.userLogin = null
+  }
+}
+
+const getters = {
+  currentLogin (state) {
+    return state.userLogin
+  },
+  isAuthenticated (state) {
+    return state.isAuthenticated
   }
 }
 

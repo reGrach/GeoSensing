@@ -15,6 +15,7 @@
                 @click:append="showPassword = !showPassword"
                 v-model="password"
               />
+              <v-checkbox v-model="rememberMe" label="Запомнить меня"></v-checkbox>
             </v-form>
           </v-card-text>
           <v-alert text border="top" type="warning" v-model="showError">{{error}}</v-alert>
@@ -38,7 +39,8 @@ export default {
   data: () => ({
     showPassword: false,
     login: '',
-    password: ''
+    password: '',
+    rememberMe: false
   }),
   computed: {
     showError () {
@@ -56,13 +58,10 @@ export default {
       this.$store
         .dispatch(SIGN_IN, {
           login: this.login,
-          password: this.password
+          password: this.password,
+          rememberMe: this.rememberMe
         })
-        .then(() => this.$router.push({ name: 'main' }))
-    },
-
-    test () {
-      console.log('TEST')
+        .then(() => this.$router.push('/'))
     }
   }
 }
