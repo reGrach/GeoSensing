@@ -57,7 +57,7 @@ export default {
           login: this.login,
           password: this.password
         })
-        .then(() => this.$router.push({ name: 'signin' }))
+        .then(() => this.$router.push('/signin'))
     }
   }
 }
