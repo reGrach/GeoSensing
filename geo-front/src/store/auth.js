@@ -60,13 +60,15 @@ const actions = {
           resolve(data)
         })
         .catch(({ response }) => {
-          if (response.status === 401) {
-            commit(SET_ERROR, response.data)
-          } else {
-            console.error('Фатальная ошибка')
-            console.log(response.data)
-            commit(SET_ERROR, response.data)
-          }
+          console.log(response)
+          commit(SET_ERROR, response.data)
+          // if (response.status === 401) {
+          //   commit(SET_ERROR, response.data)
+          // } else {
+          //   console.error('Фатальная ошибка')
+          //   console.log(response.data)
+          //   commit(SET_ERROR, response.data)
+          // }
           reject(response)
         })
         .finally(() => {
