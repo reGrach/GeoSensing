@@ -1,6 +1,6 @@
 <template>
   <div>
-      MAIN
+      MAIN art
   </div>
 </template>
 
