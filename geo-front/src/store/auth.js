@@ -1,7 +1,7 @@
 import AuthApi from '../api/auth'
 import { SIGN_IN, SIGN_UP, SIGN_OUT } from './actionsType'
 import { CHECK_AUTH, SET_AUTH, PURGE_AUTH, SET_ERROR, SET_PROCESSING } from './mutationsType'
-import { getLogin, saveLogin } from '../common/localStorage'
+import { getLogin, saveLogin, removeLogin } from '../common/localStorage'
 
 const state = {
   userLogin: null,
@@ -11,20 +11,16 @@ const state = {
 const actions = {
   [SIGN_IN] ({ commit }, credentials) {
     commit(SET_PROCESSING, true)
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       AuthApi.signin(credentials)
         .then(({ data }) => {
           commit(SET_AUTH, data)
           resolve(data)
         })
         .catch(({ response }) => {
-          // if (response.status === 401) {
-          //   commit(SET_ERROR, response.data)
-          // } else {
-          //   console.error('Фатальная ошибка')
-          console.log(response.data)
+          console.log(response)
           commit(SET_ERROR, response.data)
-          // }
+          reject(response)
         })
         .finally(() => {
           commit(SET_PROCESSING, false)
@@ -39,13 +35,8 @@ const actions = {
           resolve(data)
         })
         .catch(({ response }) => {
-          if (response.status === 401) {
-            commit(SET_ERROR, response.data)
-          } else {
-            console.error('Фатальная ошибка')
-            console.log(response.data)
-            commit(SET_ERROR, response.data)
-          }
+          console.log(response)
+          commit(SET_ERROR, response.data)
           reject(response)
         })
         .finally(() => {
@@ -63,30 +54,10 @@ const actions = {
         .catch(({ response }) => {
           console.log(response)
           commit(SET_ERROR, response.data)
-          // if (response.status === 401) {
-          //   commit(SET_ERROR, response.data)
-          // } else {
-          //   console.error('Фатальная ошибка')
-          //   console.log(response.data)
-          //   commit(SET_ERROR, response.data)
-          // }
           reject(response)
         })
         .finally(() => {
           commit(SET_PROCESSING, false)
-        })
-    })
-  },
-
-  [CHECK_AUTH] ({ commit }) {
-    return new Promise(resolve => {
-      AuthApi.check()
-        .then(({ data }) => {
-          commit(SET_AUTH, data)
-          resolve(data)
-        })
-        .catch(({ response }) => {
-          console.log(response)
         })
     })
   }
@@ -99,6 +70,7 @@ const mutations = {
     state.userLogin = login
   },
   [PURGE_AUTH] (state) {
+    removeLogin()
     state.isAuthenticated = false
     state.userLogin = null
   },
