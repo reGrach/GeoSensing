@@ -1,6 +1,7 @@
 import AuthApi from '../api/auth'
-import { SIGN_IN, SIGN_UP, SIGN_OUT, CHECK_AUTH } from './actionsType'
-import { SET_AUTH, PURGE_AUTH, SET_ERROR, SET_PROCESSING } from './mutationsType'
+import { SIGN_IN, SIGN_UP, SIGN_OUT } from './actionsType'
+import { CHECK_AUTH, SET_AUTH, PURGE_AUTH, SET_ERROR, SET_PROCESSING } from './mutationsType'
+import { getLogin, saveLogin } from '../common/localStorage'
 
 const state = {
   userLogin: null,
@@ -13,17 +14,17 @@ const actions = {
     return new Promise(resolve => {
       AuthApi.signin(credentials)
         .then(({ data }) => {
-          commit(SET_AUTH, data.login)
+          commit(SET_AUTH, data)
           resolve(data)
         })
         .catch(({ response }) => {
-          if (response.status === 401) {
-            commit(SET_ERROR, response.data)
-          } else {
-            console.error('Фатальная ошибка')
-            console.log(response.data)
-            commit(SET_ERROR, response.data)
-          }
+          // if (response.status === 401) {
+          //   commit(SET_ERROR, response.data)
+          // } else {
+          //   console.error('Фатальная ошибка')
+          console.log(response.data)
+          commit(SET_ERROR, response.data)
+          // }
         })
         .finally(() => {
           commit(SET_PROCESSING, false)
@@ -92,13 +93,21 @@ const actions = {
 }
 
 const mutations = {
-  [SET_AUTH] (state, login) {
+  [SET_AUTH] (state, { login, expirationDate }) {
+    saveLogin(login, expirationDate)
     state.isAuthenticated = true
     state.userLogin = login
   },
   [PURGE_AUTH] (state) {
     state.isAuthenticated = false
     state.userLogin = null
+  },
+  [CHECK_AUTH] (state) {
+    const login = getLogin()
+    if (login) {
+      state.isAuthenticated = true
+      state.userLogin = login
+    }
   }
 }
 

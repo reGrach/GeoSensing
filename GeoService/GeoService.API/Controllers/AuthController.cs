@@ -46,12 +46,13 @@ namespace GeoService.API.Controllers
             };
 
             var tokenResult = _jwtTokenGenerator.Generate(userIdentity, userDTO.Role.ToString());
+            var expirationDate = DateTime.Now.AddHours(tokenResult.Expires.Hours).ToString();
 
             HttpContext.Response.Cookies.Append(
                 ".Core.Geo.Bear",
                 tokenResult.AccessToken,
                 new CookieOptions { MaxAge = tokenResult.Expires });
-            return Ok(new { login = userDTO.Login, expirationDate = tokenResult.Expires });
+            return Ok(new { login = userDTO.Login, expirationDate });
         });
 
 
