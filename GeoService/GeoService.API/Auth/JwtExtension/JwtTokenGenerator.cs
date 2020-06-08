@@ -1,10 +1,7 @@
 ﻿using GeoService.API.Auth.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GeoService.API.Auth.JwtExtension
 {
@@ -26,7 +23,7 @@ namespace GeoService.API.Auth.JwtExtension
             var jwt = new JwtSecurityToken(
                 issuer: _tokenOptions.Issuer,
                 audience: _tokenOptions.Audience,
-                claims: user.BuildClaims(role).Claims,
+                claims: user.BuildClaims(role, expiration).Claims,
                 notBefore: DateTime.UtcNow,
                 expires: DateTime.UtcNow.Add(expiration),
                 signingCredentials: new SigningCredentials(_tokenOptions.SigningKey, SecurityAlgorithms.HmacSha256));

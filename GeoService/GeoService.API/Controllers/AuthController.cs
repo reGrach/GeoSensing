@@ -46,13 +46,20 @@ namespace GeoService.API.Controllers
             };
 
             var tokenResult = _jwtTokenGenerator.Generate(userIdentity, userDTO.Role.ToString());
-            var expirationDate = DateTime.Now.AddHours(tokenResult.Expires.Hours).ToString();
 
             HttpContext.Response.Cookies.Append(
                 ".Core.Geo.Bear",
                 tokenResult.AccessToken,
                 new CookieOptions { MaxAge = tokenResult.Expires });
-            return Ok(new { login = userDTO.Login, expirationDate });
+
+            var info = new AuthInfoModel
+            {
+                Login = userDTO.Login,
+                Role = userDTO.Role,
+                Expiration = DateTime.Now.AddHours(tokenResult.Expires.Hours)
+            };
+
+            return Ok(info);
         });
 
 
@@ -64,13 +71,13 @@ namespace GeoService.API.Controllers
             return Ok();
         });
 
-        // /// <summary> Проверка того, что пользователь авторизован, если да - возвращает логин </summary>
-        // [HttpGet]
-        // public IActionResult Check() => TryAction(() =>
-        // {
-        //     var id = User.Identity.GetUserId();
-        //     var expired = User.Identity.GetUserId();
-        //     return Ok(new {login, expired});
-        // });
+        /// <summary> Проверка того, что пользователь авторизован, если да - возвращает логин </summary>
+        [HttpGet]
+        public IActionResult Check() => TryAction(() => Ok(new AuthInfoModel
+        {
+            Login = User.Identity.GetUserLogin(),
+            Role = User.Identity.GetUserRole(),
+            Expiration = User.Identity.GetExpirationToken()
+        }));
     }
 }
