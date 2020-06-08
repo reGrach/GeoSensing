@@ -1,6 +1,6 @@
 import AuthApi from '../api/auth'
 import { SIGN_IN, SIGN_UP, SIGN_OUT } from './actionsType'
-import { CHECK_AUTH, SET_AUTH, PURGE_AUTH, SET_ERROR, SET_PROCESSING } from './mutationsType'
+import { CHECK_AUTH, SET_AUTH, PURGE_AUTH, SET_ERROR, SET_PROCESSING, PURGE_ERROR } from './mutationsType'
 import { getLogin, saveLogin, removeLogin } from '../common/localStorage'
 
 const state = {
@@ -11,6 +11,7 @@ const state = {
 const actions = {
   [SIGN_IN] ({ commit }, credentials) {
     commit(SET_PROCESSING, true)
+    commit(PURGE_ERROR, true)
     return new Promise((resolve, reject) => {
       AuthApi.signin(credentials)
         .then(({ data }) => {
@@ -29,6 +30,7 @@ const actions = {
   },
   [SIGN_UP] ({ commit }, credentials) {
     commit(SET_PROCESSING, true)
+    commit(PURGE_ERROR, true)
     return new Promise((resolve, reject) => {
       AuthApi.signup(credentials)
         .then(({ data }) => {
@@ -53,7 +55,6 @@ const actions = {
         })
         .catch(({ response }) => {
           console.log(response)
-          commit(SET_ERROR, response.data)
           reject(response)
         })
         .finally(() => {
@@ -64,8 +65,8 @@ const actions = {
 }
 
 const mutations = {
-  [SET_AUTH] (state, { login, expirationDate }) {
-    saveLogin(login, expirationDate)
+  [SET_AUTH] (state, { login, expiration }) {
+    saveLogin(login, expiration)
     state.isAuthenticated = true
     state.userLogin = login
   },
@@ -84,12 +85,8 @@ const mutations = {
 }
 
 const getters = {
-  currentLogin (state) {
-    return state.userLogin
-  },
-  isAuthenticated (state) {
-    return state.isAuthenticated
-  }
+  currentLogin: (state) => state.userLogin,
+  isAuthenticated: (state) => state.isAuthenticated
 }
 
 export default {

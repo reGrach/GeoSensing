@@ -5,9 +5,17 @@
         <v-card class="elevation-12">
           <v-card-title class="title">Регистрация</v-card-title>
           <v-card-text>
-            <v-form>
-              <v-text-field required label="Логин" prepend-icon="mdi-account" v-model="login" />
+            <v-form v-model="isValid">
               <v-text-field
+                required
+                :rules="rules.login"
+                label="Логин"
+                prepend-icon="mdi-account"
+                v-model="login"
+              />
+              <v-text-field
+              ref="form"
+                :rules="rules.password"
                 :type="showPassword ? 'text' : 'password'"
                 label="Пароль"
                 prepend-icon="mdi-lock"
@@ -15,17 +23,26 @@
                 @click:append="showPassword = !showPassword"
                 v-model="password"
               />
+              <v-text-field
+                required
+                type="password"
+                :rules="confirmPasswordRules"
+                label="Пароль еще раз"
+                prepend-icon="mdi-redo"
+                v-model="confirmPassword"
+              />
             </v-form>
           </v-card-text>
-          <v-alert text border="top" type="warning" v-model="error">{{error}}</v-alert>
+          <v-alert text border="top" type="warning" v-model="showError">{{getError}}</v-alert>
           <v-divider></v-divider>
           <v-card-actions class="footerForm">
             <v-spacer></v-spacer>
             <v-btn
-              min-width="15%"
-              color="info"
+              min-width="20%"
+              color="success"
               @click.prevent="onSubmit"
-              :loading="processing"
+              :disabled="!isValid"
+              :loading="getProcessing"
             >Зарегистрироваться</v-btn>
           </v-card-actions>
         </v-card>
@@ -36,20 +53,52 @@
 
 <script>
 import { SIGN_UP } from '@/store/actionsType'
+import { mapGetters } from 'vuex'
+
 export default {
   data: () => ({
     showPassword: false,
     login: '',
-    password: ''
+    password: '',
+    confirmPassword: '',
+    isValid: false,
+    rules: {
+      login: [
+        (v) => !!v || 'Необходимо ввести логин',
+        (v) => (v && v.length >= 4) || 'Логин должен содержать минимум 4 символа'
+      ],
+      password: [
+        (v) => !!v || 'Необходимо ввести пароль',
+        (v) => (v && v.length >= 6) || 'Пароль должен содержать минимум 6 символов'
+      ]
+    }
   }),
+
+  // watch: {
+  //   password: 'validateField',
+  //   confirmPassword: 'validateField'
+  // },
+
   computed: {
-    error () {
-      return this.$store.getters.getError
+    ...mapGetters(['getError', 'getProcessing']),
+    showError () {
+      return this.getError != null
     },
-    processing () {
-      return this.$store.getters.getProcessing
+    confirmPasswordRules () {
+      const rules = []
+
+      const req = v => !!v || 'Необходимо ввести пароль еще раз'
+      rules.push(req)
+
+      if (this.password) {
+        const rule = v => (!!v && v) === this.password || 'Пароли не совпадают'
+        rules.push(rule)
+      }
+
+      return rules
     }
   },
+
   methods: {
     onSubmit () {
       this.$store
@@ -58,6 +107,9 @@ export default {
           password: this.password
         })
         .then(() => this.$router.push('/signin'))
+    },
+    validateField () {
+      this.$refs.form.validate()
     }
   }
 }
