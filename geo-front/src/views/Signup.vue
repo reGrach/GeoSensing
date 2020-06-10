@@ -107,18 +107,9 @@ export default {
           password: this.password
         })
         .then(() => this.$router.push('/signin'))
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
     },
     validateField () {
       this.$refs.form.validate()
->>>>>>> 652e02bdc758de92dc8fb264e9fa5203f71f6e0a
-=======
-    },
-    validateField () {
-      this.$refs.form.validate()
->>>>>>> 652e02bdc758de92dc8fb264e9fa5203f71f6e0a
     }
   }
 }
