@@ -71,6 +71,7 @@ export default {
           name: 'main',
           icon: 'mdi-home',
           title: 'Главная',
+          vetr_features
           route: '/'
         },
         {
