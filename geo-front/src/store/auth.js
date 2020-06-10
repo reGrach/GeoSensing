@@ -1,7 +1,14 @@
+/* eslint-disable */
 import AuthApi from '../api/auth';
 import { SIGN_IN, SIGN_UP, SIGN_OUT } from './actionsType';
-import {
-  CHECK_AUTH, SET_AUTH, PURGE_AUTH, SET_ERROR, SET_PROCESSING, PURGE_ERROR,
+import
+{
+  CHECK_AUTH,
+  SET_AUTH,
+  PURGE_AUTH,
+  SET_ERROR,
+  SET_PROCESSING,
+  PURGE_ERROR,
 } from './mutationsType';
 import { getLogin, saveLogin, removeLogin } from '../common/localStorage';
 
@@ -67,17 +74,17 @@ const actions = {
 };
 
 const mutations = {
-  [SET_AUTH]({ login, expiration }) {
+  [SET_AUTH](state, { login, expiration }) {
     saveLogin(login, expiration);
     state.isAuthenticated = true;
     state.userLogin = login;
   },
-  [PURGE_AUTH]() {
+  [PURGE_AUTH](state) {
     removeLogin();
     state.isAuthenticated = false;
     state.userLogin = null;
   },
-  [CHECK_AUTH]() {
+  [CHECK_AUTH](state) {
     const login = getLogin();
     if (login) {
       state.isAuthenticated = true;
@@ -87,8 +94,8 @@ const mutations = {
 };
 
 const getters = {
-  currentLogin: () => state.userLogin,
-  isAuthenticated: () => state.isAuthenticated,
+  currentLogin: (state) => state.userLogin,
+  isAuthenticated: (state) => state.isAuthenticated,
 };
 
 export default {

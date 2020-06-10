@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { SET_ERROR, PURGE_ERROR, SET_PROCESSING } from './mutationsType';
 
 const state = {
@@ -6,20 +7,20 @@ const state = {
 };
 
 const mutations = {
-  [SET_ERROR](payload) {
+  [SET_ERROR](state, payload) {
     state.error = payload;
   },
-  [PURGE_ERROR]() {
+  [PURGE_ERROR](state) {
     state.error = null;
   },
-  [SET_PROCESSING](payload) {
+  [SET_PROCESSING](state, payload) {
     state.processing = payload;
   },
 };
 
 const getters = {
-  getProcessing: () => state.processing,
-  getError: () => state.error,
+  getProcessing: (state) => state.processing,
+  getError: (state) => state.error,
 };
 
 export default {

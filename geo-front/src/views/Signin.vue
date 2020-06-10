@@ -6,7 +6,13 @@
           <v-card-title class="title">Вход в систему</v-card-title>
           <v-card-text>
             <v-form v-model="isValid">
-              <v-text-field required :rules="rules.login" label="Логин" prepend-icon="mdi-account" v-model="login" />
+              <v-text-field
+                required
+                :rules="rules.login"
+                label="Логин"
+                prepend-icon="mdi-account"
+                v-model="login"
+              />
               <v-text-field
                 required
                 :rules="rules.password"
@@ -46,7 +52,6 @@ import { SIGN_IN } from '@/store/actionsType';
 import { mapGetters } from 'vuex';
 
 export default {
-
   data: () => ({
     showPassword: false,
     login: '',
@@ -73,7 +78,6 @@ export default {
   },
 
   methods: {
-
     onSubmit() {
       this.$store
         .dispatch(SIGN_IN, {
