@@ -1,6 +1,6 @@
 <template>
   <div>
-      MAIN art
+      Polygon
   </div>
 </template>
 

@@ -13,10 +13,17 @@ function ifAuthenticated (from, to, next) {
 }
 
 const routes = [
+
   {
     path: '/',
     name: 'Главная',
     component: () => import('@/views/Main'),
+    beforeEnter: AuthGuard
+  },
+  {
+    path: '/map',
+    name: 'Карта',
+    component: () => import('@/views/Map'),
     beforeEnter: AuthGuard
   },
   {

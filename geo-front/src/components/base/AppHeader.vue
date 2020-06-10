@@ -71,8 +71,14 @@ export default {
           name: 'main',
           icon: 'mdi-home',
           title: 'Главная',
-          route: '/',
-          isNavigate: true
+          vetr_features
+          route: '/'
+        },
+        {
+          name: 'main',
+          icon: 'mdi-map',
+          title: 'Карта',
+          route: '/map'
         }
       ]
     },
