@@ -31,23 +31,22 @@
       </router-link>
       <v-spacer></v-spacer>
       <v-toolbar-items v-if="!isAuthenticated">
-        <v-btn text :to="signinItem.route">
-          <v-icon v-html="signinItem.icon"></v-icon>
-          <span v-html="signinItem.title" class="hidden-sm-and-down"></span>
+        <v-btn text to="/signin" active-class="no-active">
+          <v-icon>mdi-login</v-icon>
+          <span v-html="'&nbsp; Войти в систему'" class="hidden-sm-and-down"></span>
         </v-btn>
       </v-toolbar-items>
-      <v-toolbar-items v-else>
-        <!-- <v-toolbar-title>{{currentLogin}}</v-toolbar-title> -->
-        <v-btn icon large>
+      <div v-else>
+        <v-btn icon large to="/profile" active-class="no-active">
           <v-avatar color="primary" item>
             <span class="white--text headline">{{getLoginToIcon}}</span>
           </v-avatar>
         </v-btn>
-        <v-btn text @click.prevent="signout" :loading="getProcessing">
-          <v-icon v-html="signoutItem.icon"></v-icon>
-          <span v-html="signoutItem.title" class="hidden-sm-and-down"></span>
+        <v-btn text bottom @click.prevent="signout" :loading="getProcessing">
+          <v-icon>mdi-logout</v-icon>
+          <span v-html="'&nbsp; Выйти'" class="hidden-sm-and-down"></span>
         </v-btn>
-      </v-toolbar-items>
+      </div>
     </v-app-bar>
   </div>
 </template>
@@ -62,40 +61,20 @@ export default {
   },
   data: () => ({
     drawer: true,
-    title: 'GeoSensing',
-    menuItems: [
-      {
-        name: 'main',
-        icon: 'mdi-home',
-        title: 'Главная',
-        route: '/',
-        isNavigate: true
-      },
-      {
-        name: 'login',
-        icon: 'mdi-login',
-        title: '&nbsp; Войти в систему',
-        route: '/signin',
-        isNavigate: false
-      },
-      {
-        name: 'logout',
-        icon: 'mdi-logout',
-        title: '&nbsp; Выйти',
-        isNavigate: false
-      }
-    ]
+    title: 'GeoSensing'
   }),
   computed: {
     ...mapGetters(['currentLogin', 'isAuthenticated', 'getProcessing']),
     navigateMenu () {
-      return this.menuItems.filter(el => el.isNavigate)
-    },
-    signinItem () {
-      return this.menuItems.find(item => item.name === 'login')
-    },
-    signoutItem () {
-      return this.menuItems.find(item => item.name === 'logout')
+      return [
+        {
+          name: 'main',
+          icon: 'mdi-home',
+          title: 'Главная',
+          route: '/',
+          isNavigate: true
+        }
+      ]
     },
     getLoginToIcon () {
       return this.currentLogin[0]
@@ -110,3 +89,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.v-btn--active.no-active::before {
+  opacity: 0 !important;
+}
+</style>

@@ -51,7 +51,15 @@ namespace GeoService.API.Controllers
                 ".Core.Geo.Bear",
                 tokenResult.AccessToken,
                 new CookieOptions { MaxAge = tokenResult.Expires });
-            return Ok(new { login = userDTO.Login });
+
+            var info = new AuthInfoModel
+            {
+                Login = userDTO.Login,
+                Role = userDTO.Role,
+                Expiration = DateTime.Now.AddHours(tokenResult.Expires.Hours)
+            };
+
+            return Ok(info);
         });
 
 
@@ -65,6 +73,11 @@ namespace GeoService.API.Controllers
 
         /// <summary> Проверка того, что пользователь авторизован, если да - возвращает логин </summary>
         [HttpGet]
-        public IActionResult Check() => TryAction(() => Ok(_context.GetLoginById(User.Identity.GetUserId())));
+        public IActionResult Check() => TryAction(() => Ok(new AuthInfoModel
+        {
+            Login = User.Identity.GetUserLogin(),
+            Role = User.Identity.GetUserRole(),
+            Expiration = User.Identity.GetExpirationToken()
+        }));
     }
 }

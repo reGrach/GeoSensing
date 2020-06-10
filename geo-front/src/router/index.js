@@ -1,8 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Signup from '@/views/Signup.vue'
-import Signin from '@/views/Signin.vue'
-import Main from '@/views/Main.vue'
 import store from '../store/index'
 
 Vue.use(VueRouter)
@@ -19,20 +16,26 @@ const routes = [
   {
     path: '/',
     name: 'Главная',
-    component: Main,
+    component: () => import('@/views/Main'),
     beforeEnter: AuthGuard
   },
   {
     path: '/signin',
     name: 'Вход',
-    component: Signin,
+    component: () => import('@/views/Signin'),
     beforeEnter: ifAuthenticated
   },
   {
     path: '/signup',
     name: 'Регистрация',
-    component: Signup,
+    component: () => import('@/views/Signup'),
     beforeEnter: ifAuthenticated
+  },
+  {
+    path: '/Profile',
+    name: 'Мой профиль',
+    component: () => import('@/views/Profile'),
+    beforeEnter: AuthGuard
   }
 ]
 
