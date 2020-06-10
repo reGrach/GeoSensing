@@ -8,7 +8,7 @@ import ApiService from './api';
 
 Vue.config.productionTip = false;
 
-ApiService.init();
+ApiService.init()
 store.commit(CHECK_AUTH);
 
 const app = {
