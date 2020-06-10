@@ -1,29 +1,29 @@
-import { SET_ERROR, PURGE_ERROR, SET_PROCESSING } from './mutationsType'
+import { SET_ERROR, PURGE_ERROR, SET_PROCESSING } from './mutationsType';
 
 const state = {
   processing: false,
-  error: null
-}
+  error: null,
+};
 
 const mutations = {
-  [SET_ERROR] (state, payload) {
-    state.error = payload
+  [SET_ERROR](payload) {
+    state.error = payload;
   },
-  [PURGE_ERROR] (state) {
-    state.error = null
+  [PURGE_ERROR]() {
+    state.error = null;
   },
-  [SET_PROCESSING] (state, payload) {
-    state.processing = payload
-  }
-}
+  [SET_PROCESSING](payload) {
+    state.processing = payload;
+  },
+};
 
 const getters = {
-  getProcessing: (state) => state.processing,
-  getError: (state) => state.error
-}
+  getProcessing: () => state.processing,
+  getError: () => state.error,
+};
 
 export default {
   state,
   mutations,
-  getters
-}
+  getters,
+};

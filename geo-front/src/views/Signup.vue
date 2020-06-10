@@ -52,8 +52,8 @@
 </template>
 
 <script>
-import { SIGN_UP } from '@/store/actionsType'
-import { mapGetters } from 'vuex'
+import { SIGN_UP } from '@/store/actionsType';
+import { mapGetters } from 'vuex';
 
 export default {
   data: () => ({
@@ -65,13 +65,13 @@ export default {
     rules: {
       login: [
         (v) => !!v || 'Необходимо ввести логин',
-        (v) => (v && v.length >= 4) || 'Логин должен содержать минимум 4 символа'
+        (v) => (v && v.length >= 4) || 'Логин должен содержать минимум 4 символа',
       ],
       password: [
         (v) => !!v || 'Необходимо ввести пароль',
-        (v) => (v && v.length >= 6) || 'Пароль должен содержать минимум 6 символов'
-      ]
-    }
+        (v) => (v && v.length >= 6) || 'Пароль должен содержать минимум 6 символов',
+      ],
+    },
   }),
 
   // watch: {
@@ -81,38 +81,38 @@ export default {
 
   computed: {
     ...mapGetters(['getError', 'getProcessing']),
-    showError () {
-      return this.getError != null
+    showError() {
+      return this.getError != null;
     },
-    confirmPasswordRules () {
-      const rules = []
+    confirmPasswordRules() {
+      const rules = [];
 
-      const req = v => !!v || 'Необходимо ввести пароль еще раз'
-      rules.push(req)
+      const req = (v) => !!v || 'Необходимо ввести пароль еще раз';
+      rules.push(req);
 
       if (this.password) {
-        const rule = v => (!!v && v) === this.password || 'Пароли не совпадают'
-        rules.push(rule)
+        const rule = (v) => (!!v && v) === this.password || 'Пароли не совпадают';
+        rules.push(rule);
       }
 
-      return rules
-    }
+      return rules;
+    },
   },
 
   methods: {
-    onSubmit () {
+    onSubmit() {
       this.$store
         .dispatch(SIGN_UP, {
           login: this.login,
-          password: this.password
+          password: this.password,
         })
-        .then(() => this.$router.push('/signin'))
+        .then(() => this.$router.push('/signin'));
     },
-    validateField () {
-      this.$refs.form.validate()
-    }
-  }
-}
+    validateField() {
+      this.$refs.form.validate();
+    },
+  },
+};
 </script>
 <style scoped>
 .title {

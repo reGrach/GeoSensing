@@ -52,48 +52,47 @@
 </template>
 
 <script>
-import { SIGN_OUT } from '@/store/actionsType'
-import { mapGetters } from 'vuex'
+import { SIGN_OUT } from '@/store/actionsType';
+import { mapGetters } from 'vuex';
 
 export default {
   props: {
-    menu: Array
+    menu: Array,
   },
   data: () => ({
     drawer: true,
-    title: 'GeoSensing'
+    title: 'GeoSensing',
   }),
   computed: {
     ...mapGetters(['currentLogin', 'isAuthenticated', 'getProcessing']),
-    navigateMenu () {
+    navigateMenu() {
       return [
         {
           name: 'main',
           icon: 'mdi-home',
           title: 'Главная',
-          vetr_features
-          route: '/'
+          route: '/',
         },
         {
           name: 'main',
           icon: 'mdi-map',
           title: 'Карта',
-          route: '/map'
-        }
-      ]
+          route: '/map',
+        },
+      ];
     },
-    getLoginToIcon () {
-      return this.currentLogin[0]
-    }
+    getLoginToIcon() {
+      return this.currentLogin[0];
+    },
   },
   methods: {
-    signout () {
+    signout() {
       this.$store
         .dispatch(SIGN_OUT)
-        .then(() => this.$router.push('/signin'))
-    }
-  }
-}
+        .then(() => this.$router.push('/signin'));
+    },
+  },
+};
 </script>
 <style scoped>
 .v-btn--active.no-active::before {
