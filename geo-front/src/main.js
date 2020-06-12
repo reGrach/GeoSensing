@@ -2,14 +2,14 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import { INIT_AUTH } from './store/mutationsType';
+import { CHECK_AUTH } from './store/actionsType';
 import vuetify from './plugins/vuetify';
 import ApiService from './api';
 
 Vue.config.productionTip = false;
 
 ApiService.init();
-store.commit(INIT_AUTH);
+store.dispatch(CHECK_AUTH);
 
 const app = {
   router,

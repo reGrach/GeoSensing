@@ -116,5 +116,15 @@ namespace GeoService.BLL.Actions
             else
                 throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
         }
+
+        public static string GetAvatar(this GeoContext ctx, int userId)
+        {
+            if (ctx.Users.Include(x => x.Avatar).SingleOrDefault(x => x.Id == userId) is User dbUser)
+                return dbUser.Avatar is Avatar _ava
+                ? $"data:{_ava.MimeType};base64,{Convert.ToBase64String(_ava.FileContent)}"
+                : string.Empty;
+            else
+                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
+        }
     }
 }

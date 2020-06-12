@@ -8,6 +8,10 @@ function AuthGuard(from, to, next) {
   if (store.getters.isAuthenticated) { next(); } else { next('/signin'); }
 }
 
+function AdminGuard(from, to, next) {
+  if (store.getters.isAuthenticated && store.getters.isAdmin) { next(); } else { next('/'); }
+}
+
 function ifAuthenticated(from, to, next) {
   if (store.getters.isAuthenticated) { next('/'); } else { next(); }
 }
@@ -43,6 +47,12 @@ const routes = [
     name: 'Мой профиль',
     component: () => import('@/views/Profile'),
     beforeEnter: AuthGuard,
+  },
+  {
+    path: '/Admin',
+    name: 'Страница администратора',
+    component: () => import('@/views/Profile'),
+    beforeEnter: AdminGuard,
   },
 ];
 

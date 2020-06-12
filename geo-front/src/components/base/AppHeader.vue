@@ -39,7 +39,8 @@
       <div v-else>
         <v-btn icon large to="/profile" active-class="no-active">
           <v-avatar color="primary" item>
-            <span class="white--text headline">{{getLoginToIcon}}</span>
+            <v-img v-if="useAvatarImg" :src="getAvatar"></v-img>
+            <span v-else class="white--text headline">{{getLoginToIcon}}</span>
           </v-avatar>
         </v-btn>
         <v-btn text bottom @click.prevent="signout">
@@ -64,7 +65,10 @@ export default {
     title: 'GeoSensing',
   }),
   computed: {
-    ...mapGetters(['currentLogin', 'isAuthenticated', 'getProcessing']),
+    ...mapGetters(['currentLogin', 'isAuthenticated', 'getProcessing', 'getAvatar']),
+    useAvatarImg() {
+      return this.getAvatar != null;
+    },
     navigateMenu() {
       return [
         {

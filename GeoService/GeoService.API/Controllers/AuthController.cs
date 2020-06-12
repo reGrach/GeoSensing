@@ -38,14 +38,14 @@ namespace GeoService.API.Controllers
         [HttpPost]
         public IActionResult SignIn(AuthModel model) => TryAction(() =>
         {
-            var userDTO = _context.AuthenticationUser(model.Login, model.Password);
+            var user = _context.AuthenticationUser(model.Login, model.Password);
             var userIdentity = new UserIdentity
             {
-                Id = userDTO.Id,
-                UserName = userDTO.Login
+                Id = user.Id,
+                UserName = user.Login
             };
 
-            var tokenResult = _jwtTokenGenerator.Generate(userIdentity, userDTO.Role.ToString(), model.RememberMe);
+            var tokenResult = _jwtTokenGenerator.Generate(userIdentity, user.Role.ToString(), model.RememberMe);
 
             HttpContext.Response.Cookies.Append(
                 ".Core.Geo.Bear",
@@ -54,9 +54,10 @@ namespace GeoService.API.Controllers
 
             var info = new AuthInfoModel
             {
-                Login = userDTO.Login,
-                Role = userDTO.Role.ToString(),
-                Expiration = DateTime.Now.AddHours(tokenResult.Expires.TotalHours)
+                Login = user.Login,
+                Role = user.Role.ToString(),
+                Expiration = DateTime.Now.AddHours(tokenResult.Expires.TotalHours),
+                AvatarSrc = _context.GetAvatar(userIdentity.Id)
             };
 
             return Ok(info);
@@ -71,12 +72,13 @@ namespace GeoService.API.Controllers
             return Ok();
         });
 
-        /// <summary> Проверка того, что пользователь авторизован, если да - возвращает логин </summary>
+        /// <summary> Проверка того, что пользователь авторизован, если да - возвращаем данные </summary>
         [HttpGet]
         public IActionResult Check() => TryAction(() => Ok(new AuthInfoModel
         {
             Login = User.Identity.GetUserLogin(),
             Role = User.Identity.GetUserRole().ToString(),
+            AvatarSrc = _context.GetAvatar(User.Identity.GetUserId()),
             Expiration = User.Identity.GetExpirationToken()
         }));
     }

@@ -17,6 +17,7 @@ namespace GeoService.API.Models
     {
         public string Login { get; set; }
         public string Role { get; set; }
+        public string AvatarSrc { get; set; }
 
         /// <summary> Срок действия токена авторизации </summary>
         public DateTime Expiration { get; set; }
