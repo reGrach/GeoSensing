@@ -10,12 +10,13 @@ import
   PURGE_AUTH,
   SET_ERROR,
   SET_PROCESSING,
-  PURGE_ERROR,
+  SET_AVA,
 } from './mutationsType';
 
 const state = {
   userLogin: null,
   userRole: null,
+  userAvatar: null,
   isAuthenticated: false,
 };
 
@@ -98,11 +99,15 @@ const mutations = {
     state.userRole = role;
     state.userAvatar = avatarSrc;
   },
+  [SET_AVA](state, avatarSrc){
+    state.userAvatar = avatarSrc;
+  },
   [PURGE_AUTH](state) {
     purgeAuth();
     state.isAuthenticated = false;
     state.userRole = null;
     state.userLogin = null;
+    state.userAvatar = null;
   },
   [INIT_AUTH](state) {
     const {isAuth, login, role} = getAuth();

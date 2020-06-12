@@ -1,7 +1,7 @@
 /* eslint-disable */
 import ProfileApi from '../api/profile';
 import { GET_PROFILE, UPDATE_PROFILE, UPLOAD_AVATAR } from './actionsType';
-import { SET_ERROR, SET_PROCESSING, UPLOAD_IMG } from './mutationsType';
+import { SET_ERROR, SET_PROCESSING, UPLOAD_IMG, SET_AVA } from './mutationsType';
 
 const actions = {
   [GET_PROFILE]({ commit }) {
@@ -9,6 +9,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       ProfileApi.Get()
         .then(({ data }) => {
+          commit(SET_AVA, data.avatarSrc)
           resolve(data);
         })
         .catch(({ response }) => {

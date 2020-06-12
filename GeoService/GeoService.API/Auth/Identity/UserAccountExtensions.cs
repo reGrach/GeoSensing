@@ -59,7 +59,7 @@ namespace GeoService.API.Auth.Identity
             if (identity is ClaimsIdentity ci)
             {
                 var timeSpan = TimeSpan.Parse(ci.FindFirst(ClaimTypes.Expiration).Value);
-                return DateTime.Now.AddHours(timeSpan.Hours);
+                return DateTime.Now.AddHours(timeSpan.TotalHours);
             }
             else
                 throw new ArgumentNullException("Identity");

@@ -17,12 +17,23 @@ function ifAuthenticated(from, to, next) {
 }
 
 const routes = [
-
   {
     path: '/',
-    name: 'Главная',
-    component: () => import('@/views/Main'),
+    name: 'Домашняя',
+    component: () => import('@/views/Home'),
     beforeEnter: AuthGuard,
+    children: [
+      {
+        path: '',
+        name: 'Главная',
+        component: () => import('@/views/Main'),
+      },
+      {
+        path: 'maphelp',
+        name: 'Карта',
+        component: () => import('@/views/Map'),
+      },
+    ],
   },
   {
     path: '/map',

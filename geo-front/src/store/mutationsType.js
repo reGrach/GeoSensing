@@ -7,4 +7,4 @@ export const SET_PROCESSING = 'SET_PROCESSING';
 
 export const SET_PROFILE = 'SET_PROFILE';
 export const UPLOAD_IMG = 'UPLOAD_IMG';
-
+export const SET_AVA = 'SET_AVA';
