@@ -42,7 +42,7 @@
             <span class="white--text headline">{{getLoginToIcon}}</span>
           </v-avatar>
         </v-btn>
-        <v-btn text bottom @click.prevent="signout" :loading="getProcessing">
+        <v-btn text bottom @click.prevent="signout">
           <v-icon>mdi-logout</v-icon>
           <span v-html="'&nbsp; Выйти'" class="hidden-sm-and-down"></span>
         </v-btn>

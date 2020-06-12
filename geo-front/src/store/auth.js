@@ -22,7 +22,6 @@ const state = {
 const actions = {
   [SIGN_IN]({ commit }, credentials) {
     commit(SET_PROCESSING, true);
-    commit(PURGE_ERROR);
     return new Promise((resolve, reject) => {
       AuthApi.signin(credentials)
         .then(({ data }) => {
@@ -41,15 +40,12 @@ const actions = {
   },
   [SIGN_UP]({ commit }, credentials) {
     commit(SET_PROCESSING, true);
-    commit(PURGE_ERROR);
     return new Promise((resolve, reject) => {
       AuthApi.signup(credentials)
-        .then(({ data }) => {
-          resolve(data);
-        })
+        .then(() => { resolve(); })
         .catch(({ response }) => {
           console.log(response);
-          commit(SET_ERROR, response.data);
+          commit(SET_ERROR, response);
           reject(response);
         })
         .finally(() => {
@@ -60,9 +56,9 @@ const actions = {
   [SIGN_OUT]({ commit }) {
     return new Promise((resolve, reject) => {
       AuthApi.signout()
-        .then(({ data }) => {
+        .then(() => {
           commit(PURGE_AUTH);
-          resolve(data);
+          resolve();
         })
         .catch(({ response }) => {
           console.log(response);
@@ -76,7 +72,7 @@ const actions = {
   [SIGN_OUT]({ commit }) {
     return new Promise((resolve, reject) => {
       AuthApi.signout()
-        .then(({ data }) => {
+        .then(() => {
           commit(PURGE_AUTH);
           resolve(data);
         })
@@ -116,10 +112,11 @@ const mutations = {
 
 const getters = {
   currentLogin: (state) => state.userLogin,
+  getRoleName: (state) => roles[state.userRole],
   isAuthenticated: (state) => state.isAuthenticated,
-  isAdmin: (state) => state.userRole === roles.Admin,
-  isLeader: (state) => state.userRole === roles.Leader,
-  isParticipant: (state) => state.userRole === roles.Participant,
+  isAdmin: (state) => state.userRole === "Admin",
+  isLeader: (state) => state.userRole === "Leader",
+  isParticipant: (state) => state.userRole === "Participant",
 };
 
 export default {

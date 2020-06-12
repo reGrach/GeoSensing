@@ -4,6 +4,10 @@ using GeoService.BLL.DTO;
 using GeoService.DAL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
 using static GeoService.API.Auth.Identity.Contracts;
 using static GeoService.BLL.Actions.UserActions;
 
@@ -51,6 +55,20 @@ namespace GeoService.API.Controllers
             };
             _context.UpdateProfile(id, user);
             return Ok(_context.GetProfile(id));
+        });
+
+        /// <summary> Загрузка аватара для пользователя </summary>
+        [HttpPost]
+        public IActionResult UploadAvatar(IFormFile avatar) => TryAction(() =>
+        {
+            var id = User.Identity.GetUserId();
+            using (var memoryStream = new MemoryStream())
+            {
+                avatar.CopyTo(memoryStream);
+                if (memoryStream.Length < 3000000)
+                    _context.CreateUpdateAvatar(id, memoryStream.ToArray(), avatar.ContentType);
+            }
+            return Ok();
         });
     }
 }

@@ -1,99 +1,106 @@
 <template>
-  <v-container fluid tag="section">
-    <v-row justify="center">
+  <v-container fill-height fluid>
+    <v-row justify-center>
       <v-col cols="12" md="4">
-        <base-card
-          class="v-card-profile"
-          avatar="https://demos.creative-tim.com/vue-material-dashboard/img/marc.aba54d65.jpg"
-        >
+        <v-card>
           <v-card-text class="text-center">
-            <h6 class="display-1 mb-1 grey--text">РОЛЬ</h6>
-
-            <h4 class="display-2 font-weight-light mb-3 black--text">German</h4>
-
-            <v-btn color="success" rounded class="mr-0">Изменить аватар</v-btn>
+            <v-avatar size="128" class="mx-auto v-card-avatar elevation-6" color="grey">
+              <v-img :src="getAvatar" alt="Avatar" @click="openAvatarLoader"/>
+            </v-avatar>
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="title">{{currentLogin}}</v-list-item-title>
+                <v-list-item-subtitle>{{getRoleName}}</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
           </v-card-text>
-        </base-card>
+        </v-card>
       </v-col>
       <v-col cols="12" md="8">
-        <base-material-card>
-          <template v-slot:heading>
-            <div class="display-2 font-weight-light">Edit Profile</div>
+        <v-form>
+          <v-container class="py-0">
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field label="Имя" class="purple-input" v-model="form.name" />
+              </v-col>
 
-            <div class="subtitle-1 font-weight-light">Complete your profile</div>
-          </template>
-
-          <v-form>
-            <v-container class="py-0">
-              <v-row>
-                <v-col cols="12" md="6">
-                  <v-text-field label="Имя" class="purple-input" />
-                </v-col>
-
-                <v-col cols="12" md="6">
-                  <v-text-field label="Фамилия" class="purple-input" />
-                </v-col>
-
-                <v-col cols="12">
-                  <v-text-field label="Adress" class="purple-input" />
-                </v-col>
-
-                <v-col cols="12" md="4">
-                  <v-text-field label="City" class="purple-input" />
-                </v-col>
-
-                <v-col cols="12" md="4">
-                  <v-text-field label="Country" class="purple-input" />
-                </v-col>
-
-                <v-col cols="12" md="4">
-                  <v-text-field class="purple-input" label="Postal Code" type="number" />
-                </v-col>
-
-                <v-col cols="12" class="text-right">
-                  <v-btn color="success" class="mr-0">Обновить профиль</v-btn>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-form>
-        </base-material-card>
+              <v-col cols="12" md="6">
+                <v-text-field label="Фамилия" class="purple-input" v-model="form.surName" />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-spacer></v-spacer>
+              <v-btn color="success" class="mr-0" @click="onSubmit">Обновить профиль</v-btn>
+            </v-row>
+          </v-container>
+        </v-form>
       </v-col>
-
-
     </v-row>
+    <avatar-loader
+      v-model="showAvatarLoader"
+      @uploaded="init"
+    ></avatar-loader>
   </v-container>
 </template>
 
 <script>
-// import AvatarPicker from '@/components/AvatarPicker.vue';
-import BaseCard from '@/components/BaseCard.vue';
+import AvatarLoader from '@/components/modals/AvatarLoader.vue';
+import { GET_PROFILE, UPDATE_PROFILE } from '@/store/actionsType';
 import { mapGetters } from 'vuex';
+import placeholder from '../assets/placeholder.png';
 
 export default {
-  components: { BaseCard },
+  components: { AvatarLoader },
   data: () => ({
     form: {
-      firstName: '',
+      name: '',
       surName: '',
-      avatar: '',
     },
-    showAvatarPicker: false,
+    avatar: null,
+    showAvatarLoader: false,
   }),
 
+  created() {
+    this.init();
+  },
+
   computed: {
-    ...mapGetters(['getError', 'getProcessing']),
+    ...mapGetters(['getError', 'getProcessing', 'getRoleName', 'currentLogin']),
+    getAvatar() {
+      if (this.avatar) {
+        return this.avatar;
+      }
+      return placeholder;
+    },
     showError() {
       return this.getError != null;
     },
   },
 
   methods: {
-    openAvatarPicker() {
-      this.showAvatarPicker = true;
+    openAvatarLoader() {
+      this.showAvatarLoader = true;
     },
-    selectAvatar(avatar) {
-      this.form.avatar = avatar;
+    init() {
+      this.$store.dispatch(GET_PROFILE).then((data) => {
+        this.form.name = data.name;
+        this.form.surName = data.surName;
+        this.avatar = data.avatarSrc;
+      });
+    },
+    onSubmit() {
+      this.$store.dispatch(UPDATE_PROFILE, {
+        name: this.form.name,
+        surName: this.form.surName,
+      });
     },
   },
 };
 </script>
+<style lang="scss">
+.v-card-avatar {
+  position: relative;
+  top: -64px;
+  margin-bottom: -48px;
+}
+</style>

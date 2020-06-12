@@ -6,3 +6,5 @@ export const PURGE_ERROR = 'PURGE_ERROR';
 export const SET_PROCESSING = 'SET_PROCESSING';
 
 export const SET_PROFILE = 'SET_PROFILE';
+export const UPLOAD_IMG = 'UPLOAD_IMG';
+

@@ -1,9 +1,7 @@
 
-const roles = {
+export default {
   Admin: 'Администратор',
   Leader: 'Лидер',
   Participant: 'Участник',
   NonDefined: 'Простой',
 };
-
-export default { roles };

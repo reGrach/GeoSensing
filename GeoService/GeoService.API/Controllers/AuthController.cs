@@ -45,7 +45,7 @@ namespace GeoService.API.Controllers
                 UserName = userDTO.Login
             };
 
-            var tokenResult = _jwtTokenGenerator.Generate(userIdentity, userDTO.Role.ToString());
+            var tokenResult = _jwtTokenGenerator.Generate(userIdentity, userDTO.Role.ToString(), model.RememberMe);
 
             HttpContext.Response.Cookies.Append(
                 ".Core.Geo.Bear",
@@ -56,7 +56,7 @@ namespace GeoService.API.Controllers
             {
                 Login = userDTO.Login,
                 Role = userDTO.Role.ToString(),
-                Expiration = DateTime.Now.AddHours(tokenResult.Expires.Hours)
+                Expiration = DateTime.Now.AddHours(tokenResult.Expires.TotalHours)
             };
 
             return Ok(info);

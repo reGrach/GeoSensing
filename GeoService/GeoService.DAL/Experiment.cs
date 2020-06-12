@@ -18,7 +18,7 @@ namespace GeoService.DAL
         /// <summary> Связь с создателем </summary>
         public int CreatorUserId { get; set; }
 
-        /// <summary> Связь с создателем </summary>
+        /// <summary> Связь с командой </summary>
         public int TeamId { get; set; }
         public Team Team { get; set; }
 

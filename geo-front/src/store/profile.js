@@ -1,29 +1,19 @@
 /* eslint-disable */
 import ProfileApi from '../api/profile';
-import { GET_PROFILE, UPDATE_PROFILE } from './actionsType';
-import { SET_ERROR, SET_PROCESSING, PURGE_ERROR, SET_PROFILE } from './mutationsType';
-
-const state = {
-  formProfile: {
-    name: null,
-    surName: null,
-    avatar: null
-  },
-};
+import { GET_PROFILE, UPDATE_PROFILE, UPLOAD_AVATAR } from './actionsType';
+import { SET_ERROR, SET_PROCESSING, UPLOAD_IMG } from './mutationsType';
 
 const actions = {
   [GET_PROFILE]({ commit }) {
     commit(SET_PROCESSING, true);
-    commit(PURGE_ERROR);
     return new Promise((resolve, reject) => {
       ProfileApi.Get()
         .then(({ data }) => {
-          commit(SET_PROFILE, data);
           resolve(data);
         })
         .catch(({ response }) => {
           console.log(response);
-          commit(SET_ERROR, response.data);
+          commit(SET_ERROR, response);
           reject(response);
         })
         .finally(() => {
@@ -33,16 +23,14 @@ const actions = {
   },
   [UPDATE_PROFILE]({ commit }, profileData) {
     commit(SET_PROCESSING, true);
-    commit(PURGE_ERROR);
     return new Promise((resolve, reject) => {
       ProfileApi.Update(profileData)
         .then(({ data }) => {
-          commit(SET_PROFILE, data);
           resolve(data);
         })
         .catch(({ response }) => {
           console.log(response);
-          commit(SET_ERROR, response.data);
+          commit(SET_ERROR, response);
           reject(response);
         })
         .finally(() => {
@@ -50,25 +38,26 @@ const actions = {
         });
     });
   },
-};
-
-const mutations = {
-  [SET_PROFILE](state, payload) {
-    state.formProfile.name = payload.name;
-    state.formProfile.surName = payload.surName;
-  },
-  [PURGE_AUTH](state) {
-  },
-  [INIT_AUTH](state) {
-  },
-};
-
-const getters = {
+  [UPLOAD_AVATAR]({ commit }, canvas) {
+    return new Promise((resolve, reject) => {
+      commit(UPLOAD_IMG, true);
+      canvas.toBlob((blob) => {
+        ProfileApi.Upload(blob)
+          .then(() => {
+            resolve(); 
+          })
+          .catch(({ response }) => {
+            commit(SET_ERROR, response);
+            reject(response);
+          })
+          .finally(() => {
+            commit(UPLOAD_IMG, false);
+          });
+      })
+    })
+  }
 };
 
 export default {
-  state,
   actions,
-  mutations,
-  getters,
 };

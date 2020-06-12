@@ -17,7 +17,7 @@ namespace GeoService.API.Auth.JwtExtension
         public JwtTokenResult Generate(UserIdentity user, string role, bool rememberMe = false)
         {
             var expiration = rememberMe
-                ? TimeSpan.FromDays(7)
+                ? TimeSpan.FromDays(14)
                 : TimeSpan.FromMinutes(_tokenOptions.TokenExpiryInMinutes);
 
             var jwt = new JwtSecurityToken(

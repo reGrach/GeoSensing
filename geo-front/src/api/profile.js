@@ -15,9 +15,14 @@ const ProfileApi = {
   Update(profile) {
     return ApiService.post(`${prefix}update`, profile);
   },
-  // Нет, надо реализовать
-  Upload(file) {
-    return ApiService.post(`${prefix}uploadavatar`, file);
+  Upload(blob) {
+    const formData = new FormData();
+    formData.append('Avatar', blob, 'Avatar.png');
+    return ApiService.post(`${prefix}uploadavatar`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
 };
 

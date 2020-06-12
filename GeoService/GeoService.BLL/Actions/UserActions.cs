@@ -63,11 +63,14 @@ namespace GeoService.BLL.Actions
 
         public static UserDTO GetProfile(this GeoContext ctx, int id)
         {
-            if (ctx.Users.Find(id) is User dbUser)
+            if (ctx.Users.Include(x => x.Avatar).SingleOrDefault(x => x.Id == id) is User dbUser)
                 return new UserDTO
                 {
                     Name = dbUser.Name,
                     SurName = dbUser.Surname,
+                    AvatarSrc = dbUser.Avatar is Avatar _ava
+                    ? $"data:{_ava.MimeType};base64,{Convert.ToBase64String(_ava.FileContent)}"
+                    : string.Empty,
                     Team = dbUser.Team is Team team ? team.ToDTO() : null
                 };
             else
@@ -90,6 +93,28 @@ namespace GeoService.BLL.Actions
                 Name = x.Name,
                 SurName = x.Surname
             });
+        }
+
+
+        public static void CreateUpdateAvatar(this GeoContext ctx, int userId, byte[] content, string mime)
+        {
+            if (ctx.Users.Include(x => x.Avatar).SingleOrDefault(x => x.Id == userId) is User dbUser)
+            {
+                if (dbUser.Avatar is null)
+                    dbUser.Avatar = new Avatar
+                    {
+                        FileContent = content,
+                        MimeType = mime
+                    };
+                else
+                {
+                    dbUser.Avatar.FileContent = content;
+                    dbUser.Avatar.MimeType = mime;
+                }
+                ctx.SaveChanges();
+            }
+            else
+                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
         }
     }
 }
