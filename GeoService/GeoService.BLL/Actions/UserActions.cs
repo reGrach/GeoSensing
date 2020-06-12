@@ -55,9 +55,7 @@ namespace GeoService.BLL.Actions
             {
                 dbUser.Name = model.Name;
                 dbUser.Surname = model.SurName;
-
-                if (dbUser.Role == RoleEnum.NonDefined)
-                    dbUser.Role = RoleEnum.Participant;
+                ctx.SaveChanges();
             }
             else
                 throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
@@ -68,7 +66,6 @@ namespace GeoService.BLL.Actions
             if (ctx.Users.Find(id) is User dbUser)
                 return new UserDTO
                 {
-                    Login = dbUser.Login,
                     Name = dbUser.Name,
                     SurName = dbUser.Surname,
                     Team = dbUser.Team is Team team ? team.ToDTO() : null
@@ -90,7 +87,6 @@ namespace GeoService.BLL.Actions
 
             return freeUsers.Select(x => new UserDTO
             {
-                Login = x.Login,
                 Name = x.Name,
                 SurName = x.Surname
             });

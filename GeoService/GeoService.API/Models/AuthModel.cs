@@ -1,5 +1,4 @@
-﻿using GeoService.DAL.Enums;
-using System;
+﻿using System;
 
 namespace GeoService.API.Models
 {
@@ -17,7 +16,7 @@ namespace GeoService.API.Models
     public class AuthInfoModel
     {
         public string Login { get; set; }
-        public RoleEnum Role { get; set; }
+        public string Role { get; set; }
 
         /// <summary> Срок действия токена авторизации </summary>
         public DateTime Expiration { get; set; }

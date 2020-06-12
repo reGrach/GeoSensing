@@ -50,7 +50,7 @@ namespace GeoService.API.Controllers
                 SurName = model.SurName,
             };
             _context.UpdateProfile(id, user);
-            return Ok();
+            return Ok(_context.GetProfile(id));
         });
     }
 }

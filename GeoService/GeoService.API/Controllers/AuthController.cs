@@ -55,7 +55,7 @@ namespace GeoService.API.Controllers
             var info = new AuthInfoModel
             {
                 Login = userDTO.Login,
-                Role = userDTO.Role,
+                Role = userDTO.Role.ToString(),
                 Expiration = DateTime.Now.AddHours(tokenResult.Expires.Hours)
             };
 
@@ -76,7 +76,7 @@ namespace GeoService.API.Controllers
         public IActionResult Check() => TryAction(() => Ok(new AuthInfoModel
         {
             Login = User.Identity.GetUserLogin(),
-            Role = User.Identity.GetUserRole(),
+            Role = User.Identity.GetUserRole().ToString(),
             Expiration = User.Identity.GetExpirationToken()
         }));
     }

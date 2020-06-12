@@ -1,5 +1,5 @@
 <template>
-  <v-container id="user-profile" fluid tag="section">
+  <v-container fluid tag="section">
     <v-row justify="center">
       <v-col cols="12" md="4">
         <base-card
@@ -71,17 +71,14 @@ import { mapGetters } from 'vuex';
 
 export default {
   components: { BaseCard },
-  data() {
-    return {
-      form: {
-        firstName: 'John',
-        lastName: 'Doe',
-        contactEmail: 'john@doe.com',
-        avatar: 'MALE_CAUCASIAN_BLOND_BEARD',
-      },
-      showAvatarPicker: false,
-    };
-  },
+  data: () => ({
+    form: {
+      firstName: '',
+      surName: '',
+      avatar: '',
+    },
+    showAvatarPicker: false,
+  }),
 
   computed: {
     ...mapGetters(['getError', 'getProcessing']),
