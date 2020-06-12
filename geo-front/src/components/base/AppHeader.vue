@@ -75,13 +75,19 @@ export default {
           name: 'main',
           icon: 'mdi-home',
           title: 'Главная',
-          route: '/',
+          route: '/home',
         },
         {
           name: 'main',
           icon: 'mdi-map',
           title: 'Карта',
-          route: '/map',
+          route: '/map2',
+        },
+        {
+          name: 'admin',
+          icon: 'mdi-shield-account',
+          title: 'Админка',
+          route: '/admin',
         },
       ];
     },

@@ -20,20 +20,14 @@ const routes = [
   {
     path: '/',
     name: 'Домашняя',
-    component: () => import('@/views/Home'),
     beforeEnter: AuthGuard,
-    children: [
-      {
-        path: '',
-        name: 'Главная',
-        component: () => import('@/views/Main'),
-      },
-      {
-        path: 'maphelp',
-        name: 'Карта',
-        component: () => import('@/views/Map'),
-      },
-    ],
+    component: () => import('@/views/Map'),
+  },
+  {
+    path: '/main',
+    name: 'Главная',
+    component: () => import('@/views/Main'),
+    beforeEnter: AuthGuard,
   },
   {
     path: '/map',
@@ -61,8 +55,8 @@ const routes = [
   },
   {
     path: '/Admin',
-    name: 'Страница администратора',
-    component: () => import('@/views/Profile'),
+    name: 'Админка',
+    component: () => import('@/views/Admin/Admin'),
     beforeEnter: AdminGuard,
   },
 ];
