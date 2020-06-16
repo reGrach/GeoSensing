@@ -18,15 +18,25 @@ function ifAuthenticated(from, to, next) {
 
 const routes = [
   {
-    path: '/',
-    name: 'Домашняя',
-    beforeEnter: AuthGuard,
-    component: () => import('@/views/Map'),
+    path: '*',
+    redirect: '/experiment',
   },
   {
-    path: '/main',
-    name: 'Главная',
-    component: () => import('@/views/Main'),
+    path: '/experiment',
+    name: 'Эксперимент',
+    component: () => import('@/views/Experiment'),
+    beforeEnter: AuthGuard,
+  },
+  {
+    path: '/data',
+    name: 'Мои данные',
+    component: () => import('@/views/MyData'),
+    beforeEnter: AuthGuard,
+  },
+  {
+    path: '/team',
+    name: 'Команда',
+    component: () => import('@/views/Team'),
     beforeEnter: AuthGuard,
   },
   {

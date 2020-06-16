@@ -4,7 +4,7 @@
       <v-col cols="12" md="4">
         <v-card>
           <v-card-text class="text-center">
-            <v-avatar size="128" class="mx-auto v-card-avatar elevation-6" color="grey">
+            <v-avatar size="192" class="mx-auto v-card-avatar elevation-6" color="grey">
               <v-img :src="getAvatar" alt="Avatar" @click="openAvatarLoader"/>
             </v-avatar>
             <v-list-item>

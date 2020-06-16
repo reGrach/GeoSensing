@@ -72,16 +72,28 @@ export default {
     navigateMenu() {
       return [
         {
-          name: 'main',
-          icon: 'mdi-home',
-          title: 'Главная',
-          route: '/home',
+          name: 'experiment',
+          icon: 'mdi-transit-detour',
+          title: 'Эксперимент',
+          route: '/experiment',
         },
         {
-          name: 'main',
+          name: 'data',
+          icon: 'mdi-database',
+          title: 'Мои данные',
+          route: '/data',
+        },
+        {
+          name: 'team',
+          icon: 'mdi-account-group',
+          title: 'Команда',
+          route: '/team',
+        },
+        {
+          name: 'map',
           icon: 'mdi-map',
           title: 'Карта',
-          route: '/map2',
+          route: '/map',
         },
         {
           name: 'admin',
