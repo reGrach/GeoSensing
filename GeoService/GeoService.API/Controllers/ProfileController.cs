@@ -65,7 +65,7 @@ namespace GeoService.API.Controllers
             using (var memoryStream = new MemoryStream())
             {
                 avatar.CopyTo(memoryStream);
-                if (memoryStream.Length < 3000000)
+                if (memoryStream.Length < 5000000)
                     _context.CreateUpdateAvatar(id, memoryStream.ToArray(), avatar.ContentType);
             }
             return Ok();

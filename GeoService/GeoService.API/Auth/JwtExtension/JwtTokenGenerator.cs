@@ -36,5 +36,28 @@ namespace GeoService.API.Auth.JwtExtension
                 Expires = expiration
             };
         }
+
+        public JwtTokenResult Update(UserIdentity user, string role, DateTime expired)
+        {
+            var expiration = expired > DateTime.UtcNow
+                ? expired.Subtract(DateTime.UtcNow)
+                : TimeSpan.FromMinutes(_tokenOptions.TokenExpiryInMinutes);
+
+            var jwt = new JwtSecurityToken(
+                issuer: _tokenOptions.Issuer,
+                audience: _tokenOptions.Audience,
+                claims: user.BuildClaims(role, expiration).Claims,
+                notBefore: DateTime.UtcNow,
+                expires: DateTime.UtcNow.Add(expiration),
+                signingCredentials: new SigningCredentials(_tokenOptions.SigningKey, SecurityAlgorithms.HmacSha256));
+
+            var accessToken = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+            return new JwtTokenResult
+            {
+                AccessToken = accessToken,
+                Expires = expiration
+            };
+        }
     }
 }

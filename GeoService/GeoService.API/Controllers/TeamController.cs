@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GeoService.API.Auth.Identity;
+using GeoService.API.Auth.JwtExtension;
 using GeoService.API.Models;
 using GeoService.BLL.Actions;
-using GeoService.BLL.DTO;
 using GeoService.DAL;
+using GeoService.DAL.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,13 +16,15 @@ using static GeoService.BLL.Actions.TeamActions;
 
 namespace GeoService.API.Controllers
 {
-    [Authorize(ParticipantPolicy)]
+    [Authorize(NonDefinedPolicy)]
     public class TeamController : BaseApiController
     {
         private readonly GeoContext _context;
+        private readonly JwtTokenGenerator _jwtTokenGenerator;
 
-        public TeamController(GeoContext context)
+        public TeamController(JwtTokenGenerator jwtTokenGenerator, GeoContext context)
         {
+            _jwtTokenGenerator = jwtTokenGenerator;
             _context = context;
         }
 
@@ -89,6 +92,7 @@ namespace GeoService.API.Controllers
 
         /// <summary> Получение полной инфомации о собственной команде </summary>
         [HttpGet]
+        [Authorize(ParticipantPolicy)]
         public IActionResult GetMy() => TryAction(() => Ok(_context.GetTeamByUser(User.Identity.GetUserId())));
 
 
@@ -100,6 +104,20 @@ namespace GeoService.API.Controllers
         {
             var id = User.Identity.GetUserId();
             _context.CreateTeam(id, model.Title, model.Color);
+
+            var identity = new UserIdentity
+            {
+                Id = id,
+                UserName = User.Identity.GetUserLogin()
+            };
+
+            var tokenResult = _jwtTokenGenerator.Update(identity, RoleEnum.Leader.ToString(), User.Identity.GetExpirationToken());
+
+            HttpContext.Response.Cookies.Append(
+                ".Core.Geo.Bear",
+                tokenResult.AccessToken,
+                new CookieOptions { MaxAge = tokenResult.Expires });
+
             return Ok();
         });
 
@@ -116,6 +134,7 @@ namespace GeoService.API.Controllers
 
         /// <summary> Выйти из команды </summary>
         [HttpPost]
+        [Authorize(ParticipantPolicy)]
         public IActionResult RemoveMe([FromBody]int idTeam) => TryAction(() =>
         {
             var id = User.Identity.GetUserId();

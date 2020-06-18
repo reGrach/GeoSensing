@@ -127,6 +127,7 @@ const getters = {
   isAdmin: (state) => state.userRole === "Admin",
   isLeader: (state) => state.userRole === "Leader",
   isParticipant: (state) => state.userRole === "Participant",
+  isEasyUser: (state) => state.userRole === "NonDefined",
 };
 
 export default {

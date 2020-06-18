@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 
@@ -59,7 +60,7 @@ namespace GeoService.API.Auth.Identity
             if (identity is ClaimsIdentity ci)
             {
                 var timeSpan = TimeSpan.Parse(ci.FindFirst(ClaimTypes.Expiration).Value);
-                return DateTime.Now.AddHours(timeSpan.TotalHours);
+                return DateTime.UtcNow.AddHours(timeSpan.TotalHours);
             }
             else
                 throw new ArgumentNullException("Identity");

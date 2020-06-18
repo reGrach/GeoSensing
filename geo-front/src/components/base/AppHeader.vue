@@ -67,7 +67,7 @@ export default {
   computed: {
     ...mapGetters(['currentLogin', 'isAuthenticated', 'getProcessing', 'getAvatar']),
     useAvatarImg() {
-      return this.getAvatar != null;
+      return !!this.getAvatar;
     },
     navigateMenu() {
       return [

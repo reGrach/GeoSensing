@@ -7,4 +7,5 @@ export const GET_PROFILE = 'GET_PROFILE';
 export const UPDATE_PROFILE = 'UPDATE_PROFILE';
 export const UPLOAD_AVATAR = 'UPLOAD_AVATAR';
 
-
+export const GET_ALL_TEAMS = 'GET_ALL_TEAMS';
+export const CREATE_TEAM = 'CREATE_TEAM';

@@ -15,11 +15,13 @@ namespace GeoService.BLL.Actions
         {
             if (ctx.Users.Find(userId) is User dbUser)
             {
-                if (dbUser.Role == RoleEnum.Leader)
+                if (dbUser.TeamId.HasValue)
                     throw new ApiException("Чтобы создать новую команду, необходимо покинуть текущую", nameof(CreateTeam), 400);
 
-                if (ctx.Teams.Any(x => x.Title.Equals(title, StringComparison.InvariantCultureIgnoreCase)))
+                if (ctx.Teams.Any(x => x.Title == title))
                     throw new ApiException("Команда с такми названием существует", nameof(CreateTeam), 400);
+
+                dbUser.Role = RoleEnum.Leader;
 
                 ctx.Teams.Add(new Team
                 {

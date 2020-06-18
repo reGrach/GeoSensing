@@ -49,6 +49,19 @@ namespace GeoService.BLL.Actions
                 throw new ApiException("Пользователь с таким логином не найден", nameof(AuthenticationUser), 401);
         }
 
+        public static IdentityDTO GetUser(this GeoContext ctx, int id)
+        {
+            if (ctx.Users.Find(id) is User userDb)
+                return new IdentityDTO
+                {
+                    Id = userDb.Id,
+                    Login = userDb.Login,
+                    Role = userDb.Role,
+                };
+            else
+                throw new ApiException("Пользователь с таким логином не найден", nameof(AuthenticationUser), 401);
+        }
+
         public static void UpdateProfile(this GeoContext ctx, int id, UserDTO model)
         {
             if (ctx.Users.Find(id) is User dbUser)
