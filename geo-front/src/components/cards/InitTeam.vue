@@ -70,11 +70,8 @@
                     <v-select
                       v-model="selectedTeam"
                       :items="teams"
-                      item-text="title"
                       item-value="id"
-                      item-color="#BF360CFF"
                       label="Выберите команду"
-                      return-object
                       required
                       :rules="[v => !!v || 'Обязательное поле']"
                     >
