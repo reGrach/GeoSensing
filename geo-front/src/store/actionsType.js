@@ -9,3 +9,4 @@ export const UPLOAD_AVATAR = 'UPLOAD_AVATAR';
 
 export const GET_ALL_TEAMS = 'GET_ALL_TEAMS';
 export const CREATE_TEAM = 'CREATE_TEAM';
+export const JOIN_TEAM = 'JOIN_TEAM';

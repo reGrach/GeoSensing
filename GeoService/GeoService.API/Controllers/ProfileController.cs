@@ -1,16 +1,14 @@
 ﻿using GeoService.API.Auth.Identity;
+using GeoService.API.Auth.JwtExtension;
 using GeoService.API.Models;
 using GeoService.BLL.DTO;
 using GeoService.DAL;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.IO;
 using static GeoService.API.Auth.Identity.Contracts;
 using static GeoService.BLL.Actions.UserActions;
-
 
 namespace GeoService.API.Controllers
 {
@@ -18,7 +16,7 @@ namespace GeoService.API.Controllers
     {
         private readonly GeoContext _context;
 
-        public ProfileController(GeoContext context)
+        public ProfileController(JwtTokenGenerator jwtTokenGenerator, GeoContext context) : base(jwtTokenGenerator)
         {
             _context = context;
         }

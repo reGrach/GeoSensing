@@ -118,7 +118,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { GET_ALL_TEAMS, CREATE_TEAM } from '@/store/actionsType';
+import { GET_ALL_TEAMS, CREATE_TEAM, JOIN_TEAM } from '@/store/actionsType';
 
 export default {
   data: () => ({
@@ -159,7 +159,9 @@ export default {
       const { title, color } = this.createForm;
       this.$store.dispatch(CREATE_TEAM, { title, color });
     },
-    JoinTeam() {},
+    JoinTeam() {
+      this.$store.dispatch(JOIN_TEAM, this.selectedTeam);
+    },
   },
 };
 </script>

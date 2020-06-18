@@ -3,6 +3,7 @@ using GeoService.API.Auth.JwtExtension;
 using GeoService.API.Models;
 using GeoService.BLL.Actions;
 using GeoService.DAL;
+using GeoService.DAL.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +16,9 @@ namespace GeoService.API.Controllers
     public class AuthController : BaseApiController
     {
         private readonly GeoContext _context;
-        private readonly JwtTokenGenerator _jwtTokenGenerator;
 
-        public AuthController(JwtTokenGenerator jwtTokenGenerator, GeoContext context)
+        public AuthController(JwtTokenGenerator jwtTokenGenerator, GeoContext context) : base(jwtTokenGenerator)
         {
-            _jwtTokenGenerator = jwtTokenGenerator;
             _context = context;
         }
 
@@ -39,25 +38,15 @@ namespace GeoService.API.Controllers
         public IActionResult SignIn(AuthModel model) => TryAction(() =>
         {
             var user = _context.AuthenticationUser(model.Login, model.Password);
-            var userIdentity = new UserIdentity
-            {
-                Id = user.Id,
-                UserName = user.Login
-            };
 
-            var tokenResult = _jwtTokenGenerator.Generate(userIdentity, user.Role.ToString(), model.RememberMe);
-
-            HttpContext.Response.Cookies.Append(
-                ".Core.Geo.Bear",
-                tokenResult.AccessToken,
-                new CookieOptions { MaxAge = tokenResult.Expires });
+            var expirationDate = CerateClaimsAndToken(user.Id, user.Login, user.Role, model.RememberMe);
 
             var info = new AuthInfoModel
             {
                 Login = user.Login,
                 Role = user.Role.ToString(),
-                Expiration = DateTime.Now.AddHours(tokenResult.Expires.TotalHours),
-                AvatarSrc = _context.GetAvatar(userIdentity.Id)
+                Expiration = expirationDate,
+                AvatarSrc = _context.GetAvatar(user.Id)
             };
 
             return Ok(info);

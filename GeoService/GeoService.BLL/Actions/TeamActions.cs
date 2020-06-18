@@ -111,9 +111,9 @@ namespace GeoService.BLL.Actions
                 throw new ApiException("Фатальная ошибка, команда не обнаружена", nameof(ChangeActiveTeam), 404);
         }
 
-        public static void AddUserToTeam(this GeoContext ctx, string login, int teamId)
+        public static void AddUserToTeam(this GeoContext ctx, int userId, int teamId)
         {
-            if (ctx.Users.FirstOrDefault(x => x.Login.Equals(login, StringComparison.InvariantCultureIgnoreCase)) is User dbUser)
+            if (ctx.Users.Find(userId) is User dbUser)
             {
                 if (dbUser.Role == RoleEnum.Leader)
                     throw new ApiException("Нельзя добавить лидера другой команды", nameof(AddUserToTeam), 400);

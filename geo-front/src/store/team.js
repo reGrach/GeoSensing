@@ -1,6 +1,6 @@
 /* eslint-disable */
 import TeamApi from '../api/team';
-import { GET_ALL_TEAMS, CREATE_TEAM, CHECK_AUTH } from './actionsType';
+import { GET_ALL_TEAMS, CREATE_TEAM, JOIN_TEAM, CHECK_AUTH } from './actionsType';
 import { SET_ERROR, SET_PROCESSING } from './mutationsType';
 
 const state = {};
@@ -24,6 +24,24 @@ const actions = {
     });
   },
   [CREATE_TEAM]({ commit, dispatch }, team) {
+    commit(SET_PROCESSING, true);
+    return new Promise((resolve, reject) => {
+      TeamApi.create(team)
+        .then(() => {
+          dispatch(CHECK_AUTH);
+          resolve();
+        })
+        .catch(({ response }) => {
+          console.log(response);
+          commit(SET_ERROR, response);
+          reject(response);
+        })
+        .finally(() => {
+          commit(SET_PROCESSING, false);
+        });
+    });
+  },
+  [JOIN_TEAM]({ commit, dispatch }, teamId) {
     commit(SET_PROCESSING, true);
     return new Promise((resolve, reject) => {
       TeamApi.create(team)

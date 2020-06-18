@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using GeoService.API.Auth.Identity;
+﻿using GeoService.API.Auth.Identity;
 using GeoService.API.Auth.JwtExtension;
 using GeoService.API.Models;
 using GeoService.BLL.Actions;
 using GeoService.DAL;
 using GeoService.DAL.Enums;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static GeoService.API.Auth.Identity.Contracts;
 using static GeoService.BLL.Actions.TeamActions;
@@ -20,11 +15,9 @@ namespace GeoService.API.Controllers
     public class TeamController : BaseApiController
     {
         private readonly GeoContext _context;
-        private readonly JwtTokenGenerator _jwtTokenGenerator;
 
-        public TeamController(JwtTokenGenerator jwtTokenGenerator, GeoContext context)
+        public TeamController(JwtTokenGenerator jwtTokenGenerator, GeoContext context) : base(jwtTokenGenerator)
         {
-            _jwtTokenGenerator = jwtTokenGenerator;
             _context = context;
         }
 
@@ -72,13 +65,13 @@ namespace GeoService.API.Controllers
         /// Добавить выбранного пользователя в группу.
         /// Добавляемый пользователь не должен быть лидером. 
         /// </summary>
-        [HttpPost]
-        [Authorize(LeaderPolicy)]
-        public IActionResult AddUser(UserInTeam model) => TryAction(() =>
-        {
-            _context.AddUserToTeam(model.Login, model.TeamId);
-            return Ok(_context.GetTeamById(model.TeamId));
-        });
+        //[HttpPost]
+        //[Authorize(LeaderPolicy)]
+        //public IActionResult AddUser(UserInTeam model) => TryAction(() =>
+        //{
+        //    _context.AddUserToTeam(model.UserId, model.TeamId);
+        //    return Ok(_context.GetTeamById(model.TeamId));
+        //});
 
         #endregion
 
@@ -104,20 +97,7 @@ namespace GeoService.API.Controllers
         {
             var id = User.Identity.GetUserId();
             _context.CreateTeam(id, model.Title, model.Color);
-
-            var identity = new UserIdentity
-            {
-                Id = id,
-                UserName = User.Identity.GetUserLogin()
-            };
-
-            var tokenResult = _jwtTokenGenerator.Update(identity, RoleEnum.Leader.ToString(), User.Identity.GetExpirationToken());
-
-            HttpContext.Response.Cookies.Append(
-                ".Core.Geo.Bear",
-                tokenResult.AccessToken,
-                new CookieOptions { MaxAge = tokenResult.Expires });
-
+            UpdateClaimsAndToken(id, role: RoleEnum.Leader);
             return Ok();
         });
 
@@ -126,9 +106,10 @@ namespace GeoService.API.Controllers
         [HttpPost]
         public IActionResult AddMe([FromBody]int idTeam) => TryAction(() =>
         {
-            var login = User.Identity.GetUserLogin();
-            _context.AddUserToTeam(login, idTeam);
-            return Ok(_context.GetTeamById(idTeam));
+            var id = User.Identity.GetUserId();
+            _context.AddUserToTeam(id, idTeam);
+            UpdateClaimsAndToken(id, role: RoleEnum.Participant);
+            return Ok();
         });
 
 
@@ -139,7 +120,7 @@ namespace GeoService.API.Controllers
         {
             var id = User.Identity.GetUserId();
             _context.RemoveUserFromTeam(id, idTeam);
-            return Ok(_context.GetTeamById(idTeam));
+            return Ok();
         });
 
         #endregion
