@@ -5,9 +5,17 @@
         <v-card class="elevation-12">
           <v-card-title class="title">Вход в систему</v-card-title>
           <v-card-text>
-            <v-form>
-              <v-text-field required label="Логин" prepend-icon="mdi-account" v-model="login" />
+            <v-form v-model="isValid">
               <v-text-field
+                required
+                :rules="rules.login"
+                label="Логин"
+                prepend-icon="mdi-account"
+                v-model="login"
+              />
+              <v-text-field
+                required
+                :rules="rules.password"
                 :type="showPassword ? 'text' : 'password'"
                 label="Пароль"
                 prepend-icon="mdi-lock"
@@ -18,14 +26,20 @@
               <v-checkbox v-model="rememberMe" label="Запомнить меня"></v-checkbox>
             </v-form>
           </v-card-text>
-          <v-alert text border="top" type="warning" v-model="showError">{{error}}</v-alert>
+          <v-alert text border="top" type="warning" v-model="showError">{{getError}}</v-alert>
           <v-divider></v-divider>
           <v-card-actions class="footerForm">
-            <router-link to="/signup">
-              <span>Зарегистрируйтесь, если у Вас еще нет профиля!</span>
-            </router-link>
+            <v-btn
+              min-width="20%"
+              color="success"
+              @click.prevent="onSubmit"
+              :disabled="!isValid"
+              :loading="getProcessing"
+            >Войти</v-btn>
             <v-spacer></v-spacer>
-            <v-btn min-width="15%" color="info" @click.prevent="onSubmit" :loading="processing">Войти</v-btn>
+            <router-link to="/signup">
+              <span>... или зарегистрироваться</span>
+            </router-link>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -34,37 +48,47 @@
 </template>
 
 <script>
-import { SIGN_IN } from '@/store/actionsType'
+import { SIGN_IN } from '@/store/actionsType';
+import { mapGetters } from 'vuex';
+
 export default {
   data: () => ({
     showPassword: false,
     login: '',
     password: '',
-    rememberMe: false
+    rememberMe: false,
+    isValid: false,
+    rules: {
+      login: [
+        (v) => !!v || 'Необходимо ввести логин',
+        (v) => (v && v.length >= 4) || 'Логин должен содержать минимум 4 символа',
+      ],
+      password: [
+        (v) => !!v || 'Необходимо ввести пароль',
+        (v) => (v && v.length >= 6) || 'Пароль должен содержать 5 и более символов',
+      ],
+    },
   }),
+
   computed: {
-    showError () {
-      return this.$store.getters.getError != null
+    ...mapGetters(['getError', 'getProcessing']),
+    showError() {
+      return this.getError != null;
     },
-    error () {
-      return this.$store.getters.getError
-    },
-    processing () {
-      return this.$store.getters.getProcessing
-    }
   },
+
   methods: {
-    onSubmit () {
+    onSubmit() {
       this.$store
         .dispatch(SIGN_IN, {
           login: this.login,
           password: this.password,
-          rememberMe: this.rememberMe
+          rememberMe: this.rememberMe,
         })
-        .then(() => this.$router.push('/'))
-    }
-  }
-}
+        .then(() => this.$router.push('/'));
+    },
+  },
+};
 </script>
 <style scoped>
 .title {

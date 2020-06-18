@@ -1,11 +1,10 @@
 <template>
   <div>
-      MAIN
-      max_features
+      My data
   </div>
 </template>
 
 <script>
 export default {
-}
+};
 </script>

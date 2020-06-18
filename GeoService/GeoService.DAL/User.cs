@@ -32,6 +32,9 @@ namespace GeoService.DAL
         [Required]
         public RoleEnum Role { get; set; }
 
+        public int? AvatarId { get; set; }
+        public Avatar Avatar { get; set; }
+
         /// <summary> Связь с командой </summary>
         public int? TeamId { get; set; }
         public Team Team { get; set; }

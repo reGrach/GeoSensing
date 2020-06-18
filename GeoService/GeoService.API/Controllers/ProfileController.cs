@@ -1,12 +1,14 @@
 ﻿using GeoService.API.Auth.Identity;
+using GeoService.API.Auth.JwtExtension;
 using GeoService.API.Models;
 using GeoService.BLL.DTO;
 using GeoService.DAL;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
 using static GeoService.API.Auth.Identity.Contracts;
 using static GeoService.BLL.Actions.UserActions;
-
 
 namespace GeoService.API.Controllers
 {
@@ -14,7 +16,7 @@ namespace GeoService.API.Controllers
     {
         private readonly GeoContext _context;
 
-        public ProfileController(GeoContext context)
+        public ProfileController(JwtTokenGenerator jwtTokenGenerator, GeoContext context) : base(jwtTokenGenerator)
         {
             _context = context;
         }
@@ -50,6 +52,20 @@ namespace GeoService.API.Controllers
                 SurName = model.SurName,
             };
             _context.UpdateProfile(id, user);
+            return Ok(_context.GetProfile(id));
+        });
+
+        /// <summary> Загрузка аватара для пользователя </summary>
+        [HttpPost]
+        public IActionResult UploadAvatar(IFormFile avatar) => TryAction(() =>
+        {
+            var id = User.Identity.GetUserId();
+            using (var memoryStream = new MemoryStream())
+            {
+                avatar.CopyTo(memoryStream);
+                if (memoryStream.Length < 5000000)
+                    _context.CreateUpdateAvatar(id, memoryStream.ToArray(), avatar.ContentType);
+            }
             return Ok();
         });
     }

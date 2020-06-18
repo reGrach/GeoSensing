@@ -31,82 +31,93 @@
       </router-link>
       <v-spacer></v-spacer>
       <v-toolbar-items v-if="!isAuthenticated">
-        <v-btn text :to="signinItem.route">
-          <v-icon v-html="signinItem.icon"></v-icon>
-          <span v-html="signinItem.title" class="hidden-sm-and-down"></span>
+        <v-btn text to="/signin" active-class="no-active">
+          <v-icon>mdi-login</v-icon>
+          <span v-html="'&nbsp; Войти в систему'" class="hidden-sm-and-down"></span>
         </v-btn>
       </v-toolbar-items>
-      <v-toolbar-items v-else>
-        <!-- <v-toolbar-title>{{currentLogin}}</v-toolbar-title> -->
-        <v-btn icon large>
+      <div v-else>
+        <v-btn icon large to="/profile" active-class="no-active">
           <v-avatar color="primary" item>
-            <span class="white--text headline">{{getLoginToIcon}}</span>
+            <v-img v-if="useAvatarImg" :src="getAvatar"></v-img>
+            <span v-else class="white--text headline">{{getLoginToIcon}}</span>
           </v-avatar>
         </v-btn>
-        <v-btn text @click.prevent="signout" :loading="getProcessing">
-          <v-icon v-html="signoutItem.icon"></v-icon>
-          <span v-html="signoutItem.title" class="hidden-sm-and-down"></span>
+        <v-btn text bottom @click.prevent="signout">
+          <v-icon>mdi-logout</v-icon>
+          <span v-html="'&nbsp; Выйти'" class="hidden-sm-and-down"></span>
         </v-btn>
-      </v-toolbar-items>
+      </div>
     </v-app-bar>
   </div>
 </template>
 
 <script>
-import { SIGN_OUT } from '@/store/actionsType'
-import { mapGetters } from 'vuex'
+import { SIGN_OUT } from '@/store/actionsType';
+import { mapGetters } from 'vuex';
 
 export default {
   props: {
-    menu: Array
+    menu: Array,
   },
   data: () => ({
     drawer: true,
     title: 'GeoSensing',
-    menuItems: [
-      {
-        name: 'main',
-        icon: 'mdi-home',
-        title: 'Главная',
-        route: '/',
-        isNavigate: true
-      },
-      {
-        name: 'login',
-        icon: 'mdi-login',
-        title: '&nbsp; Войти в систему',
-        route: '/signin',
-        isNavigate: false
-      },
-      {
-        name: 'logout',
-        icon: 'mdi-logout',
-        title: '&nbsp; Выйти',
-        isNavigate: false
-      }
-    ]
   }),
   computed: {
-    ...mapGetters(['currentLogin', 'isAuthenticated', 'getProcessing']),
-    navigateMenu () {
-      return this.menuItems.filter(el => el.isNavigate)
+    ...mapGetters(['currentLogin', 'isAuthenticated', 'getProcessing', 'getAvatar']),
+    useAvatarImg() {
+      return !!this.getAvatar;
     },
-    signinItem () {
-      return this.menuItems.find(item => item.name === 'login')
+    navigateMenu() {
+      return [
+        {
+          name: 'experiment',
+          icon: 'mdi-transit-detour',
+          title: 'Эксперимент',
+          route: '/experiment',
+        },
+        {
+          name: 'data',
+          icon: 'mdi-database',
+          title: 'Мои данные',
+          route: '/data',
+        },
+        {
+          name: 'team',
+          icon: 'mdi-account-group',
+          title: 'Команда',
+          route: '/team',
+        },
+        {
+          name: 'map',
+          icon: 'mdi-map',
+          title: 'Карта',
+          route: '/map',
+        },
+        {
+          name: 'admin',
+          icon: 'mdi-shield-account',
+          title: 'Админка',
+          route: '/admin',
+        },
+      ];
     },
-    signoutItem () {
-      return this.menuItems.find(item => item.name === 'logout')
+    getLoginToIcon() {
+      return this.currentLogin[0];
     },
-    getLoginToIcon () {
-      return this.currentLogin[0]
-    }
   },
   methods: {
-    signout () {
+    signout() {
       this.$store
         .dispatch(SIGN_OUT)
-        .then(() => this.$router.push('/signin'))
-    }
-  }
-}
+        .then(() => this.$router.push('/signin'));
+    },
+  },
+};
 </script>
+<style scoped>
+.v-btn--active.no-active::before {
+  opacity: 0 !important;
+}
+</style>
