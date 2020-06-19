@@ -41,10 +41,10 @@ const actions = {
         });
     });
   },
-  [JOIN_TEAM]({ commit, dispatch }, teamId) {
+  [JOIN_TEAM]({ commit, dispatch }, TeamId) {
     commit(SET_PROCESSING, true);
     return new Promise((resolve, reject) => {
-      TeamApi.create(team)
+      TeamApi.join(TeamId)
         .then(() => {
           dispatch(CHECK_AUTH);
           resolve();

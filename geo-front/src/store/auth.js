@@ -55,39 +55,28 @@ const actions = {
     });
   },
   [SIGN_OUT]({ commit }) {
+    commit(PURGE_AUTH);
     return new Promise((resolve, reject) => {
       AuthApi.signout()
         .then(() => {
-          commit(PURGE_AUTH);
           resolve();
         })
         .catch(({ response }) => {
           console.log(response);
           reject(response);
         })
-        .finally(() => {
-          commit(SET_PROCESSING, false);
-        });
     });
   },
   [CHECK_AUTH]({ commit }) {
-    commit(INIT_AUTH);
-    commit(SET_PROCESSING, true);
-    return new Promise((resolve, reject) => {
       AuthApi.check()
         .then(({ data }) => {
           commit(SET_AUTH, data);
-          resolve(data);
         })
         .catch(({ response }) => {
-          console.log(response);
-          commit(SET_ERROR, response.data);
-          reject(response);
+          if(response.status === 401 && response.config){
+            commit(PURGE_AUTH);            
+          }
         })
-        .finally(() => {
-          commit(SET_PROCESSING, false);
-        });
-      })
   },
 };
 

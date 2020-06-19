@@ -123,7 +123,7 @@ namespace GeoService.BLL.Actions
                         dbUser.Role = RoleEnum.Participant;
 
                     if (ctx.Teams.Find(teamId) is Team dbTeam)
-                        dbTeam.Users.Add(dbUser);
+                        dbUser.TeamId = teamId;
                     else
                         throw new ApiException("Фатальная ошибка, команда не обнаружена", nameof(AddUserToTeam), 400);
                 }

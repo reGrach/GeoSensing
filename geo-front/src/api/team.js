@@ -6,8 +6,8 @@ const TeamApi = {
   create(team) {
     return ApiService.post(`${prefix}create`, team);
   },
-  join(idTeam) {
-    return ApiService.post(`${prefix}addMe`, { idTeam });
+  join(TeamId) {
+    return ApiService.post(`${prefix}addMe`, { TeamId });
   },
   getAll(isAdmin) {
     const route = isAdmin ? 'getAll' : 'getActive';

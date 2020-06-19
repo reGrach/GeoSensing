@@ -104,10 +104,10 @@ namespace GeoService.API.Controllers
 
         /// <summary> Добавление текущего авторизованного пользователя в команду </summary>
         [HttpPost]
-        public IActionResult AddMe([FromBody]int idTeam) => TryAction(() =>
+        public IActionResult AddMe([Bind("TeamId")] UserInTeam model) => TryAction(() =>
         {
             var id = User.Identity.GetUserId();
-            _context.AddUserToTeam(id, idTeam);
+            _context.AddUserToTeam(id, model.TeamId);
             UpdateClaimsAndToken(id, role: RoleEnum.Participant);
             return Ok();
         });

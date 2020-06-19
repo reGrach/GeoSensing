@@ -43,7 +43,7 @@
             <span v-else class="white--text headline">{{getLoginToIcon}}</span>
           </v-avatar>
         </v-btn>
-        <v-btn text bottom @click.prevent="signout">
+        <v-btn class="ml-3" text bottom @click.prevent="signout">
           <v-icon>mdi-logout</v-icon>
           <span v-html="'&nbsp; Выйти'" class="hidden-sm-and-down"></span>
         </v-btn>
@@ -55,6 +55,7 @@
 <script>
 import { SIGN_OUT } from '@/store/actionsType';
 import { mapGetters } from 'vuex';
+import { menu, adminMenu } from '../../common/navigateMenu';
 
 export default {
   props: {
@@ -65,43 +66,12 @@ export default {
     title: 'GeoSensing',
   }),
   computed: {
-    ...mapGetters(['currentLogin', 'isAuthenticated', 'getProcessing', 'getAvatar']),
+    ...mapGetters(['currentLogin', 'isAuthenticated', 'getProcessing', 'getAvatar', 'isAdmin']),
     useAvatarImg() {
       return !!this.getAvatar;
     },
     navigateMenu() {
-      return [
-        {
-          name: 'experiment',
-          icon: 'mdi-transit-detour',
-          title: 'Эксперимент',
-          route: '/experiment',
-        },
-        {
-          name: 'data',
-          icon: 'mdi-database',
-          title: 'Мои данные',
-          route: '/data',
-        },
-        {
-          name: 'team',
-          icon: 'mdi-account-group',
-          title: 'Команда',
-          route: '/team',
-        },
-        {
-          name: 'map',
-          icon: 'mdi-map',
-          title: 'Карта',
-          route: '/map',
-        },
-        {
-          name: 'admin',
-          icon: 'mdi-shield-account',
-          title: 'Админка',
-          route: '/admin',
-        },
-      ];
+      return this.isAdmin ? adminMenu : menu;
     },
     getLoginToIcon() {
       return this.currentLogin[0];

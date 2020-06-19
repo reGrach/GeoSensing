@@ -10,7 +10,7 @@ const ProfileApi = {
     return ApiService.get(`${prefix}get`);
   },
   Search(query) {
-    return ApiService.get(`${prefix}search`, query);
+    return ApiService.query(`${prefix}search`, query);
   },
   Update(profile) {
     return ApiService.post(`${prefix}update`, profile);
