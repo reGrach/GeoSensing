@@ -1,6 +1,6 @@
 <template>
   <div>
-      Polygon
+      Experiment
   </div>
 </template>
 

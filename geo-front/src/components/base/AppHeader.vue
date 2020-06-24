@@ -39,10 +39,11 @@
       <div v-else>
         <v-btn icon large to="/profile" active-class="no-active">
           <v-avatar color="primary" item>
-            <span class="white--text headline">{{getLoginToIcon}}</span>
+            <v-img v-if="useAvatarImg" :src="getAvatar"></v-img>
+            <span v-else class="white--text headline">{{getLoginToIcon}}</span>
           </v-avatar>
         </v-btn>
-        <v-btn text bottom @click.prevent="signout" :loading="getProcessing">
+        <v-btn class="ml-3" text bottom @click.prevent="signout">
           <v-icon>mdi-logout</v-icon>
           <span v-html="'&nbsp; Выйти'" class="hidden-sm-and-down"></span>
         </v-btn>
@@ -52,48 +53,38 @@
 </template>
 
 <script>
-import { SIGN_OUT } from '@/store/actionsType'
-import { mapGetters } from 'vuex'
+import { SIGN_OUT } from '@/store/actionsType';
+import { mapGetters } from 'vuex';
+import { menu, adminMenu } from '../../common/navigateMenu';
 
 export default {
   props: {
-    menu: Array
+    menu: Array,
   },
   data: () => ({
     drawer: true,
-    title: 'GeoSensing'
+    title: 'GeoSensing',
   }),
   computed: {
-    ...mapGetters(['currentLogin', 'isAuthenticated', 'getProcessing']),
-    navigateMenu () {
-      return [
-        {
-          name: 'main',
-          icon: 'mdi-home',
-          title: 'Главная',
-          vetr_features
-          route: '/'
-        },
-        {
-          name: 'main',
-          icon: 'mdi-map',
-          title: 'Карта',
-          route: '/map'
-        }
-      ]
+    ...mapGetters(['currentLogin', 'isAuthenticated', 'getProcessing', 'getAvatar', 'isAdmin']),
+    useAvatarImg() {
+      return !!this.getAvatar;
     },
-    getLoginToIcon () {
-      return this.currentLogin[0]
-    }
+    navigateMenu() {
+      return this.isAdmin ? adminMenu : menu;
+    },
+    getLoginToIcon() {
+      return this.currentLogin[0];
+    },
   },
   methods: {
-    signout () {
+    signout() {
       this.$store
         .dispatch(SIGN_OUT)
-        .then(() => this.$router.push('/signin'))
-    }
-  }
-}
+        .then(() => this.$router.push('/signin'));
+    },
+  },
+};
 </script>
 <style scoped>
 .v-btn--active.no-active::before {

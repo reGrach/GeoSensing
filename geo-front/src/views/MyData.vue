@@ -1,10 +1,10 @@
 <template>
   <div>
-      MAIN art
+      My data
   </div>
 </template>
 
 <script>
 export default {
-}
+};
 </script>

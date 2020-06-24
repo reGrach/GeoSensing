@@ -3,6 +3,7 @@ using GeoService.API.Auth.JwtExtension;
 using GeoService.API.Models;
 using GeoService.BLL.Actions;
 using GeoService.DAL;
+using GeoService.DAL.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +16,9 @@ namespace GeoService.API.Controllers
     public class AuthController : BaseApiController
     {
         private readonly GeoContext _context;
-        private readonly JwtTokenGenerator _jwtTokenGenerator;
 
-        public AuthController(JwtTokenGenerator jwtTokenGenerator, GeoContext context)
+        public AuthController(JwtTokenGenerator jwtTokenGenerator, GeoContext context) : base(jwtTokenGenerator)
         {
-            _jwtTokenGenerator = jwtTokenGenerator;
             _context = context;
         }
 
@@ -38,25 +37,16 @@ namespace GeoService.API.Controllers
         [HttpPost]
         public IActionResult SignIn(AuthModel model) => TryAction(() =>
         {
-            var userDTO = _context.AuthenticationUser(model.Login, model.Password);
-            var userIdentity = new UserIdentity
-            {
-                Id = userDTO.Id,
-                UserName = userDTO.Login
-            };
+            var user = _context.AuthenticationUser(model.Login, model.Password);
 
-            var tokenResult = _jwtTokenGenerator.Generate(userIdentity, userDTO.Role.ToString());
-
-            HttpContext.Response.Cookies.Append(
-                ".Core.Geo.Bear",
-                tokenResult.AccessToken,
-                new CookieOptions { MaxAge = tokenResult.Expires });
+            var expirationDate = CerateClaimsAndToken(user.Id, user.Login, user.Role, model.RememberMe);
 
             var info = new AuthInfoModel
             {
-                Login = userDTO.Login,
-                Role = userDTO.Role,
-                Expiration = DateTime.Now.AddHours(tokenResult.Expires.Hours)
+                Login = user.Login,
+                Role = user.Role.ToString(),
+                Expiration = expirationDate,
+                AvatarSrc = _context.GetAvatar(user.Id)
             };
 
             return Ok(info);
@@ -71,12 +61,13 @@ namespace GeoService.API.Controllers
             return Ok();
         });
 
-        /// <summary> Проверка того, что пользователь авторизован, если да - возвращает логин </summary>
+        /// <summary> Проверка того, что пользователь авторизован, если да - возвращаем данные </summary>
         [HttpGet]
         public IActionResult Check() => TryAction(() => Ok(new AuthInfoModel
         {
             Login = User.Identity.GetUserLogin(),
-            Role = User.Identity.GetUserRole(),
+            Role = User.Identity.GetUserRole().ToString(),
+            AvatarSrc = _context.GetAvatar(User.Identity.GetUserId()),
             Expiration = User.Identity.GetExpirationToken()
         }));
     }

@@ -49,15 +49,26 @@ namespace GeoService.BLL.Actions
                 throw new ApiException("Пользователь с таким логином не найден", nameof(AuthenticationUser), 401);
         }
 
+        public static IdentityDTO GetUser(this GeoContext ctx, int id)
+        {
+            if (ctx.Users.Find(id) is User userDb)
+                return new IdentityDTO
+                {
+                    Id = userDb.Id,
+                    Login = userDb.Login,
+                    Role = userDb.Role,
+                };
+            else
+                throw new ApiException("Пользователь с таким логином не найден", nameof(AuthenticationUser), 401);
+        }
+
         public static void UpdateProfile(this GeoContext ctx, int id, UserDTO model)
         {
             if (ctx.Users.Find(id) is User dbUser)
             {
                 dbUser.Name = model.Name;
                 dbUser.Surname = model.SurName;
-
-                if (dbUser.Role == RoleEnum.NonDefined)
-                    dbUser.Role = RoleEnum.Participant;
+                ctx.SaveChanges();
             }
             else
                 throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
@@ -65,12 +76,14 @@ namespace GeoService.BLL.Actions
 
         public static UserDTO GetProfile(this GeoContext ctx, int id)
         {
-            if (ctx.Users.Find(id) is User dbUser)
+            if (ctx.Users.Include(x => x.Avatar).SingleOrDefault(x => x.Id == id) is User dbUser)
                 return new UserDTO
                 {
-                    Login = dbUser.Login,
                     Name = dbUser.Name,
                     SurName = dbUser.Surname,
+                    AvatarSrc = dbUser.Avatar is Avatar _ava
+                    ? $"data:{_ava.MimeType};base64,{Convert.ToBase64String(_ava.FileContent)}"
+                    : string.Empty,
                     Team = dbUser.Team is Team team ? team.ToDTO() : null
                 };
             else
@@ -90,10 +103,41 @@ namespace GeoService.BLL.Actions
 
             return freeUsers.Select(x => new UserDTO
             {
-                Login = x.Login,
                 Name = x.Name,
                 SurName = x.Surname
             });
+        }
+
+
+        public static void CreateUpdateAvatar(this GeoContext ctx, int userId, byte[] content, string mime)
+        {
+            if (ctx.Users.Include(x => x.Avatar).SingleOrDefault(x => x.Id == userId) is User dbUser)
+            {
+                if (dbUser.Avatar is null)
+                    dbUser.Avatar = new Avatar
+                    {
+                        FileContent = content,
+                        MimeType = mime
+                    };
+                else
+                {
+                    dbUser.Avatar.FileContent = content;
+                    dbUser.Avatar.MimeType = mime;
+                }
+                ctx.SaveChanges();
+            }
+            else
+                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
+        }
+
+        public static string GetAvatar(this GeoContext ctx, int userId)
+        {
+            if (ctx.Users.Include(x => x.Avatar).SingleOrDefault(x => x.Id == userId) is User dbUser)
+                return dbUser.Avatar is Avatar _ava
+                ? $"data:{_ava.MimeType};base64,{Convert.ToBase64String(_ava.FileContent)}"
+                : string.Empty;
+            else
+                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
         }
     }
 }

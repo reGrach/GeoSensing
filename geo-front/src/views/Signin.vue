@@ -6,7 +6,13 @@
           <v-card-title class="title">Вход в систему</v-card-title>
           <v-card-text>
             <v-form v-model="isValid">
-              <v-text-field required :rules="rules.login" label="Логин" prepend-icon="mdi-account" v-model="login" />
+              <v-text-field
+                required
+                :rules="rules.login"
+                label="Логин"
+                prepend-icon="mdi-account"
+                v-model="login"
+              />
               <v-text-field
                 required
                 :rules="rules.password"
@@ -42,11 +48,10 @@
 </template>
 
 <script>
-import { SIGN_IN } from '@/store/actionsType'
-import { mapGetters } from 'vuex'
+import { SIGN_IN } from '@/store/actionsType';
+import { mapGetters } from 'vuex';
 
 export default {
-
   data: () => ({
     showPassword: false,
     login: '',
@@ -56,35 +61,34 @@ export default {
     rules: {
       login: [
         (v) => !!v || 'Необходимо ввести логин',
-        (v) => (v && v.length >= 4) || 'Логин должен содержать минимум 4 символа'
+        (v) => (v && v.length >= 4) || 'Логин должен содержать минимум 4 символа',
       ],
       password: [
         (v) => !!v || 'Необходимо ввести пароль',
-        (v) => (v && v.length >= 5) || 'Пароль должен содержать 5 и более символов'
-      ]
-    }
+        (v) => (v && v.length >= 6) || 'Пароль должен содержать 5 и более символов',
+      ],
+    },
   }),
 
   computed: {
     ...mapGetters(['getError', 'getProcessing']),
-    showError () {
-      return this.getError != null
-    }
+    showError() {
+      return this.getError != null;
+    },
   },
 
   methods: {
-
-    onSubmit () {
+    onSubmit() {
       this.$store
         .dispatch(SIGN_IN, {
           login: this.login,
           password: this.password,
-          rememberMe: this.rememberMe
+          rememberMe: this.rememberMe,
         })
-        .then(() => this.$router.push('/'))
-    }
-  }
-}
+        .then(() => this.$router.push('/'));
+    },
+  },
+};
 </script>
 <style scoped>
 .title {

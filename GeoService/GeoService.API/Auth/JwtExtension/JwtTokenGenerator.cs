@@ -14,12 +14,14 @@ namespace GeoService.API.Auth.JwtExtension
                 ?? throw new ArgumentNullException($"An instance of valid {nameof(JwtOptions)} must be passed in order to generate a JWT!");
         }
 
-        public JwtTokenResult Generate(UserIdentity user, string role, bool rememberMe = false)
-        {
-            var expiration = rememberMe
-                ? TimeSpan.FromDays(7)
-                : TimeSpan.FromMinutes(_tokenOptions.TokenExpiryInMinutes);
+        public JwtTokenResult Generate(UserIdentity user, string role, bool rememberMe = false) =>
+            Generate(user, role, rememberMe ? TimeSpan.FromDays(14) : TimeSpan.FromMinutes(_tokenOptions.TokenExpiryInMinutes));
 
+        public JwtTokenResult Generate(UserIdentity user, string role, DateTime expired) =>
+            Generate(user, role, (expired > DateTime.UtcNow ? expired.Subtract(DateTime.UtcNow) : TimeSpan.FromMinutes(_tokenOptions.TokenExpiryInMinutes)));
+
+        public JwtTokenResult Generate(UserIdentity user, string role, TimeSpan expiration)
+        {
             var jwt = new JwtSecurityToken(
                 issuer: _tokenOptions.Issuer,
                 audience: _tokenOptions.Audience,
