@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import auth from './auth';
 import general from './general';
 import profile from './profile';
-import teamы from './team';
+import team from './team';
 
 Vue.use(Vuex);
 
