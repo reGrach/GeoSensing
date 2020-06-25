@@ -1,6 +1,6 @@
 <template>
   <v-card tile class="elevation-0">
-    <v-tabs v-model="tab" flat fixed-tabs background-color="indigo" dark>
+    <v-tabs v-model="tab" color="indigo" flat grow>
       <v-tab>Авто</v-tab>
       <v-tab>Ручной</v-tab>
       <v-tab>Слежение</v-tab>
@@ -11,17 +11,39 @@
           <v-layout align-center justify-center>
             <v-flex xs12 sm8 md6>
               <v-card class="elevation-0">
-                <v-card-title class="title">Координаты</v-card-title>
+                <v-card-title class="title">
+                  Координаты:
+                  <v-btn class="pl-1 pr-1 text-lowercase" tile text @click="show = !show">
+                    <div style="font-size: 20px; letter-spacing: 0px">{{ showBtnTitle }}</div>
+                  </v-btn>
+                  <v-btn
+                    absolute
+                    right
+                    width="150px"
+                    @click="change"
+                    :color="currentBtnColor"
+                    depressed
+                    dark
+                  >{{ currentBtnTitle }}</v-btn>
+                </v-card-title>
                 <v-card-text>
-                  <v-form>
+                  <v-form id="demo">
                     <v-text-field disabled label="Широта" />
                     <v-text-field disabled label="Долгота" />
                     <v-text-field disabled label="Высота" />
+                    <transition name="fade">
+                      <!-- Костыль! надо переделать -->
+                      <v-layout>
+                        <v-flex>
+                          <v-text-field v-if="show" disabled label="Направление" />
+                          <v-text-field v-if="show" disabled label="Скорость" />
+                          <v-text-field v-if="show" disabled label="Точность" />
+                        </v-flex>
+                      </v-layout>
+                      <!-- Конец костыля. Тут нужен транзишн груп -->
+                    </transition>
                   </v-form>
                 </v-card-text>
-                <v-layout align-center justify-center>
-                  <v-btn class="mr-5" v-text="currentBtnTitle" @click="change" :color="currentBtnColor" dark></v-btn>
-                </v-layout>
               </v-card>
             </v-flex>
           </v-layout>
@@ -60,16 +82,28 @@
 <script>
 export default {
   data: () => ({
+    SHBtnStyle: {
+      color: "cyan",
+      fontSize: "22px",
+      texttransform: "lowercase"
+    },
+    show: false,
     isNewPoint: true,
     tab: null,
     btnSave: {
-      color: '#ff3333',
-      title: 'Сохранить',
+      color: "#ff3333",
+      title: "Сохранить"
     },
     btnDetermine: {
-      color: '#29cc29',
-      title: 'Определить',
+      color: "#29cc29",
+      title: "Определить"
     },
+    btnShow: {
+      title: "простые"
+    },
+    btnHide: {
+      title: "подробные"
+    }
   }),
   computed: {
     currentBtnColor() {
@@ -84,11 +118,17 @@ export default {
       }
       return this.btnSave.title;
     },
+    showBtnTitle() {
+      if (this.show) {
+        return this.btnHide.title;
+      }
+      return this.btnShow.title;
+    }
   },
   methods: {
     change() {
       this.isNewPoint = !this.isNewPoint;
-    },
-  },
+    }
+  }
 };
 </script>
