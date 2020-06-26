@@ -38,7 +38,7 @@ namespace GeoService.API.Controllers
 
         /// <summary> Получить список пользователей </summary>
         [HttpGet]
-        public IActionResult Search([FromQuery] string query) => TryAction(() => Ok(_context.GetFreeUsers(query)));
+        public IActionResult Search(string query, string role) => TryAction(() => Ok(_context.GetFilterUsers(query, role)));
 
 
         /// <summary> Обновить профиль авторизованного пользователя </summary>

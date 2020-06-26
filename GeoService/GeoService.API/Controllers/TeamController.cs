@@ -39,9 +39,9 @@ namespace GeoService.API.Controllers
         /// <summary> Активировать/деактивировать команду (для админа) </summary>
         [HttpPost]
         [Authorize(AdminPolicy)]
-        public IActionResult ChangeActive([FromBody]int idTeam) => TryAction(() =>
+        public IActionResult ChangeActive([Bind("TeamId")] UserInTeam model) => TryAction(() =>
         {
-            _context.ChangeActiveTeam(idTeam);
+            _context.ChangeActiveTeam(model.TeamId);
             return Ok();
         });
 
@@ -60,18 +60,14 @@ namespace GeoService.API.Controllers
             return Ok();
         });
 
-
-        /// <summary>
-        /// Добавить выбранного пользователя в группу.
-        /// Добавляемый пользователь не должен быть лидером. 
-        /// </summary>
-        //[HttpPost]
-        //[Authorize(LeaderPolicy)]
-        //public IActionResult AddUser(UserInTeam model) => TryAction(() =>
-        //{
-        //    _context.AddUserToTeam(model.UserId, model.TeamId);
-        //    return Ok(_context.GetTeamById(model.TeamId));
-        //});
+        /// <summary> Выйти из команды </summary>
+        [HttpPost]
+        [Authorize(LeaderPolicy)]
+        public IActionResult RemoveUser([Bind("UserId")] UserInTeam model) => TryAction(() =>
+        {
+            _context.RemoveUserFromTeam(model.UserId);
+            return Ok();
+        });
 
         #endregion
 
@@ -86,7 +82,11 @@ namespace GeoService.API.Controllers
         /// <summary> Получение полной инфомации о собственной команде </summary>
         [HttpGet]
         [Authorize(ParticipantPolicy)]
-        public IActionResult GetMy() => TryAction(() => Ok(_context.GetTeamByUser(User.Identity.GetUserId())));
+        public IActionResult GetMy() => TryAction(() =>
+        {
+            var userId = User.Identity.GetUserId();
+            return Ok(_context.GetTeamByUser(userId));
+        });
 
 
         /// <summary>
@@ -115,11 +115,11 @@ namespace GeoService.API.Controllers
 
         /// <summary> Выйти из команды </summary>
         [HttpPost]
-        [Authorize(ParticipantPolicy)]
-        public IActionResult RemoveMe([FromBody]int idTeam) => TryAction(() =>
+        public IActionResult RemoveMe() => TryAction(() =>
         {
             var id = User.Identity.GetUserId();
-            _context.RemoveUserFromTeam(id, idTeam);
+            _context.RemoveUserFromTeam(id);
+            UpdateClaimsAndToken(id, role: RoleEnum.NonDefined);
             return Ok();
         });
 

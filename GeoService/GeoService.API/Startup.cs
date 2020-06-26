@@ -43,7 +43,10 @@ namespace GeoService.API
             services.AddControllers();
             services.AddCors();
 
-            services.AddDbContext<GeoContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("GeoContext")));
+            services.AddDbContext<GeoContext>(opt =>
+                opt
+                .UseLazyLoadingProxies()
+                .UseNpgsql(Configuration.GetConnectionString("GeoContext")));
 
             #region Подключение ацтентификации
             var section = Configuration.GetSection("AuthOptions");

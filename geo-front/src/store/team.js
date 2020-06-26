@@ -1,6 +1,6 @@
 /* eslint-disable */
 import TeamApi from '../api/team';
-import { GET_ALL_TEAMS, CREATE_TEAM, JOIN_TEAM, CHECK_AUTH } from './actionsType';
+import { GET_ALL_TEAMS, CREATE_TEAM, JOIN_TEAM, CHECK_AUTH, GET_TEAM } from './actionsType';
 import { SET_ERROR, SET_PROCESSING } from './mutationsType';
 
 const state = {};
@@ -10,6 +10,23 @@ const actions = {
     commit(SET_PROCESSING, true);
     return new Promise((resolve, reject) => {
       TeamApi.getAll(getters.isAdmin)
+        .then(({ data }) => {
+          resolve(data);
+        })
+        .catch(({ response }) => {
+          console.log(response);
+          commit(SET_ERROR, response.data);
+          reject(response);
+        })
+        .finally(() => {
+          commit(SET_PROCESSING, false);
+        });
+    });
+  },
+  [GET_TEAM]({ commit }, id) {
+    commit(SET_PROCESSING, true);
+    return new Promise((resolve, reject) => {
+      TeamApi.get(id)
         .then(({ data }) => {
           resolve(data);
         })
