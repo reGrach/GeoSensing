@@ -5,15 +5,11 @@
         <v-card>
           <v-card-text class="text-center">
             <v-avatar size="192" class="mx-auto v-card-avatar elevation-6" color="grey">
-<<<<<<< HEAD
-              <v-img :src="getAvatar" alt="Avatar" @click="openAvatarLoader"/>
-=======
               <v-img :src="avatar" alt="Avatar" @click="openAvatarLoader">
                 <template v-slot:placeholder>
                   <v-img :src="placeholder"></v-img>
                 </template>
               </v-img>
->>>>>>> develop
             </v-avatar>
             <v-list-item>
               <v-list-item-content>
@@ -44,14 +40,7 @@
         </v-form>
       </v-col>
     </v-row>
-<<<<<<< HEAD
-    <avatar-loader
-      v-model="showAvatarLoader"
-      @uploaded="init"
-    ></avatar-loader>
-=======
     <avatar-loader v-model="showAvatarLoader" @uploaded="init"></avatar-loader>
->>>>>>> develop
   </v-container>
 </template>
 
@@ -70,10 +59,7 @@ export default {
     },
     avatar: null,
     showAvatarLoader: false,
-<<<<<<< HEAD
-=======
     placeholder,
->>>>>>> develop
   }),
 
   created() {
@@ -82,15 +68,6 @@ export default {
 
   computed: {
     ...mapGetters(['getError', 'getProcessing', 'getRoleName', 'currentLogin']),
-<<<<<<< HEAD
-    getAvatar() {
-      if (this.avatar) {
-        return this.avatar;
-      }
-      return placeholder;
-    },
-=======
->>>>>>> develop
     showError() {
       return this.getError != null;
     },

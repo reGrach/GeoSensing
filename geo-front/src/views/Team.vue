@@ -1,8 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <init-team v-if="isEasyUser"></init-team>
-  <div v-else>В КОМАНДЕ</div>
-=======
   <init-team v-if="isEasyUser" v-on:enterToTeam="getMyTeam"></init-team>
   <v-container v-else fluid grid-list-xl>
     <v-layout row wrap>
@@ -48,18 +44,11 @@
     <v-divider></v-divider>
     <list-users :users="users"></list-users>
   </v-container>
->>>>>>> develop
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import InitTeam from '../components/cards/InitTeam.vue';
-<<<<<<< HEAD
-
-export default {
-  components: { InitTeam },
-  data: () => ({}),
-=======
 import Widget from '../components/cards/Widget.vue';
 import ListUsers from '../components/ListUsers.vue';
 
@@ -77,15 +66,11 @@ export default {
       this.getMyTeam();
     }
   },
->>>>>>> develop
 
   computed: {
     ...mapGetters(['isEasyUser']),
   },
 
-<<<<<<< HEAD
-  methods: {},
-=======
   methods: {
     getMyTeam() {
       this.$store.dispatch(GET_TEAM)
@@ -94,6 +79,5 @@ export default {
         });
     },
   },
->>>>>>> develop
 };
 </script>
