@@ -1,5 +1,5 @@
 <template>
-  <init-team v-if="isEasyUser"></init-team>
+  <init-team v-if="isEasyUser" v-on:enterToTeam="getMyTeam"></init-team>
   <v-container v-else fluid grid-list-xl>
     <v-layout row wrap>
       <!-- Widgets-->
@@ -61,7 +61,7 @@ export default {
     users: [],
   }),
 
-  created() {
+  mounted() {
     if (!this.isEasyUser) {
       this.getMyTeam();
     }
