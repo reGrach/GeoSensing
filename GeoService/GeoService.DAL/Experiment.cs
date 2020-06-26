@@ -12,7 +12,6 @@ namespace GeoService.DAL
         [MaxLength(50)]
         public string Title { get; set; }
 
-        [Required]
         public DateTime CreateDate { get; set; }
 
         public bool IsActive { get; set; }

@@ -1,5 +1,5 @@
-﻿using GeoService.API.Auth.Identity;
-using GeoService.API.Auth.JwtExtension;
+﻿using AutoMapper;
+using GeoService.API.Auth.Identity;
 using GeoService.API.Models;
 using GeoService.BLL.DTO;
 using GeoService.DAL;
@@ -13,12 +13,9 @@ namespace GeoService.API.Controllers
     [Authorize(ParticipantPolicy)]
     public class GeoController : BaseApiController
     {
-        private readonly GeoContext _context;
+        public GeoController(GeoContext context, IMapper mapper) : base(context, mapper) { }
 
-        public GeoController(JwtTokenGenerator jwtTokenGenerator, GeoContext context) : base(jwtTokenGenerator)
-        {
-            _context = context;
-        }
+        #region Действия участника
 
         /// <summary> Инициировать эксперимент </summary>
         [HttpPost]
@@ -51,23 +48,13 @@ namespace GeoService.API.Controllers
         [HttpPost]
         public IActionResult FixationPoint(FixPointModel model) => TryAction(() =>
         {
-            var id = User.Identity.GetUserId();
-            var dto = new GeoParameterDTO
-            {
-                Accuracy = model.Accuracy,
-                Altitude = model.Altitude,
-                AltitudeAccuracy = model.AltitudeAccuracy,
-                Speed = model.Speed,
-                CreateTime = model.CreateTime,
-                ExperimentId = model.ExperimentId,
-                Heading = model.Heading,
-                Latitude = model.Latitude,
-                Longitude = model.Longitude,
-                Mode = model.Mode,
-                UserId = id
-            };
-            _context.AddPoint(dto);
+            var parametrs = _mapper.Map<GeoParameterDTO>(model);
+            parametrs.UserId = User.Identity.GetUserId();
+            _context.AddPoint(parametrs);
+
             return Ok();
         });
+
+        #endregion
     }
 }

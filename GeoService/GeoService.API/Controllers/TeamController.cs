@@ -14,12 +14,7 @@ namespace GeoService.API.Controllers
     [Authorize(NonDefinedPolicy)]
     public class TeamController : BaseApiController
     {
-        private readonly GeoContext _context;
-
-        public TeamController(JwtTokenGenerator jwtTokenGenerator, GeoContext context) : base(jwtTokenGenerator)
-        {
-            _context = context;
-        }
+        public TeamController(JwtTokenGenerator jwtTokenGenerator, GeoContext context) : base(jwtTokenGenerator, context) { }
 
         #region Действия админа
 
@@ -74,20 +69,35 @@ namespace GeoService.API.Controllers
 
         #region Действия участника
 
-        /// <summary> Получение всех активных команд </summary>
-        [HttpGet]
-        public IActionResult GetActive() => TryAction(() => Ok(_context.GetTeams()));
-
-
         /// <summary> Получение полной инфомации о собственной команде </summary>
         [HttpGet]
         [Authorize(ParticipantPolicy)]
         public IActionResult GetMy() => TryAction(() =>
         {
             var userId = User.Identity.GetUserId();
-            return Ok(_context.GetTeamByUser(userId));
+            var team = _context.GetTeamByUser(userId);
+            return Ok(team);
         });
 
+        /// <summary> Выйти из команды </summary>
+        [HttpPost]
+        [Authorize(ParticipantPolicy)]
+        public IActionResult RemoveMe() => TryAction(() =>
+        {
+            var id = User.Identity.GetUserId();
+            _context.RemoveUserFromTeam(id);
+            UpdateClaimsAndToken(id, role: RoleEnum.NonDefined);
+            return Ok();
+        });
+
+        #endregion
+
+
+        #region Действия пользователя
+
+        /// <summary> Получение всех активных команд </summary>
+        [HttpGet]
+        public IActionResult GetActive() => TryAction(() => Ok(_context.GetTeams()));
 
         /// <summary>
         /// Создание команды. Текущий пользователь автоматически становится ее лидером.
@@ -101,7 +111,6 @@ namespace GeoService.API.Controllers
             return Ok();
         });
 
-
         /// <summary> Добавление текущего авторизованного пользователя в команду </summary>
         [HttpPost]
         public IActionResult AddMe([Bind("TeamId")] UserInTeam model) => TryAction(() =>
@@ -109,17 +118,6 @@ namespace GeoService.API.Controllers
             var id = User.Identity.GetUserId();
             _context.AddUserToTeam(id, model.TeamId);
             UpdateClaimsAndToken(id, role: RoleEnum.Participant);
-            return Ok();
-        });
-
-
-        /// <summary> Выйти из команды </summary>
-        [HttpPost]
-        public IActionResult RemoveMe() => TryAction(() =>
-        {
-            var id = User.Identity.GetUserId();
-            _context.RemoveUserFromTeam(id);
-            UpdateClaimsAndToken(id, role: RoleEnum.NonDefined);
             return Ok();
         });
 
