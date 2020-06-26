@@ -15,13 +15,15 @@ namespace GeoService.DAL
         [Required]
         public DateTime CreateDate { get; set; }
 
+        public bool IsActive { get; set; }
+
         /// <summary> Связь с создателем </summary>
         public int CreatorUserId { get; set; }
 
         /// <summary> Связь с командой </summary>
         public int TeamId { get; set; }
-        public Team Team { get; set; }
+        public virtual Team Team { get; set; }
 
-        public List<GeoParameter> Coordinates { get; set; }
+        public virtual ICollection<GeoParameter> Coordinates { get; set; }
     }
 }

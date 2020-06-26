@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace GeoService.BLL.Actions
 {
@@ -76,7 +75,7 @@ namespace GeoService.BLL.Actions
 
         public static UserDTO GetProfile(this GeoContext ctx, int id)
         {
-            if (ctx.Users.Include(x => x.Avatar).SingleOrDefault(x => x.Id == id) is User dbUser)
+            if (ctx.Users.Find(id) is User dbUser)
                 return new UserDTO
                 {
                     Name = dbUser.Name,
@@ -90,10 +89,12 @@ namespace GeoService.BLL.Actions
                 throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
         }
 
-        public static IEnumerable<UserDTO> GetFreeUsers(this GeoContext ctx, string query)
+        public static IEnumerable<UserDTO> GetFilterUsers(this GeoContext ctx, string query, string role)
         {
+
+
             var freeUsers = ctx.Users.AsNoTracking()
-                .Where(x => x.Role == RoleEnum.NonDefined)
+                .Where(x => string.IsNullOrEmpty(role) || x.Role.ToString() == role)
                 .AsEnumerable();
             if (string.IsNullOrEmpty(query))
                 freeUsers = freeUsers
@@ -108,22 +109,13 @@ namespace GeoService.BLL.Actions
             });
         }
 
-
         public static void CreateUpdateAvatar(this GeoContext ctx, int userId, byte[] content, string mime)
         {
-            if (ctx.Users.Include(x => x.Avatar).SingleOrDefault(x => x.Id == userId) is User dbUser)
+            if (ctx.Users.Find(userId) is User dbUser)
             {
-                if (dbUser.Avatar is null)
-                    dbUser.Avatar = new Avatar
-                    {
-                        FileContent = content,
-                        MimeType = mime
-                    };
-                else
-                {
-                    dbUser.Avatar.FileContent = content;
-                    dbUser.Avatar.MimeType = mime;
-                }
+                var ava = dbUser.Avatar ?? ctx.Avatars.Add(new Avatar { User = dbUser }).Entity;
+                ava.FileContent = content;
+                ava.MimeType = mime;
                 ctx.SaveChanges();
             }
             else
@@ -132,7 +124,7 @@ namespace GeoService.BLL.Actions
 
         public static string GetAvatar(this GeoContext ctx, int userId)
         {
-            if (ctx.Users.Include(x => x.Avatar).SingleOrDefault(x => x.Id == userId) is User dbUser)
+            if (ctx.Users.Find(userId) is User dbUser)
                 return dbUser.Avatar is Avatar _ava
                 ? $"data:{_ava.MimeType};base64,{Convert.ToBase64String(_ava.FileContent)}"
                 : string.Empty;
