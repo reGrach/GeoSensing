@@ -123,7 +123,7 @@ namespace GeoService.BLL.Actions
                 Name = user.Name,
                 SurName = user.Surname,
                 AvatarSrc = user.GetAvatarSrc(),
-                IsLeader = user.TeamId.HasValue
+                IsLeader = user.Role == RoleEnum.Leader
             };
 
         internal static UserExtensionDTO ToExtensionDTO(this User user) =>
@@ -134,6 +134,7 @@ namespace GeoService.BLL.Actions
                 Name = user.Name,
                 SurName = user.Surname,
                 AvatarSrc = user.GetAvatarSrc(),
+                IsLeader = user.Role == RoleEnum.Leader,
                 Team = user.Team is Team team ? team.ToDTO() : null
             };
 
