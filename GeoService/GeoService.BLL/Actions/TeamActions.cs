@@ -67,11 +67,7 @@ namespace GeoService.BLL.Actions
                     Id = dbTeam.Id,
                     Title = dbTeam.Title,
                     Color = dbTeam.Color,
-                    Participants = dbTeam.Users.Select(x => new UserDTO
-                    {
-                        Name = x.Name,
-                        SurName = x.Surname
-                    }).ToList()
+                    Participants = dbTeam.Users.Select(x => x.ToDTO()).ToList(),
                 };
             }
             else
@@ -84,12 +80,14 @@ namespace GeoService.BLL.Actions
             {
                 if (dbUser.Team is Team dbTeam)
                 {
+                    var dd = dbTeam.Users.ToList();
+
                     return new TeamExtensionDTO
                     {
                         Id = dbTeam.Id,
                         Title = dbTeam.Title,
                         Color = dbTeam.Color,
-                        Participants = dbTeam.Users.Select(x => new UserDTO { Name = x.Name, SurName = x.Surname }).ToList(),
+                        Participants = dbTeam.Users.Select(x => x.ToDTO()).ToList(),
                         Polygon = null
                     };
                 }

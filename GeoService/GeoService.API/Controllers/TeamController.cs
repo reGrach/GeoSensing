@@ -82,7 +82,11 @@ namespace GeoService.API.Controllers
         /// <summary> Получение полной инфомации о собственной команде </summary>
         [HttpGet]
         [Authorize(ParticipantPolicy)]
-        public IActionResult GetMy() => TryAction(() => Ok(_context.GetTeamByUser(User.Identity.GetUserId())));
+        public IActionResult GetMy() => TryAction(() =>
+        {
+            var userId = User.Identity.GetUserId();
+            return Ok(_context.GetTeamByUser(userId));
+        });
 
 
         /// <summary>

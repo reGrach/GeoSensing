@@ -60,7 +60,7 @@ namespace GeoService.API.Controllers
                 new CookieOptions { MaxAge = tokenResult.Expires });
         }
 
-        internal DateTime CerateClaimsAndToken(int userId, string login, RoleEnum role, bool rememberMe)
+        internal DateTime CreateClaimsAndToken(int userId, string login, RoleEnum role, bool rememberMe)
         {
             var userIdentity = new UserIdentity
             {

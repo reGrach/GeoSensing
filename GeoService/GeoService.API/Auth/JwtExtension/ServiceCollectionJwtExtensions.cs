@@ -43,10 +43,10 @@ namespace GeoService.API.Auth.JwtExtension
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(AdminPolicy, policy => policy.RequireRole(nameof(RoleEnum.Admin), nameof(RoleEnum.Leader), nameof(RoleEnum.Participant), nameof(RoleEnum.NonDefined)));
-                options.AddPolicy(LeaderPolicy, policy => policy.RequireRole(nameof(RoleEnum.Leader), nameof(RoleEnum.Participant)));
-                options.AddPolicy(ParticipantPolicy, policy => policy.RequireRole(nameof(RoleEnum.Participant)));
-                options.AddPolicy(NonDefinedPolicy, policy => policy.RequireRole(nameof(RoleEnum.NonDefined)));
+                options.AddPolicy(AdminPolicy, policy => policy.RequireRole(nameof(RoleEnum.Admin)));
+                options.AddPolicy(LeaderPolicy, policy => policy.RequireRole(nameof(RoleEnum.Admin), nameof(RoleEnum.Leader)));
+                options.AddPolicy(ParticipantPolicy, policy => policy.RequireRole(nameof(RoleEnum.Admin), nameof(RoleEnum.Leader), nameof(RoleEnum.Participant)));
+                options.AddPolicy(NonDefinedPolicy, policy => policy.RequireRole(nameof(RoleEnum.Admin), nameof(RoleEnum.Leader), nameof(RoleEnum.Participant), nameof(RoleEnum.NonDefined)));
             });
 
             return services;

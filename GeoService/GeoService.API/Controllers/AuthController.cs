@@ -37,7 +37,7 @@ namespace GeoService.API.Controllers
         {
             var user = _context.AuthenticationUser(model.Login, model.Password);
 
-            var expirationDate = CerateClaimsAndToken(user.Id, user.Login, user.Role, model.RememberMe);
+            var expirationDate = CreateClaimsAndToken(user.Id, user.Login, user.Role, model.RememberMe);
 
             var info = new AuthInfoModel
             {

@@ -76,37 +76,23 @@ namespace GeoService.BLL.Actions
         public static UserDTO GetProfile(this GeoContext ctx, int id)
         {
             if (ctx.Users.Find(id) is User dbUser)
-                return new UserDTO
-                {
-                    Name = dbUser.Name,
-                    SurName = dbUser.Surname,
-                    AvatarSrc = dbUser.Avatar is Avatar _ava
-                    ? $"data:{_ava.MimeType};base64,{Convert.ToBase64String(_ava.FileContent)}"
-                    : string.Empty,
-                    Team = dbUser.Team is Team team ? team.ToDTO() : null
-                };
+                return dbUser.ToExtensionDTO();
             else
                 throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
         }
 
         public static IEnumerable<UserDTO> GetFilterUsers(this GeoContext ctx, string query, string role)
         {
-
-
-            var freeUsers = ctx.Users.AsNoTracking()
+            var dbUsers = ctx.Users.AsNoTracking()
                 .Where(x => string.IsNullOrEmpty(role) || x.Role.ToString() == role)
                 .AsEnumerable();
             if (string.IsNullOrEmpty(query))
-                freeUsers = freeUsers
+                dbUsers = dbUsers
                     .Where(x => x.Login.Equals(query, StringComparison.InvariantCultureIgnoreCase)
                     || x.Name.Equals(query, StringComparison.InvariantCultureIgnoreCase)
                     || x.Surname.Equals(query, StringComparison.InvariantCultureIgnoreCase));
 
-            return freeUsers.Select(x => new UserDTO
-            {
-                Name = x.Name,
-                SurName = x.Surname
-            });
+            return dbUsers.Select(x => x.ToDTO());
         }
 
         public static void CreateUpdateAvatar(this GeoContext ctx, int userId, byte[] content, string mime)
@@ -125,11 +111,33 @@ namespace GeoService.BLL.Actions
         public static string GetAvatar(this GeoContext ctx, int userId)
         {
             if (ctx.Users.Find(userId) is User dbUser)
-                return dbUser.Avatar is Avatar _ava
-                ? $"data:{_ava.MimeType};base64,{Convert.ToBase64String(_ava.FileContent)}"
-                : string.Empty;
+                return dbUser.GetAvatarSrc();
             else
                 throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
         }
+
+        internal static UserDTO ToDTO(this User user) =>
+            new UserDTO
+            {
+                Login = user.Login,
+                Name = user.Name,
+                SurName = user.Surname,
+                AvatarSrc = user.GetAvatarSrc(),
+                IsLeader = user.TeamId.HasValue
+            };
+
+        internal static UserExtensionDTO ToExtensionDTO(this User user) =>
+            new UserExtensionDTO
+            {
+                Id = user.Id,
+                Login = user.Login,
+                Name = user.Name,
+                SurName = user.Surname,
+                AvatarSrc = user.GetAvatarSrc(),
+                Team = user.Team is Team team ? team.ToDTO() : null
+            };
+
+        private static string GetAvatarSrc(this User user) =>
+            user.Avatar is Avatar _ava ? $"data:{_ava.MimeType};base64,{Convert.ToBase64String(_ava.FileContent)}" : string.Empty;
     }
 }
