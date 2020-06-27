@@ -37,7 +37,7 @@ namespace GeoService.BLL.Actions
                 };
             }
             else
-                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(InitExperiment), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(InitExperiment), 404);
         }
 
         public static void CloseExperiment(this GeoContext ctx, int userId, int experimentId)
@@ -56,7 +56,7 @@ namespace GeoService.BLL.Actions
                     throw new ApiException("Такой эксперимент не обнаружен", nameof(CloseExperiment), 404);
             }
             else
-                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(CloseExperiment), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(CloseExperiment), 404);
         }
 
         public static List<ExperimentDTO> GetExperimentsByUserId(this GeoContext ctx, int userId)
@@ -77,7 +77,7 @@ namespace GeoService.BLL.Actions
                     }).ToList();
             }
             else
-                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(GetExperimentsByUserId), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(GetExperimentsByUserId), 404);
         }
 
 
@@ -107,9 +107,7 @@ namespace GeoService.BLL.Actions
                     throw new ApiException("Нельзя добавить точку. Пользователь должен состоять в команде, с выбранным экспериментом", nameof(AddPoint), 400);
             }
             else
-                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AddPoint), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(AddPoint), 404);
         }
-
-
     }
 }

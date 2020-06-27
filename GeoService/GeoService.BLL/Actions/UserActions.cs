@@ -11,14 +11,14 @@ namespace GeoService.BLL.Actions
 {
     public static class UserActions
     {
-        public static void TryRegisterUser(this GeoContext ctx, string login, string password)
+        public static IdentityDTO TryRegisterUser(this GeoContext ctx, string login, string password)
         {
             if (ctx.Users.Any(x => x.Login == login))
                 throw new ApiException("Пользователь с таким логином уже существует", nameof(TryRegisterUser), 400);
 
             var hasher = new PasswordHash();
 
-            ctx.Users.Add(new User
+            var dbUser = ctx.Users.Add(new User
             {
                 Login = login,
                 Salt = hasher.Salt,
@@ -27,6 +27,13 @@ namespace GeoService.BLL.Actions
                 RegistrationDate = DateTime.Now
             });
             ctx.SaveChanges();
+
+            return new IdentityDTO
+            {
+                Id = dbUser.Entity.Id,
+                Login = dbUser.Entity.Login,
+                Role = dbUser.Entity.Role,
+            };
         }
 
         public static IdentityDTO AuthenticationUser(this GeoContext ctx, string login, string password)
@@ -35,7 +42,7 @@ namespace GeoService.BLL.Actions
             {
                 var hasher = new PasswordHash(userDb.Salt);
                 if (!hasher.Verify(userDb.PasswordHash, password))
-                    throw new ApiException("Введен неверный пароль", nameof(AuthenticationUser), 401);
+                    throw new ApiException("Введен неверный пароль", nameof(AuthenticationUser), 400);
                 else
                     return new IdentityDTO
                     {
@@ -45,32 +52,21 @@ namespace GeoService.BLL.Actions
                     };
             }
             else
-                throw new ApiException("Пользователь с таким логином не найден", nameof(AuthenticationUser), 401);
+                throw new ApiException("Пользователя с таким логином не существует", nameof(AuthenticationUser), 400);
         }
 
-        public static IdentityDTO GetUser(this GeoContext ctx, int id)
-        {
-            if (ctx.Users.Find(id) is User userDb)
-                return new IdentityDTO
-                {
-                    Id = userDb.Id,
-                    Login = userDb.Login,
-                    Role = userDb.Role,
-                };
-            else
-                throw new ApiException("Пользователь с таким логином не найден", nameof(AuthenticationUser), 401);
-        }
-
-        public static void UpdateProfile(this GeoContext ctx, int id, UserDTO model)
+        public static UserDTO UpdateProfile(this GeoContext ctx, int id, UserDTO model)
         {
             if (ctx.Users.Find(id) is User dbUser)
             {
                 dbUser.Name = model.Name;
                 dbUser.Surname = model.SurName;
                 ctx.SaveChanges();
+
+                return GetProfile(ctx, id);
             }
             else
-                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(UpdateProfile), 404);
         }
 
         public static UserDTO GetProfile(this GeoContext ctx, int id)
@@ -78,7 +74,7 @@ namespace GeoService.BLL.Actions
             if (ctx.Users.Find(id) is User dbUser)
                 return dbUser.ToExtensionDTO();
             else
-                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(GetProfile), 404);
         }
 
         public static IEnumerable<UserDTO> GetFilterUsers(this GeoContext ctx, string query, string role)
@@ -105,7 +101,7 @@ namespace GeoService.BLL.Actions
                 ctx.SaveChanges();
             }
             else
-                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(CreateUpdateAvatar), 404);
         }
 
         public static string GetAvatar(this GeoContext ctx, int userId)
@@ -113,7 +109,7 @@ namespace GeoService.BLL.Actions
             if (ctx.Users.Find(userId) is User dbUser)
                 return dbUser.GetAvatarSrc();
             else
-                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(GetAvatar), 404);
         }
 
         internal static UserDTO ToDTO(this User user) =>
@@ -123,7 +119,7 @@ namespace GeoService.BLL.Actions
                 Name = user.Name,
                 SurName = user.Surname,
                 AvatarSrc = user.GetAvatarSrc(),
-                IsLeader = user.Role == RoleEnum.Leader
+                IsLeader = user.Role == RoleEnum.Leader                
             };
 
         internal static UserExtensionDTO ToExtensionDTO(this User user) =>
@@ -134,7 +130,7 @@ namespace GeoService.BLL.Actions
                 Name = user.Name,
                 SurName = user.Surname,
                 AvatarSrc = user.GetAvatarSrc(),
-                IsLeader = user.Role == RoleEnum.Leader,
+                IsLeader = user.Role == RoleEnum.Leader,                
                 Team = user.Team is Team team ? team.ToDTO() : null
             };
 
