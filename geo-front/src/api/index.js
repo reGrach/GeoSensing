@@ -6,7 +6,7 @@ const ApiService = {
   init() {
     Vue.use(VueAxios, axios);
     // Vue.axios.defaults.baseURL = 'https://regrach.ru/api/';
-    Vue.axios.defaults.baseURL = 'https://localhost:5001/api/';
+    Vue.axios.defaults.baseURL = 'http://127.0.0.1:5000/api';
     Vue.axios.defaults.withCredentials = true;
   },
 
