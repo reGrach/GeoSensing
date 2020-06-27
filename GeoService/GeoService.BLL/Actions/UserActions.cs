@@ -66,7 +66,7 @@ namespace GeoService.BLL.Actions
                 return GetProfile(ctx, id);
             }
             else
-                throw new ApiException("Пользователь не обнаружен в системе", nameof(UpdateProfile), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(UpdateProfile), 404);
         }
 
         public static UserDTO GetProfile(this GeoContext ctx, int id)
@@ -74,7 +74,7 @@ namespace GeoService.BLL.Actions
             if (ctx.Users.Find(id) is User dbUser)
                 return dbUser.ToExtensionDTO();
             else
-                throw new ApiException("Пользователь не обнаружен в системе", nameof(GetProfile), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(GetProfile), 404);
         }
 
         public static IEnumerable<UserDTO> GetFilterUsers(this GeoContext ctx, string query, string role)
@@ -101,7 +101,7 @@ namespace GeoService.BLL.Actions
                 ctx.SaveChanges();
             }
             else
-                throw new ApiException("Текущий пользователь не обнаружен в системе", nameof(CreateUpdateAvatar), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(CreateUpdateAvatar), 404);
         }
 
         public static string GetAvatar(this GeoContext ctx, int userId)
@@ -109,7 +109,7 @@ namespace GeoService.BLL.Actions
             if (ctx.Users.Find(userId) is User dbUser)
                 return dbUser.GetAvatarSrc();
             else
-                throw new ApiException("Текущий пользователь не обнаружен в системе", nameof(GetAvatar), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(GetAvatar), 404);
         }
 
         internal static UserDTO ToDTO(this User user) =>
@@ -119,7 +119,7 @@ namespace GeoService.BLL.Actions
                 Name = user.Name,
                 SurName = user.Surname,
                 AvatarSrc = user.GetAvatarSrc(),
-                IsLeader = user.Role == RoleEnum.Leader
+                IsLeader = user.Role == RoleEnum.Leader                
             };
 
         internal static UserExtensionDTO ToExtensionDTO(this User user) =>
@@ -130,7 +130,7 @@ namespace GeoService.BLL.Actions
                 Name = user.Name,
                 SurName = user.Surname,
                 AvatarSrc = user.GetAvatarSrc(),
-                IsLeader = user.Role == RoleEnum.Leader,
+                IsLeader = user.Role == RoleEnum.Leader,                
                 Team = user.Team is Team team ? team.ToDTO() : null
             };
 

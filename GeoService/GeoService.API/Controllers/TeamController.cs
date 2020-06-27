@@ -21,7 +21,7 @@ namespace GeoService.API.Controllers
         /// <summary> Получение всех существующих команд (для админов) </summary>
         [HttpGet]
         [Authorize(AdminPolicy)]
-        public IActionResult GetAll() => TryAction(() => Ok(_context.GetTeams(false)));
+        public IActionResult GetAll() => TryAction(() => Ok(_context.GetAllTeams()));
 
 
         /// <summary> Получение полной инфомации о команде (для админа) </summary>
@@ -51,8 +51,8 @@ namespace GeoService.API.Controllers
         public IActionResult Update(TeamModel model) => TryAction(() =>
         {
             var id = User.Identity.GetUserId();
-            _context.UpdateTeamByLeader(id, model.Title, model.Color);
-            return Ok();
+            var updateTeam = _context.UpdateTeamByLeader(id, model.Title, model.Color);
+            return Ok(updateTeam);
         });
 
         /// <summary> Выйти из команды </summary>
@@ -97,7 +97,7 @@ namespace GeoService.API.Controllers
 
         /// <summary> Получение всех активных команд </summary>
         [HttpGet]
-        public IActionResult GetActive() => TryAction(() => Ok(_context.GetTeams()));
+        public IActionResult GetActive() => TryAction(() => Ok(_context.GetActiveTeams()));
 
         /// <summary>
         /// Создание команды. Текущий пользователь автоматически становится ее лидером.
