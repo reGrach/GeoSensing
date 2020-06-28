@@ -48,7 +48,7 @@ namespace GeoService.API
                 .UseLazyLoadingProxies()
                 .UseNpgsql(Configuration.GetConnectionString("GeoContext")));
 
-            #region Подключение ацтентификации
+            #region Подключение аутентификации
             var section = Configuration.GetSection("AuthOptions");
 
             var options = section.Get<AuthOptions>();
@@ -68,6 +68,8 @@ namespace GeoService.API
                 c.IncludeXmlComments(xmlPath);
             });
 
+
+            services.AddAutoMapper();
         }
 
         public void Configure(IApplicationBuilder app)

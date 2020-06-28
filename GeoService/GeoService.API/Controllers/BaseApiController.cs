@@ -1,6 +1,8 @@
-﻿using GeoService.API.Auth.Identity;
+﻿using AutoMapper;
+using GeoService.API.Auth.Identity;
 using GeoService.API.Auth.JwtExtension;
 using GeoService.BLL;
+using GeoService.DAL;
 using GeoService.DAL.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,10 +17,26 @@ namespace GeoService.API.Controllers
     public class BaseApiController : ControllerBase
     {
         private readonly JwtTokenGenerator _jwtTokenGenerator;
+        internal readonly IMapper _mapper;
+        internal readonly GeoContext _context;
 
-        public BaseApiController(JwtTokenGenerator jwtTokenGenerator)
+        public BaseApiController(GeoContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public BaseApiController(JwtTokenGenerator jwtTokenGenerator, GeoContext context)
         {
             _jwtTokenGenerator = jwtTokenGenerator;
+            _context = context;
+        }
+
+        public BaseApiController(JwtTokenGenerator jwtTokenGenerator, GeoContext context, IMapper mapper)
+        {
+            _jwtTokenGenerator = jwtTokenGenerator;
+            _mapper = mapper;
+            _context = context;
         }
 
 

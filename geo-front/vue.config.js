@@ -3,4 +3,7 @@ module.exports = {
   transpileDependencies: [
     'vuetify',
   ],
+  outputDir: process.env.NODE_ENV === 'production'
+    ? '/var/www/geo_sensing/site'
+    : 'dist',
 };
