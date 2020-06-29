@@ -1,4 +1,4 @@
-﻿﻿using AutoMapper;
+﻿using AutoMapper;
 using GeoService.API.Auth.Identity;
 using GeoService.API.Auth.JwtExtension;
 using GeoService.API.Models;

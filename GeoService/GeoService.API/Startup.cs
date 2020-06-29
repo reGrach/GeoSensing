@@ -80,7 +80,7 @@ namespace GeoService.API
             });
 
             app.UseCors(x => x
-            .WithOrigins("http://localhost:8080", "http://192.168.1.247:8080")
+            .WithOrigins("http://localhost:8080", "http://192.168.1.247:8080", "https://regrach.ru")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials());

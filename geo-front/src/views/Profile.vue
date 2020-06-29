@@ -5,11 +5,7 @@
         <v-card>
           <v-card-text class="text-center">
             <v-avatar size="192" class="mx-auto v-card-avatar elevation-6" color="grey">
-              <v-img :src="avatar" alt="Avatar" @click="openAvatarLoader">
-                <template v-slot:placeholder>
-                  <v-img :src="placeholder"></v-img>
-                </template>
-              </v-img>
+              <v-img :src="getAvatar" alt="Avatar" @click="openAvatarLoader"></v-img>
             </v-avatar>
             <v-list-item>
               <v-list-item-content>
@@ -59,7 +55,6 @@ export default {
     },
     avatar: null,
     showAvatarLoader: false,
-    placeholder,
   }),
 
   created() {
@@ -70,6 +65,9 @@ export default {
     ...mapGetters(['getError', 'getProcessing', 'getRoleName', 'currentLogin']),
     showError() {
       return this.getError != null;
+    },
+    getAvatar() {
+      return this.avatar ? this.avatar : placeholder;
     },
   },
 
