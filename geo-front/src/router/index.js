@@ -25,7 +25,7 @@ const routes = [
     path: '/experiment',
     name: 'Эксперимент',
     component: () => import('@/views/Experiment'),
-    // beforeEnter: AuthGuard,
+    beforeEnter: AuthGuard,
   },
   {
     path: '/data',
