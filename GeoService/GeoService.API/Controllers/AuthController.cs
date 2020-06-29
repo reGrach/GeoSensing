@@ -3,6 +3,7 @@ using GeoService.API.Auth.JwtExtension;
 using GeoService.API.Models;
 using GeoService.BLL.Actions;
 using GeoService.DAL;
+using GeoService.DAL.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

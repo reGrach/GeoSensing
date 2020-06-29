@@ -80,6 +80,12 @@ namespace GeoService.BLL.Actions
                 throw new ApiException(ConstMsg.UserNotFound, nameof(GetExperimentsByUserId), 404);
         }
 
+        public static void CloseExperiment(this GeoContext ctx, int userId, int experimentId)
+        {
+            if (ctx.Users.Find(userId) is User dbUser)
+            {
+                if (dbUser.Team is null)
+                    throw new ApiException("Чтобы закрыть эксперимент, необходимо быть участником команды", nameof(CloseExperiment), 400);
 
         public static void AddPoint(this GeoContext ctx, GeoParameterDTO model)
         {

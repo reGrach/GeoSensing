@@ -7,6 +7,8 @@ namespace GeoService.API.Models
     {
         public string Login { get; set; }
         public string Password { get; set; }
+
+        /// <summary> Если true - срок действия токена - 1 месяц, иначе - 2 часа </summary>
         public bool RememberMe { get; set; }
     }
 
