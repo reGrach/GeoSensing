@@ -5,8 +5,8 @@ import VueAxios from 'vue-axios';
 const ApiService = {
   init() {
     Vue.use(VueAxios, axios);
-    Vue.axios.defaults.baseURL = 'https://regrach.ru:5000/api/';
-    // Vue.axios.defaults.baseURL = 'http://127.0.0.1:5000/api';
+    // Vue.axios.defaults.baseURL = 'https://regrach.ru:5000/api/';
+    Vue.axios.defaults.baseURL = 'https://regrach.ru:444/api/';
     Vue.axios.defaults.withCredentials = true;
   },
 
