@@ -1,59 +1,48 @@
 <template>
-  <v-card class="widget-card">
-    <v-card-text class="pa-0">
-      <v-container class="pa-0">
-        <div class="layout row ma-0" :style="{ backgroundColor: color }">
-          <div class="sm4 xs4 flex">
-            <div class="layout column ma-0 justify-center align-center">
-              <v-icon size="76px" color="white" style="opacity: 0.8;">{{icon}}</v-icon>
-            </div>
-          </div>
-          <div class="layout column ma-0 justify-center" style="color: white;">
-            <span class="caption">{{ subTitle }}</span>
-            <div class="headline">{{ title }}</div>
-            <span class="caption">{{ supTitle }}</span>
-          </div>
+  <v-card class="v-card--material pa-3">
+    <div class="d-flex grow">
+      <div class="ml-2">
+        <div class="ml-auto text-left">
+          <div class="grey--text font-weight-light" v-text="title" />
+          <span class="display-1 font-weight-light">{{ value }}</span>
         </div>
-      </v-container>
-    </v-card-text>
+      </div>
+      <v-sheet elevation="6" class="pa-4" dark :color="color" rounded>
+        <v-icon large v-text="icon" />
+      </v-sheet>
+    </div>
   </v-card>
 </template>
 
 <script>
 export default {
   props: {
-    supTitle: {
+    color: {
       type: String,
-      required: false,
-    },
-    subTitle: {
-      type: String,
-      required: false,
-    },
-    title: {
-      type: String,
-      required: false,
+      default: 'success',
     },
     icon: {
       type: String,
-      required: false,
+      required: true,
     },
-    color: {
+    title: {
       type: String,
-      required: false,
+      default: undefined,
     },
-  },
-
-  data() {
-    return {};
+    value: {
+      type: String,
+      default: undefined,
+    },
   },
 };
 </script>
 
-<style>
-.widget-card {
-  border-radius: 5%;
-  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.21);
-  background-color: transparent;
-}
+<style lang="sass">
+.v-card--material
+  display: flex
+  flex-wrap: wrap
+  position: relative
+
+  > div:first-child
+    justify-content: space-between
 </style>

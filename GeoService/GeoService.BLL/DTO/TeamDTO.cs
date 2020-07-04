@@ -1,4 +1,4 @@
-﻿using GeoService.DAL;
+﻿using System;
 using System.Collections.Generic;
 
 namespace GeoService.BLL.DTO
@@ -12,6 +12,7 @@ namespace GeoService.BLL.DTO
 
     public class TeamExtensionDTO : TeamDTO
     {
+        public DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }
         public List<UserDTO> Participants { get; set; }
         public PolygonTeam Polygon { get; set; }

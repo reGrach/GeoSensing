@@ -3,6 +3,7 @@ using GeoService.BLL.DTO;
 using GeoService.DAL;
 using GeoService.DAL.Enums;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,6 +27,7 @@ namespace GeoService.BLL.Actions
                 {
                     Title = title,
                     Color = color,
+                    CreateDate = DateTime.UtcNow,
                     IsActive = true,
                     Users = new List<User> { dbUser }
                 });
@@ -149,10 +151,11 @@ namespace GeoService.BLL.Actions
             new TeamExtensionDTO
             {
                 Id = team.Id,
+                CreateDate = team.CreateDate,
                 Title = team.Title,
                 Color = team.Color, 
                 IsActive = team.IsActive,
-                Participants = team.Users.Select(x => x.ToDTO()).ToList(),
+                Participants = team.Users.Select(x => x.ToDTO()).OrderBy(x => x.IsLeader).ThenBy(x => x.Login).ToList(),
                 Polygon = team.Polygon.HasValue ? team.Polygon.Value.ToPolygon() : null
             };
     }

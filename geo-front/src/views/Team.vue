@@ -2,45 +2,22 @@
   <init-team v-if="isEasyUser" v-on:enterToTeam="getMyTeam"></init-team>
   <v-container v-else fluid grid-list-xl>
     <v-layout row wrap>
-      <!-- Widgets-->
-      <v-flex d-flex lg3 sm6 xs12>
-        <widget
-          icon="mdi-home"
-          title="1,287,687"
-          subTitle="13% higher yesterday"
-          supTitle="Today's Visits"
-          color="#00b297"
-        />
-      </v-flex>
-      <v-flex d-flex lg3 sm6 xs12>
-        <widget
-          icon="mdi-home"
-          title="$141,291"
-          subTitle="$117,212 before tax"
-          supTitle="Today's Sales"
-          color="#dc3545"
-        />
-      </v-flex>
-      <v-flex d-flex lg3 sm6 xs12>
-        <widget
-          icon="mdi-home"
-          title="33.45%"
-          subTitle="13% average duration"
-          supTitle="% Unique Visits"
-          color="#0866C6"
-        />
-      </v-flex>
-      <v-flex d-flex lg3 sm6 xs12>
-        <widget
-          icon="mdi-home"
-          title="13.00%"
-          subTitle="17.25% on average time"
-          supTitle="Bounce Rate"
-          color="#1D2939"
-        />
-      </v-flex>
+      <v-card-title class="text-h4">{{title}}</v-card-title>
     </v-layout>
-
+    <v-divider></v-divider>
+    <v-layout row wrap>
+      <v-col cols="12" sm="6" lg="3">
+        <widget :color="color" v-model="getDate" icon="mdi-calendar-check" title="Дата создания" />
+      </v-col>
+      <v-col cols="12" sm="6" lg="3">
+        <widget
+          :color="color"
+          v-model="countParticipants"
+          icon="mdi-account-multiple"
+          title="Число участников"
+        />
+      </v-col>
+    </v-layout>
     <v-divider></v-divider>
     <list-users :users="users"></list-users>
   </v-container>
@@ -51,13 +28,14 @@ import { mapGetters } from 'vuex';
 import InitTeam from '../components/cards/InitTeam.vue';
 import Widget from '../components/cards/Widget.vue';
 import ListUsers from '../components/ListUsers.vue';
-
 import { GET_TEAM } from '../store/actionsType';
-
 
 export default {
   components: { InitTeam, Widget, ListUsers },
   data: () => ({
+    title: null,
+    color: null,
+    createDate: null,
     users: [],
   }),
 
@@ -69,14 +47,26 @@ export default {
 
   computed: {
     ...mapGetters(['isEasyUser']),
+    countParticipants() {
+      return this.users.length.toString();
+    },
+    getDate() {
+      return new Date(this.createDate).toLocaleString('ru', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    },
   },
 
   methods: {
     getMyTeam() {
-      this.$store.dispatch(GET_TEAM)
-        .then((data) => {
-          this.users = data.participants;
-        });
+      this.$store.dispatch(GET_TEAM).then((data) => {
+        this.users = data.participants;
+        this.color = data.color;
+        this.title = data.title;
+        this.createDate = data.createDate;
+      });
     },
   },
 };

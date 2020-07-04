@@ -1,4 +1,5 @@
 ﻿using NpgsqlTypes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,6 +15,8 @@ namespace GeoService.DAL
 
         [Required]
         public string Color { get; set; }
+
+        public DateTime CreateDate { get; set; }
 
         public bool IsActive { get; set; }
 
