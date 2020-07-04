@@ -37,16 +37,34 @@
         </v-btn>
       </v-toolbar-items>
       <div v-else>
-        <v-btn icon large to="/profile" active-class="no-active">
-          <v-avatar color="primary" item>
-            <v-img v-if="useAvatarImg" :src="getAvatar"></v-img>
-            <span v-else class="white--text headline">{{getLoginToIcon}}</span>
-          </v-avatar>
-        </v-btn>
-        <v-btn class="ml-3" text bottom @click.prevent="signout">
-          <v-icon>mdi-logout</v-icon>
-          <span v-html="'&nbsp; Выйти'" class="hidden-sm-and-down"></span>
-        </v-btn>
+        <v-menu rounded="lg" offset-y>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" icon>
+              <v-avatar color="primary" item>
+                <v-img v-if="useAvatarImg" :src="getAvatar"></v-img>
+                <span v-else class="white--text headline">{{getLoginToIcon}}</span>
+              </v-avatar>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item to="/profile">
+              <v-list-item-icon>
+                <v-icon>mdi-account</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Профиль</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item @click.prevent="signout">
+              <v-list-item-icon>
+                <v-icon>mdi-logout</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Выйти</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
     </v-app-bar>
   </div>
@@ -66,7 +84,13 @@ export default {
     title: 'GeoSensing',
   }),
   computed: {
-    ...mapGetters(['currentLogin', 'isAuthenticated', 'getProcessing', 'getAvatar', 'isAdmin']),
+    ...mapGetters([
+      'currentLogin',
+      'isAuthenticated',
+      'getProcessing',
+      'getAvatar',
+      'isAdmin',
+    ]),
     useAvatarImg() {
       return !!this.getAvatar;
     },
@@ -79,15 +103,13 @@ export default {
   },
   methods: {
     signout() {
-      this.$store
-        .dispatch(SIGN_OUT)
-        .then(() => this.$router.push('/signin'));
+      this.$store.dispatch(SIGN_OUT).then(() => this.$router.push('/signin'));
     },
   },
 };
 </script>
 <style scoped>
-.v-btn--active.no-active::before {
+.v-btn.no-active::before {
   opacity: 0 !important;
 }
 </style>
