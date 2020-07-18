@@ -13,6 +13,6 @@ namespace GeoService.DAL
         [MaxLength(50)]
         public string MimeType { get; set; }
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
     }
 }

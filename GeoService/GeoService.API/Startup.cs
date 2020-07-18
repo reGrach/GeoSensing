@@ -43,9 +43,12 @@ namespace GeoService.API
             services.AddControllers();
             services.AddCors();
 
-            services.AddDbContext<GeoContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("GeoContext")));
+            services.AddDbContext<GeoContext>(opt =>
+                opt
+                .UseLazyLoadingProxies()
+                .UseNpgsql(Configuration.GetConnectionString("GeoContext")));
 
-            #region Подключение ацтентификации
+            #region Подключение аутентификации
             var section = Configuration.GetSection("AuthOptions");
 
             var options = section.Get<AuthOptions>();
@@ -65,6 +68,8 @@ namespace GeoService.API
                 c.IncludeXmlComments(xmlPath);
             });
 
+
+            services.AddAutoMapper();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -75,7 +80,7 @@ namespace GeoService.API
             });
 
             app.UseCors(x => x
-            .WithOrigins("http://localhost:8080")
+            .WithOrigins("http://localhost:8080", "http://192.168.1.247:8080", "https://regrach.ru")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials());

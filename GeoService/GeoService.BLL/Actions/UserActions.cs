@@ -6,20 +6,19 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace GeoService.BLL.Actions
 {
     public static class UserActions
     {
-        public static void TryRegisterUser(this GeoContext ctx, string login, string password)
+        public static IdentityDTO TryRegisterUser(this GeoContext ctx, string login, string password)
         {
             if (ctx.Users.Any(x => x.Login == login))
                 throw new ApiException("Пользователь с таким логином уже существует", nameof(TryRegisterUser), 400);
 
             var hasher = new PasswordHash();
 
-            ctx.Users.Add(new User
+            var dbUser = ctx.Users.Add(new User
             {
                 Login = login,
                 Salt = hasher.Salt,
@@ -28,6 +27,13 @@ namespace GeoService.BLL.Actions
                 RegistrationDate = DateTime.Now
             });
             ctx.SaveChanges();
+
+            return new IdentityDTO
+            {
+                Id = dbUser.Entity.Id,
+                Login = dbUser.Entity.Login,
+                Role = dbUser.Entity.Role,
+            };
         }
 
         public static IdentityDTO AuthenticationUser(this GeoContext ctx, string login, string password)
@@ -36,7 +42,7 @@ namespace GeoService.BLL.Actions
             {
                 var hasher = new PasswordHash(userDb.Salt);
                 if (!hasher.Verify(userDb.PasswordHash, password))
-                    throw new ApiException("Введен неверный пароль", nameof(AuthenticationUser), 401);
+                    throw new ApiException("Введен неверный пароль", nameof(AuthenticationUser), 400);
                 else
                     return new IdentityDTO
                     {
@@ -46,98 +52,89 @@ namespace GeoService.BLL.Actions
                     };
             }
             else
-                throw new ApiException("Пользователь с таким логином не найден", nameof(AuthenticationUser), 401);
+                throw new ApiException("Пользователя с таким логином не существует", nameof(AuthenticationUser), 400);
         }
 
-        public static IdentityDTO GetUser(this GeoContext ctx, int id)
-        {
-            if (ctx.Users.Find(id) is User userDb)
-                return new IdentityDTO
-                {
-                    Id = userDb.Id,
-                    Login = userDb.Login,
-                    Role = userDb.Role,
-                };
-            else
-                throw new ApiException("Пользователь с таким логином не найден", nameof(AuthenticationUser), 401);
-        }
-
-        public static void UpdateProfile(this GeoContext ctx, int id, UserDTO model)
+        public static UserDTO UpdateProfile(this GeoContext ctx, int id, UserDTO model)
         {
             if (ctx.Users.Find(id) is User dbUser)
             {
                 dbUser.Name = model.Name;
                 dbUser.Surname = model.SurName;
                 ctx.SaveChanges();
+
+                return GetProfile(ctx, id);
             }
             else
-                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(UpdateProfile), 404);
         }
 
         public static UserDTO GetProfile(this GeoContext ctx, int id)
         {
-            if (ctx.Users.Include(x => x.Avatar).SingleOrDefault(x => x.Id == id) is User dbUser)
-                return new UserDTO
-                {
-                    Name = dbUser.Name,
-                    SurName = dbUser.Surname,
-                    AvatarSrc = dbUser.Avatar is Avatar _ava
-                    ? $"data:{_ava.MimeType};base64,{Convert.ToBase64String(_ava.FileContent)}"
-                    : string.Empty,
-                    Team = dbUser.Team is Team team ? team.ToDTO() : null
-                };
+            if (ctx.Users.Find(id) is User dbUser)
+                return dbUser.ToExtensionDTO();
             else
-                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(GetProfile), 404);
         }
 
-        public static IEnumerable<UserDTO> GetFreeUsers(this GeoContext ctx, string query)
+        public static IEnumerable<UserDTO> GetFilterUsers(this GeoContext ctx, string query, string role)
         {
-            var freeUsers = ctx.Users.AsNoTracking()
-                .Where(x => x.Role == RoleEnum.NonDefined)
+            var dbUsers = ctx.Users.AsNoTracking()
+                .Where(x => string.IsNullOrEmpty(role) || x.Role.ToString() == role)
                 .AsEnumerable();
             if (string.IsNullOrEmpty(query))
-                freeUsers = freeUsers
+                dbUsers = dbUsers
                     .Where(x => x.Login.Equals(query, StringComparison.InvariantCultureIgnoreCase)
                     || x.Name.Equals(query, StringComparison.InvariantCultureIgnoreCase)
                     || x.Surname.Equals(query, StringComparison.InvariantCultureIgnoreCase));
 
-            return freeUsers.Select(x => new UserDTO
-            {
-                Name = x.Name,
-                SurName = x.Surname
-            });
+            return dbUsers.Select(x => x.ToDTO());
         }
-
 
         public static void CreateUpdateAvatar(this GeoContext ctx, int userId, byte[] content, string mime)
         {
-            if (ctx.Users.Include(x => x.Avatar).SingleOrDefault(x => x.Id == userId) is User dbUser)
+            if (ctx.Users.Find(userId) is User dbUser)
             {
-                if (dbUser.Avatar is null)
-                    dbUser.Avatar = new Avatar
-                    {
-                        FileContent = content,
-                        MimeType = mime
-                    };
-                else
-                {
-                    dbUser.Avatar.FileContent = content;
-                    dbUser.Avatar.MimeType = mime;
-                }
+                var ava = dbUser.Avatar ?? ctx.Avatars.Add(new Avatar { User = dbUser }).Entity;
+                ava.FileContent = content;
+                ava.MimeType = mime;
                 ctx.SaveChanges();
             }
             else
-                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(CreateUpdateAvatar), 404);
         }
 
         public static string GetAvatar(this GeoContext ctx, int userId)
         {
-            if (ctx.Users.Include(x => x.Avatar).SingleOrDefault(x => x.Id == userId) is User dbUser)
-                return dbUser.Avatar is Avatar _ava
-                ? $"data:{_ava.MimeType};base64,{Convert.ToBase64String(_ava.FileContent)}"
-                : string.Empty;
+            if (ctx.Users.Find(userId) is User dbUser)
+                return dbUser.GetAvatarSrc();
             else
-                throw new ApiException("Фатальная ошибка, текущий пользователь не обнаружен", nameof(AuthenticationUser), 404);
+                throw new ApiException(ConstMsg.UserNotFound, nameof(GetAvatar), 404);
         }
+
+        internal static UserDTO ToDTO(this User user) =>
+            new UserDTO
+            {
+                Login = user.Login,
+                Name = user.Name,
+                SurName = user.Surname,
+                AvatarSrc = user.GetAvatarSrc(),
+                IsLeader = user.Role == RoleEnum.Leader                
+            };
+
+        internal static UserExtensionDTO ToExtensionDTO(this User user) =>
+            new UserExtensionDTO
+            {
+                Id = user.Id,
+                Login = user.Login,
+                Name = user.Name,
+                SurName = user.Surname,
+                AvatarSrc = user.GetAvatarSrc(),
+                IsLeader = user.Role == RoleEnum.Leader,                
+                Team = user.Team is Team team ? team.ToDTO() : null
+            };
+
+        private static string GetAvatarSrc(this User user) =>
+            user.Avatar is Avatar _ava ? $"data:{_ava.MimeType};base64,{Convert.ToBase64String(_ava.FileContent)}" : string.Empty;
     }
 }

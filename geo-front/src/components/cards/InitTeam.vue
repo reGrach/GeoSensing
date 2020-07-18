@@ -72,6 +72,7 @@
                       :items="teams"
                       item-value="id"
                       label="Выберите команду"
+                      no-data-text="Команды отсутствуют"
                       required
                       :rules="[v => !!v || 'Обязательное поле']"
                     >

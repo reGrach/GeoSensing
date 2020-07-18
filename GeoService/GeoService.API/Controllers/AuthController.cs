@@ -7,7 +7,6 @@ using GeoService.DAL.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using static GeoService.BLL.Actions.UserActions;
 
 
@@ -15,20 +14,26 @@ namespace GeoService.API.Controllers
 {
     public class AuthController : BaseApiController
     {
-        private readonly GeoContext _context;
-
-        public AuthController(JwtTokenGenerator jwtTokenGenerator, GeoContext context) : base(jwtTokenGenerator)
-        {
-            _context = context;
-        }
+        public AuthController(JwtTokenGenerator jwtTokenGenerator, GeoContext context) : base(jwtTokenGenerator, context) { }
 
         /// <summary> Регистрация пользователя </summary>
         [AllowAnonymous]
         [HttpPost]
         public IActionResult SignUp(AuthModel model) => TryAction(() =>
         {
-            _context.TryRegisterUser(model.Login, model.Password);
-            return Ok();
+            var user = _context.TryRegisterUser(model.Login, model.Password);
+
+            var expirationDate = CreateClaimsAndToken(user.Id, user.Login, user.Role, model.RememberMe);
+
+            var info = new AuthInfoModel
+            {
+                Login = user.Login,
+                Role = user.Role.ToString(),
+                Expiration = expirationDate,
+                AvatarSrc = _context.GetAvatar(user.Id)
+            };
+
+            return Ok(info);
         });
 
 
@@ -39,7 +44,7 @@ namespace GeoService.API.Controllers
         {
             var user = _context.AuthenticationUser(model.Login, model.Password);
 
-            var expirationDate = CerateClaimsAndToken(user.Id, user.Login, user.Role, model.RememberMe);
+            var expirationDate = CreateClaimsAndToken(user.Id, user.Login, user.Role, model.RememberMe);
 
             var info = new AuthInfoModel
             {

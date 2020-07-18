@@ -35,6 +35,12 @@ namespace GeoService.DAL
                 .WithMany()
                 .HasForeignKey(p => p.CreatorUserId);
 
+            //Создаем ForeginKey без navigation property 
+            builder.Entity<GeoParameter>()
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(p => p.CreatorUserId);
+
             builder.HasPostgresEnum<RoleEnum>();
 
             builder.HasPostgresEnum<ModeEnum>();
