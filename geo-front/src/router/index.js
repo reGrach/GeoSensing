@@ -31,18 +31,11 @@ const routes = [
     path: '/data',
     name: 'Мои данные',
     component: () => import('@/views/MyData'),
-    beforeEnter: AuthGuard,
   },
   {
     path: '/team',
     name: 'Команда',
     component: () => import('@/views/Team'),
-    beforeEnter: AuthGuard,
-  },
-  {
-    path: '/map',
-    name: 'Карта',
-    component: () => import('@/views/Map'),
     beforeEnter: AuthGuard,
   },
   {
