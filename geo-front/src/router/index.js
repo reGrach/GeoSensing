@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
 import Authentication from '@/views/Authentication'
-import Geo from '@/views/Geo.vue'
+import Geo from '@/views/GeoNew.vue'
 import About from '@/views/About.vue'
 
 Vue.use(VueRouter)
