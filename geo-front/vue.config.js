@@ -1,12 +1,9 @@
 module.exports = {
-  devServer: {
-    https: true
-  },
-  "lintOnSave": false,
-  "transpileDependencies": [
-    "vuetify"
+  lintOnSave: process.env.NODE_ENV !== 'production',
+  transpileDependencies: [
+    'vuetify',
   ],
-  // devServer: {
-  //   https: true
-  // }
-}
+  outputDir: process.env.NODE_ENV === 'production'
+    ? '/var/www/geo_sensing/site'
+    : 'dist',
+};

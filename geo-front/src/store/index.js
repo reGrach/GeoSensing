@@ -1,15 +1,19 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
+import auth from './auth';
+import general from './general';
+import profile from './profile';
+import team from './team';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
-export default new Vuex.Store({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
+const store = new Vuex.Store({
   modules: {
-  }
-})
+    auth,
+    general,
+    profile,
+    team,
+  },
+});
+
+export default store;
