@@ -16,18 +16,9 @@
                   <v-btn class="pl-1 pr-1 text-lowercase" tile text @click="show = !show">
                     <div style="font-size: 20px; letter-spacing: 0px">{{ showBtnTitle }}</div>
                   </v-btn>
-                  <v-btn
-                    absolute
-                    right
-                    width="150px"
-                    @click="change"
-                    :color="currentBtnColor"
-                    depressed
-                    dark
-                  >{{ currentBtnTitle }}</v-btn>
                 </v-card-title>
                 <v-card-text>
-                  <v-form id="demo">
+                  <v-form ref="form" :v-model="valid" id="demo">
                     <v-text-field disabled label="Широта" />
                     <v-text-field disabled label="Долгота" />
                     <v-text-field disabled label="Высота" />
@@ -42,6 +33,17 @@
                       </v-layout>
                       <!-- Конец костыля. Тут нужен транзишн груп -->
                     </transition>
+                    <v-btn
+                    absolute
+                    right
+                      width="130px"
+                      @click="change"
+                      :color="currentBtnColor"
+                      depressed
+                      dark
+                    >{{ currentBtnTitle }}</v-btn>
+                    <v-btn style="left: 50%; transform: translateX(-50%)" width="130px" @click="reset" color="error" depressed dark>Сбросить</v-btn>
+                    <v-btn absolute left width="130px" color="primary" depressed dark>Отправить</v-btn>
                   </v-form>
                 </v-card-text>
               </v-card>
@@ -56,10 +58,20 @@
               <v-card class="elevation-0">
                 <v-card-title class="title">Ввод</v-card-title>
                 <v-card-text>
-                  <v-form>
-                    <v-text-field label="Широта" />
-                    <v-text-field label="Долгота" />
-                    <v-text-field label="Высота" />
+                  <v-form :v-model="valid" ref="form">
+                    <v-text-field :rules="coordsRules" label="Широта" required />
+                    <v-text-field :rules="coordsRules" label="Долгота" required />
+                    <v-text-field :rules="hghtRules" label="Высота" required />
+                    <v-btn
+                      @click="reset"
+                      absolute
+                      right
+                      width="130px"
+                      color="error"
+                      depressed
+                      dark
+                    >Сбросить</v-btn>
+                    <v-btn absolute left width="130px" color="primary" depressed dark>Отправить</v-btn>
                   </v-form>
                 </v-card-text>
               </v-card>
@@ -82,28 +94,41 @@
 <script>
 export default {
   data: () => ({
+    valid: true,
+    coords: "",
+    coordsRules: [
+      (v) => !!v || "Нужно заполнить это поле",
+      (v) => /.+\.+(?=\d)/.test(v) || "Координаты должны быть введены правильно",
+    ],
+    hght: "",
+    hghtRules: [
+      (v) => !!v || "Нужно заполнить это поле",
+      (v) =>
+        /(?=\d)/.test(v) ||
+        "Высота должна быть указана в метрах целым числом",
+    ],
     SHBtnStyle: {
       color: "cyan",
       fontSize: "22px",
-      texttransform: "lowercase"
+      texttransform: "lowercase",
     },
     show: false,
     isNewPoint: true,
     tab: null,
     btnSave: {
       color: "#ff3333",
-      title: "Сохранить"
+      title: "Сохранить",
     },
     btnDetermine: {
       color: "#29cc29",
-      title: "Определить"
+      title: "Определить",
     },
     btnShow: {
-      title: "простые"
+      title: "простые",
     },
     btnHide: {
-      title: "подробные"
-    }
+      title: "подробные",
+    },
   }),
   computed: {
     currentBtnColor() {
@@ -123,12 +148,21 @@ export default {
         return this.btnHide.title;
       }
       return this.btnShow.title;
-    }
+    },
   },
+
+
+// Сделать единый метод отправки данных
   methods: {
+    validate() {
+      this.$refs.form.validate();
+    },
+    reset() {
+      this.$refs.form.reset();
+    },
     change() {
       this.isNewPoint = !this.isNewPoint;
-    }
-  }
+    },
+  },
 };
 </script>
