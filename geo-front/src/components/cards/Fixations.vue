@@ -33,17 +33,37 @@
                       </v-layout>
                       <!-- Конец костыля. Тут нужен транзишн груп -->
                     </transition>
+                    <v-layout justify-center>
                     <v-btn
-                    absolute
-                    right
-                      width="130px"
+                    :class="'rounded-l-lg'"
+                      style="font-size: 15px; letter-spacing: 0px"
+                      tile
+                      width="120px"
+                      color="primary"
+                      depressed
+                      dark
+                    >Отправить</v-btn>
+
+                    <v-btn
+                      style="font-size: 15px; letter-spacing: 0px"
+                      tile
+                      width="120px"
+                      @click="reset"
+                      color="error"
+                      depressed
+                      dark
+                    >Сбросить</v-btn>
+                    <v-btn
+                      :class="'rounded-r-lg'"
+                      style="font-size: 15px; letter-spacing: 0px"
+                      tile
+                      width="120px"
                       @click="change"
                       :color="currentBtnColor"
                       depressed
                       dark
                     >{{ currentBtnTitle }}</v-btn>
-                    <v-btn style="left: 50%; transform: translateX(-50%)" width="130px" @click="reset" color="error" depressed dark>Сбросить</v-btn>
-                    <v-btn absolute left width="130px" color="primary" depressed dark>Отправить</v-btn>
+                    </v-layout>
                   </v-form>
                 </v-card-text>
               </v-card>
@@ -62,16 +82,23 @@
                     <v-text-field :rules="coordsRules" label="Широта" required />
                     <v-text-field :rules="coordsRules" label="Долгота" required />
                     <v-text-field :rules="hghtRules" label="Высота" required />
+                    <v-layout justify-center >
+                    <v-btn 
+                    :class="'rounded-l-lg'"
+                      style="font-size: 15px; letter-spacing: 0px"
+                      tile
+                    :disabled="valid" width="130px" color="primary">Отправить</v-btn>
                     <v-btn
+                    :class="'rounded-r-lg'"
+                      style="font-size: 15px; letter-spacing: 0px"
+                      tile
                       @click="reset"
-                      absolute
-                      right
                       width="130px"
                       color="error"
                       depressed
                       dark
                     >Сбросить</v-btn>
-                    <v-btn absolute left width="130px" color="primary" depressed dark>Отправить</v-btn>
+                    </v-layout>  
                   </v-form>
                 </v-card-text>
               </v-card>
@@ -81,7 +108,11 @@
       </v-tab-item>
       <v-tab-item>
         <v-card flat>
-          <v-card-text>Когда Вы нажмёте "Начать", процесс сохранения координат Вашего устройства будет продолжаться до нажатия кнопки "Стоп".</v-card-text>
+          <v-card-text>
+            Когда Вы нажмёте "Начать",
+            процесс сохранения координат Вашего устройства
+            будет продолжаться до нажатия кнопки "Стоп".
+          </v-card-text>
           <v-card-actions class="footerForm">
             <v-btn color="#ff3333" dark>Начать</v-btn>
           </v-card-actions>
@@ -98,14 +129,14 @@ export default {
     coords: "",
     coordsRules: [
       (v) => !!v || "Нужно заполнить это поле",
-      (v) => /.+\.+(?=\d)/.test(v) || "Координаты должны быть введены правильно",
+      (v) =>
+        /.+\.+(?=\d)/.test(v) || "Координаты должны быть введены правильно",
     ],
     hght: "",
     hghtRules: [
       (v) => !!v || "Нужно заполнить это поле",
       (v) =>
-        /(?=\d)/.test(v) ||
-        "Высота должна быть указана в метрах целым числом",
+        /(?=\d)/.test(v) || "Высота должна быть указана в метрах целым числом",
     ],
     SHBtnStyle: {
       color: "cyan",
@@ -116,7 +147,7 @@ export default {
     isNewPoint: true,
     tab: null,
     btnSave: {
-      color: "#ff3333",
+      color: "error",
       title: "Сохранить",
     },
     btnDetermine: {
@@ -150,9 +181,7 @@ export default {
       return this.btnShow.title;
     },
   },
-
-
-// Сделать единый метод отправки данных
+  //  Сделать единый метод отправки данных
   methods: {
     validate() {
       this.$refs.form.validate();
