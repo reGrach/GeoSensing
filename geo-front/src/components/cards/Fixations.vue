@@ -13,12 +13,12 @@
               <v-card class="elevation-0">
                 <v-card-title class="title">
                   Координаты:
-                  <v-btn class="pl-1 pr-1 text-lowercase" tile text @click="show = !show">
+                  <v-btn class="px-1 text-lowercase" tile text @click="show = !show">
                     <div style="font-size: 20px; letter-spacing: 0px">{{ showBtnTitle }}</div>
                   </v-btn>
                 </v-card-title>
                 <v-card-text>
-                  <v-form ref="form" :v-model="valid" id="demo">
+                  <v-form ref="formAuto" :v-model="valid" id="demo">
                     <v-text-field disabled label="Широта" />
                     <v-text-field disabled label="Долгота" />
                     <v-text-field disabled label="Высота" />
@@ -33,36 +33,35 @@
                       </v-layout>
                       <!-- Конец костыля. Тут нужен транзишн груп -->
                     </transition>
-                    <v-layout justify-center>
-                    <v-btn
-                    :class="'rounded-l-lg'"
-                      style="font-size: 15px; letter-spacing: 0px"
-                      tile
-                      width="120px"
-                      color="primary"
-                      depressed
-                      dark
-                    >Отправить</v-btn>
-
-                    <v-btn
-                      style="font-size: 15px; letter-spacing: 0px"
-                      tile
-                      width="120px"
-                      @click="reset"
-                      color="error"
-                      depressed
-                      dark
-                    >Сбросить</v-btn>
-                    <v-btn
-                      :class="'rounded-r-lg'"
-                      style="font-size: 15px; letter-spacing: 0px"
-                      tile
-                      width="120px"
-                      @click="change"
-                      :color="currentBtnColor"
-                      depressed
-                      dark
-                    >{{ currentBtnTitle }}</v-btn>
+                    <v-layout justify-center class="mt-5">
+                      <v-btn
+                        :class="'rounded-l-lg'"
+                        style="font-size: 15px; letter-spacing: 0px"
+                        tile
+                        width="120px"
+                        color="primary"
+                        depressed
+                        dark
+                      >Отправить</v-btn>
+                      <v-btn
+                        style="font-size: 15px; letter-spacing: 0px"
+                        tile
+                        width="120px"
+                        @click="resetAuto"
+                        color="error"
+                        depressed
+                        dark
+                      >Сбросить</v-btn>
+                      <v-btn
+                        :class="'rounded-r-lg'"
+                        style="font-size: 15px; letter-spacing: 0px"
+                        tile
+                        width="120px"
+                        @click="change"
+                        :color="currentBtnColor"
+                        depressed
+                        dark
+                      >{{ currentBtnTitle }}</v-btn>
                     </v-layout>
                   </v-form>
                 </v-card-text>
@@ -78,27 +77,41 @@
               <v-card class="elevation-0">
                 <v-card-title class="title">Ввод</v-card-title>
                 <v-card-text>
-                  <v-form :v-model="valid" ref="form">
-                    <v-text-field :rules="coordsRules" label="Широта" required />
-                    <v-text-field :rules="coordsRules" label="Долгота" required />
-                    <v-text-field :rules="hghtRules" label="Высота" required />
-                    <v-layout justify-center >
-                    <v-btn 
-                    :class="'rounded-l-lg'"
-                      style="font-size: 15px; letter-spacing: 0px"
-                      tile
-                    :disabled="valid" width="130px" color="primary">Отправить</v-btn>
-                    <v-btn
-                    :class="'rounded-r-lg'"
-                      style="font-size: 15px; letter-spacing: 0px"
-                      tile
-                      @click="reset"
-                      width="130px"
-                      color="error"
-                      depressed
-                      dark
-                    >Сбросить</v-btn>
-                    </v-layout>  
+                  <v-form 
+                  :v-model="valid"
+                  ref="formManual">
+                    <v-text-field
+                    v-mask="'##.########'"
+                    v-model="input.lat"
+                    label="Широта" required />
+                    <v-text-field
+                    v-mask="'##.########'"
+                    v-model="input.long"
+                    label="Долгота" required />
+                    <v-text-field 
+                    v-mask="'###'"
+                    v-model="input.height"
+                    label="Высота" required />
+                    <v-layout justify-center class="mt-5">
+                      <v-btn
+                        :class="'rounded-l-lg'"
+                        style="font-size: 15px; letter-spacing: 0px"
+                        tile
+                        :disabled="valid"
+                        width="130px"
+                        color="primary"
+                      >Отправить</v-btn>
+                      <v-btn
+                        :class="'rounded-r-lg'"
+                        style="font-size: 15px; letter-spacing: 0px"
+                        tile
+                        @click="resetManual"
+                        width="130px"
+                        color="error"
+                        depressed
+                        dark
+                      >Сбросить</v-btn>
+                    </v-layout>
                   </v-form>
                 </v-card-text>
               </v-card>
@@ -114,7 +127,7 @@
             будет продолжаться до нажатия кнопки "Стоп".
           </v-card-text>
           <v-card-actions class="footerForm">
-            <v-btn color="#ff3333" dark>Начать</v-btn>
+            <v-btn color="error" dark>Начать</v-btn>
           </v-card-actions>
         </v-card>
       </v-tab-item>
@@ -123,21 +136,31 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import { VueMaskDirective } from 'v-mask'
+Vue.directive('mask', VueMaskDirective);
+
 export default {
   data: () => ({
+    input: {
+      lat: "",
+      long: "",
+      height: "",
+    },
     valid: true,
     coords: "",
-    coordsRules: [
-      (v) => !!v || "Нужно заполнить это поле",
-      (v) =>
-        /.+\.+(?=\d)/.test(v) || "Координаты должны быть введены правильно",
-    ],
     hght: "",
-    hghtRules: [
+    rules: {
+    // Убрать регулярку, сделать маски
+    coords: [
       (v) => !!v || "Нужно заполнить это поле",
-      (v) =>
-        /(?=\d)/.test(v) || "Высота должна быть указана в метрах целым числом",
+      (v) => /.+\.+(?=\d)/.test(v) || "Координаты должны быть введены правильно",
     ],
+    height: [
+      (v) => !!v || "Нужно заполнить это поле",
+      (v) => /(?=\d)/.test(v) || "Высота должна быть указана в метрах целым числом",
+    ],
+    },
     SHBtnStyle: {
       color: "cyan",
       fontSize: "22px",
@@ -146,39 +169,32 @@ export default {
     show: false,
     isNewPoint: true,
     tab: null,
-    btnSave: {
-      color: "error",
-      title: "Сохранить",
-    },
-    btnDetermine: {
-      color: "#29cc29",
-      title: "Определить",
-    },
-    btnShow: {
-      title: "простые",
-    },
-    btnHide: {
-      title: "подробные",
+    btn: {
+      save: {
+        color: "error",
+        title: "Сохранить",
+      },
+      determine: {
+        color: "success",
+        title: "Определить",
+      },
+      show: {
+        title: "простые",
+      },
+      hide: {
+        title: "подробные",
+      },
     },
   }),
   computed: {
     currentBtnColor() {
-      if (this.isNewPoint) {
-        return this.btnDetermine.color;
-      }
-      return this.btnSave.color;
+      return this.isNewPoint ? this.btn.determine.color : this.btn.save.color;
     },
     currentBtnTitle() {
-      if (this.isNewPoint) {
-        return this.btnDetermine.title;
-      }
-      return this.btnSave.title;
+      return this.isNewPoint ? this.btn.determine.title : this.btn.save.title;
     },
     showBtnTitle() {
-      if (this.show) {
-        return this.btnHide.title;
-      }
-      return this.btnShow.title;
+      return this.show ? this.btn.hide.title : this.btn.show.title;
     },
   },
   //  Сделать единый метод отправки данных
@@ -186,8 +202,11 @@ export default {
     validate() {
       this.$refs.form.validate();
     },
-    reset() {
-      this.$refs.form.reset();
+    resetManual() {
+      this.$refs.formManual.reset();
+    },
+    resetAuto() {
+      this.$refs.formAuto.reset();
     },
     change() {
       this.isNewPoint = !this.isNewPoint;
