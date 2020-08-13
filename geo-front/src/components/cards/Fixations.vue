@@ -23,7 +23,6 @@
                     <v-text-field disabled label="Долгота" />
                     <v-text-field disabled label="Высота" />
                     <transition name="fade">
-                      <!-- Костыль! надо переделать -->
                       <v-layout>
                         <v-flex>
                           <v-text-field v-if="show" disabled label="Направление" />
@@ -31,19 +30,10 @@
                           <v-text-field v-if="show" disabled label="Точность" />
                         </v-flex>
                       </v-layout>
-                      <!-- Конец костыля. Тут нужен транзишн груп -->
                     </transition>
                     <v-layout justify-center class="mt-5">
                       <v-btn
                         :class="'rounded-l-lg'"
-                        style="font-size: 15px; letter-spacing: 0px"
-                        tile
-                        width="120px"
-                        color="primary"
-                        depressed
-                        dark
-                      >Отправить</v-btn>
-                      <v-btn
                         style="font-size: 15px; letter-spacing: 0px"
                         tile
                         width="120px"
@@ -77,32 +67,31 @@
               <v-card class="elevation-0">
                 <v-card-title class="title">Ввод</v-card-title>
                 <v-card-text>
-                  <v-form 
-                  :v-model="valid"
-                  ref="formManual">
+                  <v-form :v-model="valid" ref="formManual">
                     <v-text-field
-                    v-mask="'##.########'"
-                    v-model="input.lat"
-                    label="Широта" required />
+                      :rules="rules.fillCoords"
+                      v-mask="'##.########'"
+                      v-model="input.lat"
+                      label="Широта"
+                      required
+                    />
                     <v-text-field
-                    v-mask="'##.########'"
-                    v-model="input.long"
-                    label="Долгота" required />
-                    <v-text-field 
-                    v-mask="'###'"
-                    v-model="input.height"
-                    label="Высота" required />
+                      :rules="rules.fillCoords"
+                      v-mask="'##.########'"
+                      v-model="input.long"
+                      label="Долгота"
+                      required
+                    />
+                    <v-text-field
+                      :rules="rules.fillHeight"
+                      v-mask="'###'"
+                      v-model="input.height"
+                      label="Высота"
+                      required
+                    />
                     <v-layout justify-center class="mt-5">
                       <v-btn
                         :class="'rounded-l-lg'"
-                        style="font-size: 15px; letter-spacing: 0px"
-                        tile
-                        :disabled="valid"
-                        width="130px"
-                        color="primary"
-                      >Отправить</v-btn>
-                      <v-btn
-                        :class="'rounded-r-lg'"
                         style="font-size: 15px; letter-spacing: 0px"
                         tile
                         @click="resetManual"
@@ -111,6 +100,14 @@
                         depressed
                         dark
                       >Сбросить</v-btn>
+                      <v-btn
+                        :class="'rounded-r-lg'"
+                        style="font-size: 15px; letter-spacing: 0px"
+                        tile
+                        :disabled="valid"
+                        width="130px"
+                        color="primary"
+                      >Отправить</v-btn>
                     </v-layout>
                   </v-form>
                 </v-card-text>
@@ -127,7 +124,26 @@
             будет продолжаться до нажатия кнопки "Стоп".
           </v-card-text>
           <v-card-actions class="footerForm">
-            <v-btn color="error" dark>Начать</v-btn>
+            <v-layout justify-center class="mt-5">
+              <v-btn
+                :class="'rounded-l-lg'"
+                style="font-size: 15px; letter-spacing: 0px"
+                tile
+                width="120px"
+                color="success"
+                depressed
+                dark
+              >Начать</v-btn>
+              <v-btn
+                :class="'rounded-r-lg'"
+                style="font-size: 15px; letter-spacing: 0px"
+                tile
+                width="120px"
+                color="error"
+                depressed
+                dark
+              >Стоп</v-btn>
+            </v-layout>
           </v-card-actions>
         </v-card>
       </v-tab-item>
@@ -136,10 +152,9 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import { VueMaskDirective } from 'v-mask'
-Vue.directive('mask', VueMaskDirective);
-
+import Vue from "vue";
+import { VueMaskDirective } from "v-mask";
+Vue.directive("mask", VueMaskDirective);
 export default {
   data: () => ({
     input: {
@@ -147,20 +162,17 @@ export default {
       long: "",
       height: "",
     },
-    valid: true,
-    coords: "",
-    hght: "",
     rules: {
-    // Убрать регулярку, сделать маски
-    coords: [
-      (v) => !!v || "Нужно заполнить это поле",
-      (v) => /.+\.+(?=\d)/.test(v) || "Координаты должны быть введены правильно",
-    ],
-    height: [
-      (v) => !!v || "Нужно заполнить это поле",
-      (v) => /(?=\d)/.test(v) || "Высота должна быть указана в метрах целым числом",
-    ],
+      fillCoords: [
+        (v) => !!v || "Нужно заполнить это поле",
+        (v) => (v && v.length > 8) || "Поле должно быть заполнено полностью",
+      ],
+      fillHeight: [
+        (v) => !!v || "Нужно заполнить это поле",
+      ],
     },
+
+    valid: true,
     SHBtnStyle: {
       color: "cyan",
       fontSize: "22px",
@@ -171,7 +183,7 @@ export default {
     tab: null,
     btn: {
       save: {
-        color: "error",
+        color: "primary",
         title: "Сохранить",
       },
       determine: {
