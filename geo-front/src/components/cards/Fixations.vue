@@ -122,6 +122,23 @@
             Когда Вы нажмёте "Начать",
             процесс сохранения координат Вашего устройства
             будет продолжаться до нажатия кнопки "Стоп".
+            <p>
+              Let us locate you for better results...
+              <button @click="locateMe">Get location</button>
+            </p>
+
+            <div v-if="errorStr">
+              Sorry, but the following error
+              occurred: {{errorStr}}
+            </div>
+
+            <div v-if="gettingLocation">
+              <i>Getting your location...</i>
+            </div>
+
+            <div
+              v-if="location"
+            >Your location data is {{ location.coords.latitude }}, {{ location.coords.longitude}}</div>
           </v-card-text>
           <v-card-actions class="footerForm">
             <v-layout justify-center class="mt-5">
@@ -167,9 +184,7 @@ export default {
         (v) => !!v || "Нужно заполнить это поле",
         (v) => (v && v.length > 8) || "Поле должно быть заполнено полностью",
       ],
-      fillHeight: [
-        (v) => !!v || "Нужно заполнить это поле",
-      ],
+      fillHeight: [(v) => !!v || "Нужно заполнить это поле"],
     },
 
     valid: true,
@@ -211,6 +226,32 @@ export default {
   },
   //  Сделать единый метод отправки данных
   methods: {
+    async getLocation() {
+      return new Promise((resolve, reject) => {
+        if (!("geolocation" in navigator)) {
+          reject(new Error("Geolocation is not available."));
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            resolve(pos);
+          },
+          (err) => {
+            reject(err);
+          }
+        );
+      });
+    },
+    async locateMe() {
+      this.gettingLocation = true;
+      try {
+        this.gettingLocation = false;
+        this.location = await this.getLocation();
+      } catch (e) {
+        this.gettingLocation = false;
+        this.errorStr = e.message;
+      }
+    },
     validate() {
       this.$refs.form.validate();
     },
