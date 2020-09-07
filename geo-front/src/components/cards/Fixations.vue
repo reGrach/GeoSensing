@@ -28,7 +28,7 @@
                           <v-text-field v-if="show" disabled label="Точность высоты" :value="location.coords.altitudeAccuracy"/>
                           <v-text-field v-if="show" disabled label="Точность координат" :value="location.coords.accuracy"/>
                           <v-text-field v-if="show" disabled label="Направление" :value="location.coords.heading"/>
-                          <v-text-field v-if="show" disabled label="Скорость" :value="location.coords.speed"/>
+                          <v-text-field v-if="show" disabled label="Скорость " :value="location.coords.speed"/>
                         </v-flex>
                       </v-layout>
                     </transition>
