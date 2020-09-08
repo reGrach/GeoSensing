@@ -19,9 +19,9 @@
                 </v-card-title>
                 <v-card-text>
                   <v-form ref="formAuto" :v-model="valid" id="demo">
-                    <v-text-field disabled label="Широта" />
-                    <v-text-field disabled label="Долгота" />
-                    <v-text-field disabled label="Высота" />
+                    <v-text-field disabled label="Широта" :value="location.coords.latitude"/>
+                    <v-text-field disabled label="Долгота" :value="location.coords.longitude"/>
+                    <v-text-field disabled label="Высота" :value="location.coords.altitude"/>
                     <transition name="fade">
                       <v-layout>
                         <v-flex>
@@ -47,11 +47,19 @@
                         style="font-size: 15px; letter-spacing: 0px"
                         tile
                         width="120px"
-                        @click="change"
+                        @click="locateMe"
                         :color="currentBtnColor"
                         depressed
                         dark
                       >{{ currentBtnTitle }}</v-btn>
+                      <!-- для дебага, ес чо -->
+                      <!-- <div v-if="gettingLocation">
+                        <i>Getting your location...</i>
+                      </div>
+                      <div v-if="errorStr">
+                        Sorry, but the following error
+                        occurred: {{errorStr}}
+                      </div> -->
                     </v-layout>
                   </v-form>
                 </v-card-text>
@@ -122,23 +130,6 @@
             Когда Вы нажмёте "Начать",
             процесс сохранения координат Вашего устройства
             будет продолжаться до нажатия кнопки "Стоп".
-            <p>
-              Let us locate you for better results...
-              <button @click="locateMe">Get location</button>
-            </p>
-
-            <div v-if="errorStr">
-              Sorry, but the following error
-              occurred: {{errorStr}}
-            </div>
-
-            <div v-if="gettingLocation">
-              <i>Getting your location...</i>
-            </div>
-
-            <div
-              v-if="location"
-            >Your location data is {{ location.coords.latitude }}, {{ location.coords.longitude}}</div>
           </v-card-text>
           <v-card-actions class="footerForm">
             <v-layout justify-center class="mt-5">
@@ -174,10 +165,19 @@ import { VueMaskDirective } from "v-mask";
 Vue.directive("mask", VueMaskDirective);
 export default {
   data: () => ({
+    location: {
+      coords: {
+        latitude: "",
+        longitude: "",
+        altitude: "",
+      },
+    },
+    errorStr: "",
+    gettingLocation: false,
     input: {
       lat: "",
       long: "",
-      height: "",
+      altitude: "",
     },
     rules: {
       fillCoords: [
