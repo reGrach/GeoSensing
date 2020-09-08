@@ -25,9 +25,10 @@
                     <transition name="fade">
                       <v-layout>
                         <v-flex>
-                          <v-text-field v-if="show" disabled label="Направление" />
-                          <v-text-field v-if="show" disabled label="Скорость" />
-                          <v-text-field v-if="show" disabled label="Точность" />
+                          <v-text-field v-if="show" disabled label="Точность высоты" :value="location.coords.altitudeAccuracy"/>
+                          <v-text-field v-if="show" disabled label="Точность координат" :value="location.coords.accuracy"/>
+                          <v-text-field v-if="show" disabled label="Направление" :value="location.coords.heading"/>
+                          <v-text-field v-if="show" disabled label="Скорость" :value="location.coords.speed"/>
                         </v-flex>
                       </v-layout>
                     </transition>
@@ -170,6 +171,10 @@ export default {
         latitude: "",
         longitude: "",
         altitude: "",
+        altitudeAccuracy: "",
+        accuracy: "",
+        speed: "",
+        heading: "",
       },
     },
     errorStr: "",
