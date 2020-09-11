@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import Fixations from '../components/cards/Fixations';
+import Fixations from '../components/cards/Fixations.vue';
 
 export default {
   components: { Fixations },
