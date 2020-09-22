@@ -80,9 +80,12 @@ export default {
     menu: Array,
   },
   data: () => ({
-    drawer: true,
+    drawer: false,
     title: 'GeoSensing',
   }),
+  mounted() {
+    this.drawer = this.$vuetify.breakpoint.lgAndUp;
+  },
   computed: {
     ...mapGetters([
       'currentLogin',

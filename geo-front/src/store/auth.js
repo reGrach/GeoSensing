@@ -2,10 +2,8 @@
 import AuthApi from '../api/auth';
 import roles from '../common/roles'
 import { SIGN_IN, SIGN_UP, SIGN_OUT, CHECK_AUTH } from './actionsType';
-import { setAuth, purgeAuth, getAuth } from '../common/localStorage';
 import
 {
-  INIT_AUTH,
   SET_AUTH,
   PURGE_AUTH,
   SET_ERROR,
@@ -68,21 +66,22 @@ const actions = {
     });
   },
   [CHECK_AUTH]({ commit }) {
+    return new Promise((resolve, reject) => {
       AuthApi.check()
-        .then(({ data }) => {
-          commit(SET_AUTH, data);
-        })
-        .catch(({ response }) => {
-          if(response.status === 401 && response.config){
-            commit(PURGE_AUTH);            
-          }
-        })
+      .then(({ data }) => {
+        commit(SET_AUTH, data);
+        resolve();
+      })
+      .catch(() => {
+        commit(PURGE_AUTH);
+        reject();
+      })
+    });
   },
 };
 
 const mutations = {
-  [SET_AUTH](state, { login, role, avatarSrc, expiration }) {
-    setAuth(login, role, expiration);
+  [SET_AUTH](state, { login, role, avatarSrc }) {
     state.isAuthenticated = true;
     state.userLogin = login;
     state.userRole = role;
@@ -92,19 +91,10 @@ const mutations = {
     state.userAvatar = avatarSrc;
   },
   [PURGE_AUTH](state) {
-    purgeAuth();
     state.isAuthenticated = false;
     state.userRole = null;
     state.userLogin = null;
     state.userAvatar = null;
-  },
-  [INIT_AUTH](state) {
-    const {isAuth, login, role} = getAuth();
-    if (isAuth) {
-      state.isAuthenticated = true;
-      state.userRole = role;
-      state.userLogin = login;
-    }
   },
 };
 

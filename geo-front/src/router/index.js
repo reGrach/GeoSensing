@@ -19,13 +19,13 @@ function ifAuthenticated(from, to, next) {
 const routes = [
   {
     path: '*',
-    redirect: '/experiment',
+    redirect: '/data',
   },
   {
     path: '/experiment',
     name: 'Эксперимент',
     component: () => import('@/views/Experiment'),
-    // beforeEnter: AuthGuard,
+    beforeEnter: AuthGuard,
   },
   {
     path: '/data',
@@ -37,12 +37,6 @@ const routes = [
     path: '/team',
     name: 'Команда',
     component: () => import('@/views/Team'),
-    beforeEnter: AuthGuard,
-  },
-  {
-    path: '/map',
-    name: 'Карта',
-    component: () => import('@/views/Map'),
     beforeEnter: AuthGuard,
   },
   {
