@@ -19,16 +19,36 @@
                 </v-card-title>
                 <v-card-text>
                   <v-form ref="formAuto" :v-model="valid" id="demo">
-                    <v-text-field disabled label="Широта" :value="location.coords.latitude"/>
-                    <v-text-field disabled label="Долгота" :value="location.coords.longitude"/>
-                    <v-text-field disabled label="Высота" :value="location.coords.altitude"/>
+                    <v-text-field disabled label="Широта" :value="location.coords.latitude" />
+                    <v-text-field disabled label="Долгота" :value="location.coords.longitude" />
+                    <v-text-field disabled label="Высота" :value="location.coords.altitude" />
                     <transition name="fade">
                       <v-layout>
                         <v-flex>
-                          <v-text-field v-if="show" disabled label="Точность высоты" :value="location.coords.altitudeAccuracy"/>
-                          <v-text-field v-if="show" disabled label="Точность координат" :value="location.coords.accuracy"/>
-                          <v-text-field v-if="show" disabled label="Направление" :value="location.coords.heading"/>
-                          <v-text-field v-if="show" disabled label="Скорость " :value="location.coords.speed"/>
+                          <v-text-field
+                            v-if="show"
+                            disabled
+                            label="Точность высоты"
+                            :value="location.coords.altitudeAccuracy"
+                          />
+                          <v-text-field
+                            v-if="show"
+                            disabled
+                            label="Точность координат"
+                            :value="location.coords.accuracy"
+                          />
+                          <v-text-field
+                            v-if="show"
+                            disabled
+                            label="Направление"
+                            :value="location.coords.heading"
+                          />
+                          <v-text-field
+                            v-if="show"
+                            disabled
+                            label="Скорость "
+                            :value="location.coords.speed"
+                          />
                         </v-flex>
                       </v-layout>
                     </transition>
@@ -60,7 +80,7 @@
                       <div v-if="errorStr">
                         Sorry, but the following error
                         occurred: {{errorStr}}
-                      </div> -->
+                      </div>-->
                     </v-layout>
                   </v-form>
                 </v-card-text>
@@ -76,24 +96,21 @@
               <v-card class="elevation-0">
                 <v-card-title class="title">Ввод</v-card-title>
                 <v-card-text>
-                  <v-form :v-model="valid" ref="formManual">
+                  <v-form v-model="validManual" ref="formManual">
                     <v-text-field
                       :rules="rules.fillCoords"
-                      v-mask="'##.########'"
                       v-model="input.lat"
                       label="Широта"
                       required
                     />
                     <v-text-field
                       :rules="rules.fillCoords"
-                      v-mask="'##.########'"
                       v-model="input.long"
                       label="Долгота"
                       required
                     />
                     <v-text-field
                       :rules="rules.fillHeight"
-                      v-mask="'###'"
                       v-model="input.height"
                       label="Высота"
                       required
@@ -113,9 +130,10 @@
                         :class="'rounded-r-lg'"
                         style="font-size: 15px; letter-spacing: 0px"
                         tile
-                        :disabled="valid"
+                        :disabled="!validManual"
                         width="130px"
                         color="primary"
+                        @click="showCoords"
                       >Отправить</v-btn>
                     </v-layout>
                   </v-form>
@@ -161,60 +179,66 @@
 </template>
 
 <script>
-import Vue from "vue";
-import { VueMaskDirective } from "v-mask";
-Vue.directive("mask", VueMaskDirective);
 export default {
   data: () => ({
     location: {
       coords: {
-        latitude: "",
-        longitude: "",
-        altitude: "",
-        altitudeAccuracy: "",
-        accuracy: "",
-        speed: "",
-        heading: "",
+        latitude: '',
+        longitude: '',
+        altitude: '',
+        altitudeAccuracy: '',
+        accuracy: '',
+        speed: '',
+        heading: '',
       },
     },
-    errorStr: "",
+    errorStr: '',
     gettingLocation: false,
     input: {
-      lat: "",
-      long: "",
-      altitude: "",
+      lat: '',
+      long: '',
+      altitude: '',
     },
     rules: {
       fillCoords: [
-        (v) => !!v || "Нужно заполнить это поле",
-        (v) => (v && v.length > 8) || "Поле должно быть заполнено полностью",
+        (v) => !!v || 'Обязательное поле',
+        (v) => {
+          const pattern = /^(-?\d{1,3}([.|,]\d{1,8})?)$/;
+          return pattern.test(v) || 'Неверный формат ввода координат';
+        },
       ],
-      fillHeight: [(v) => !!v || "Нужно заполнить это поле"],
+      fillHeight: [
+        (v) => !!v || 'Обязательное поле',
+        (v) => {
+          const pattern = /^\d{1,3}$/;
+          return pattern.test(v) || 'Неверный формат ввода координат';
+        }],
     },
 
     valid: true,
+    validManual: false,
     SHBtnStyle: {
-      color: "cyan",
-      fontSize: "22px",
-      texttransform: "lowercase",
+      color: 'cyan',
+      fontSize: '22px',
+      texttransform: 'lowercase',
     },
     show: false,
     isNewPoint: true,
     tab: null,
     btn: {
       save: {
-        color: "primary",
-        title: "Сохранить",
+        color: 'primary',
+        title: 'Сохранить',
       },
       determine: {
-        color: "success",
-        title: "Определить",
+        color: 'success',
+        title: 'Определить',
       },
       show: {
-        title: "простые",
+        title: 'простые',
       },
       hide: {
-        title: "подробные",
+        title: 'подробные',
       },
     },
   }),
@@ -233,8 +257,8 @@ export default {
   methods: {
     async getLocation() {
       return new Promise((resolve, reject) => {
-        if (!("geolocation" in navigator)) {
-          reject(new Error("Geolocation is not available."));
+        if (!('geolocation' in navigator)) {
+          reject(new Error('Geolocation is not available.'));
         }
 
         navigator.geolocation.getCurrentPosition(
@@ -243,7 +267,7 @@ export default {
           },
           (err) => {
             reject(err);
-          }
+          },
         );
       });
     },
@@ -268,6 +292,9 @@ export default {
     },
     change() {
       this.isNewPoint = !this.isNewPoint;
+    },
+    showCoords() {
+      console.log(this.input.long);
     },
   },
 };

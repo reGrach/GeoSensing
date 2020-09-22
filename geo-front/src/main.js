@@ -5,7 +5,9 @@ import store from './store';
 import { INIT_AUTH } from './store/mutationsType';
 import { CHECK_AUTH } from './store/actionsType';
 import vuetify from './plugins/vuetify';
+// import initPlugins from './plugins';
 import ApiService from './api';
+
 // тест пуша
 Vue.config.productionTip = false;
 
