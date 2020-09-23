@@ -11,3 +11,7 @@ export const GET_ALL_TEAMS = 'GET_ALL_TEAMS';
 export const GET_TEAM = 'GET_TEAM';
 export const CREATE_TEAM = 'CREATE_TEAM';
 export const JOIN_TEAM = 'JOIN_TEAM';
+
+export const NEW_EXP = 'NEW_EXP';
+export const GET_LIST_EXP = 'GET_LIST_EXP';
+export const POINT = 'POINT';

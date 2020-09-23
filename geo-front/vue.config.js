@@ -1,7 +1,7 @@
 module.exports = {
-  // devServer: {
-  //   https: true,
-  // },
+  devServer: {
+    https: true,
+  },
   lintOnSave: process.env.NODE_ENV !== 'production',
   transpileDependencies: [
     'vuetify',
