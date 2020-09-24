@@ -18,6 +18,7 @@
 <script>
 import MapData from '../components/cards/MapData.vue';
 import TableData from '../components/cards/TableData.vue';
+
 export default {
   components: { MapData, TableData },
 
@@ -26,26 +27,26 @@ export default {
     points: [
       {
         number: 1,
-        author: "Дима",
-        x:60.44906,
-        y:30.289094,
-        coords:[60.44906, 30.289094]
+        author: 'Дима',
+        x: 60.44906,
+        y: 30.289094,
+        coords: [60.44906, 30.289094],
       },
       {
         number: 2,
-        author: "Миша",
-        x:60.448902,
-        y:30.28967,
-        coords:[60.448902, 30.28967]
+        author: 'Миша',
+        x: 60.448902,
+        y: 30.28967,
+        coords: [60.448902, 30.28967],
       },
       {
         number: 3,
-        author: "Юля",
-        x:60.449111,
-        y:30.290246,
-        coords:[60.449111, 30.290246]
-      }
-    ]
+        author: 'Юля',
+        x: 60.449111,
+        y: 30.290246,
+        coords: [60.449111, 30.290246],
+      },
+    ],
   }),
 };
 </script>
