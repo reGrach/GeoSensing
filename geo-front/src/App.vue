@@ -1,8 +1,9 @@
 <template>
   <v-app>
     <app-header></app-header>
-    <v-main>
-      <router-view/>
+    <v-main >
+      <router-view v-show="!showPreloader" />
+      <Preloader v-if="showPreloader"></Preloader>
     </v-main>
     <app-footer></app-footer>
   </v-app>
@@ -11,25 +12,17 @@
 <script>
 import AppHeader from '@/components/base/AppHeader.vue';
 import AppFooter from '@/components/base/AppFooter.vue';
-import axios from 'axios';
-import { PURGE_AUTH } from './store/mutationsType';
+import Preloader from '@/components/base/Preloader.vue';
+import { mapGetters } from 'vuex';
 
 export default {
   components: {
     AppHeader,
     AppFooter,
+    Preloader,
   },
-  created() {
-    axios.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        const { status } = error.response;
-        if (status === 401) {
-          this.$store.commit(PURGE_AUTH);
-        }
-        return Promise.reject(error);
-      },
-    );
+  computed: {
+    ...mapGetters(['showPreloader']),
   },
 };
 </script>

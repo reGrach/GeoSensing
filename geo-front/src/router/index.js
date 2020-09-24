@@ -19,7 +19,7 @@ function ifAuthenticated(from, to, next) {
 const routes = [
   {
     path: '*',
-    redirect: '/experiment',
+    redirect: '/data',
   },
   {
     path: '/experiment',
@@ -31,6 +31,7 @@ const routes = [
     path: '/data',
     name: 'Мои данные',
     component: () => import('@/views/MyData'),
+    beforeEnter: AuthGuard,
   },
   {
     path: '/team',

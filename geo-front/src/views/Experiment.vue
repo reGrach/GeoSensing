@@ -1,5 +1,5 @@
 <template>
-  <fixations></fixations>
+<fixations></fixations>
 </template>
 
 <script>

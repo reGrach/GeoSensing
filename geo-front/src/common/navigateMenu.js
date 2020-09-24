@@ -1,23 +1,18 @@
 export const menu = [
   {
-    icon: 'mdi-transit-detour',
-    title: 'Эксперимент',
-    route: '/experiment',
-  },
-  {
     icon: 'mdi-database',
     title: 'Мои данные',
     route: '/data',
   },
   {
+    icon: 'mdi-transit-detour',
+    title: 'Эксперимент',
+    route: '/experiment',
+  },
+  {
     icon: 'mdi-account-group',
     title: 'Команда',
     route: '/team',
-  },
-  {
-    icon: 'mdi-map',
-    title: 'Карта',
-    route: '/map',
   },
 ];
 export const adminMenu = [

@@ -4,6 +4,7 @@ import auth from './auth';
 import general from './general';
 import profile from './profile';
 import team from './team';
+import geo from './geo';
 
 Vue.use(Vuex);
 
@@ -13,6 +14,7 @@ const store = new Vuex.Store({
     general,
     profile,
     team,
+    geo,
   },
 });
 
