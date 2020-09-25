@@ -3,10 +3,6 @@ import GeoApi from '../api/geo';
 import { NEW_EXP, GET_LIST_EXP, POINT } from './actionsType';
 import { SET_ERROR, SET_PROCESSING, SET_EXP } from './mutationsType';
 
-const state = {
-  currentExperiment: null,
-};
-
 const actions = {
     [GET_LIST_EXP]({ commit }) {
         commit(SET_PROCESSING, true);
@@ -44,11 +40,11 @@ const actions = {
       });
     },
 
-    [POINT]({ commit, state }, coords, mode) {
+    [POINT]({ commit }, coords, mode, cExpId) {
       commit(SET_PROCESSING, true);
       const point = {
         ...coords,
-        experimentId: state.currentExperiment,
+        experimentId: cExpId,
         mode: mode
       }
       return new Promise((resolve, reject) => {
@@ -68,9 +64,7 @@ const actions = {
 };
 
 const mutations = {
-  [SET_EXP](state, payload) {
-    state.currentExperiment = payload;
-  },
+
 };
 
 const getters = {};
