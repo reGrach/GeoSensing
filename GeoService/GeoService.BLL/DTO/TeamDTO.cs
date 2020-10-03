@@ -14,7 +14,7 @@ namespace GeoService.BLL.DTO
     {
         public DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }
-        public List<UserDTO> Participants { get; set; }
+        public List<UserWithImgDTO> Participants { get; set; }
         public PolygonTeam Polygon { get; set; }
     }    
 

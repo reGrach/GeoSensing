@@ -1,9 +1,9 @@
 ﻿using GeoService.BLL.DTO;
 using GeoService.DAL;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace GeoService.BLL.Actions
 {
@@ -80,9 +80,9 @@ namespace GeoService.BLL.Actions
                 throw new ApiException(ConstMsg.UserNotFound, nameof(GetExperimentsByUserId), 404);
         }
 
-        public static void AddPoint(this GeoContext ctx, GeoParameterDTO model)
+        public static void AddPoint(this GeoContext ctx, SavePointDTO model, int userId)
         {
-            if (ctx.Users.Find(model.UserId) is User dbUser)
+            if (ctx.Users.Find(userId) is User dbUser)
             {
                 if (dbUser.Team is Team dbTeam && dbTeam.Experiments.SingleOrDefault(x => x.Id == model.ExperimentId) is Experiment exp && exp.IsActive)
                 {
@@ -107,6 +107,49 @@ namespace GeoService.BLL.Actions
             }
             else
                 throw new ApiException(ConstMsg.UserNotFound, nameof(AddPoint), 404);
+        }
+
+        public static ResponsePointsDTO GetPoints(this GeoContext ctx, int userId)
+        {
+            if (ctx.Users.Find(userId) is User dbUser)
+            {
+                var points = ctx.GeoParameters
+                    .Include(x => x.Experiment).ThenInclude(x => x.Team)
+                    .Where(x => x.Experiment.TeamId == dbUser.TeamId)
+                    .GroupBy(x => x.Experiment)
+                    .Select(x => new ListPointsDTO
+                    {
+                        ExperimentId = x.Key.Id,
+                        ExperimentTitle = x.Key.Title,
+                        Points = x.Select(x => new UserPointDTO
+                        {
+                            Accuracy = x.Accuracy,
+                            Altitude = x.Altitude,
+                            AltitudeAccuracy = x.AltitudeAccuracy,
+                            Speed = x.Speed,
+                            CreateTime = x.CreateTime,
+                            Heading = x.Heading,
+                            Latitude = x.Latitude,
+                            Longitude = x.Longitude,
+                            Mode = x.Mode,
+                            User = ctx.Users.FirstOrDefault(y => y.Id == x.CreatorUserId).ToDTO()
+                        }).ToList()
+                    }).ToList();
+
+                var logins = points.SelectMany(x => x.Points.Select(y => y.User.Login)).Distinct().ToArray();
+
+                var userImg = ctx.Users.Include(x => x.Avatar)
+                    .Where(x => logins.Contains(x.Login))
+                    .ToDictionary(k => k.Login, v => v.GetAvatarSrc());
+
+                return new ResponsePointsDTO
+                {
+                    ListPoint = points,
+                    UserImages = userImg
+                };
+            }
+            else
+                throw new ApiException(ConstMsg.UserNotFound, nameof(GetPoints), 404);
         }
     }
 }

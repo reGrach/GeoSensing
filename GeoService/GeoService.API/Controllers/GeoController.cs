@@ -15,6 +15,16 @@ namespace GeoService.API.Controllers
     {
         public GeoController(GeoContext context, IMapper mapper) : base(context, mapper) { }
 
+
+        /// <summary> Получить список точек для команды по id</summary>
+        [Authorize(AdminPolicy)]
+        [HttpGet]
+        public IActionResult GetPoints(int id) => TryAction(() =>
+        {
+            return Ok();
+        });
+
+
         #region Действия участника
 
         /// <summary> Инициировать эксперимент </summary>
@@ -44,14 +54,21 @@ namespace GeoService.API.Controllers
             return Ok(expirements);
         });
 
+        /// <summary> Получить список точек для текущей команды </summary>
+        [HttpGet]
+        public IActionResult GetMyPoints() => TryAction(() =>
+        {
+            var id = User.Identity.GetUserId();
+            var points = _context.GetPoints(id);
+            return Ok(points);
+        });
+
         /// <summary> Зафиксировать точку </summary>
         [HttpPost]
         public IActionResult FixationPoint(FixPointModel model) => TryAction(() =>
         {
-            var parametrs = _mapper.Map<GeoParameterDTO>(model);
-            parametrs.UserId = User.Identity.GetUserId();
-            _context.AddPoint(parametrs);
-
+            var parametrs = _mapper.Map<SavePointDTO>(model);
+            _context.AddPoint(parametrs, User.Identity.GetUserId());
             return Ok();
         });
 

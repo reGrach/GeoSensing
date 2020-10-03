@@ -55,7 +55,7 @@ namespace GeoService.BLL.Actions
                 throw new ApiException("Пользователя с таким логином не существует", nameof(AuthenticationUser), 400);
         }
 
-        public static UserDTO UpdateProfile(this GeoContext ctx, int id, UserDTO model)
+        public static UserWithImgDTO UpdateProfile(this GeoContext ctx, int id, UserWithImgDTO model)
         {
             if (ctx.Users.Find(id) is User dbUser)
             {
@@ -69,7 +69,7 @@ namespace GeoService.BLL.Actions
                 throw new ApiException(ConstMsg.UserNotFound, nameof(UpdateProfile), 404);
         }
 
-        public static UserDTO GetProfile(this GeoContext ctx, int id)
+        public static UserWithImgDTO GetProfile(this GeoContext ctx, int id)
         {
             if (ctx.Users.Find(id) is User dbUser)
                 return dbUser.ToExtensionDTO();
@@ -77,7 +77,7 @@ namespace GeoService.BLL.Actions
                 throw new ApiException(ConstMsg.UserNotFound, nameof(GetProfile), 404);
         }
 
-        public static IEnumerable<UserDTO> GetFilterUsers(this GeoContext ctx, string query, string role)
+        public static IEnumerable<UserWithImgDTO> GetFilterUsers(this GeoContext ctx, string query, string role)
         {
             var dbUsers = ctx.Users.AsNoTracking()
                 .Where(x => string.IsNullOrEmpty(role) || x.Role.ToString() == role)
@@ -88,7 +88,7 @@ namespace GeoService.BLL.Actions
                     || x.Name.Equals(query, StringComparison.InvariantCultureIgnoreCase)
                     || x.Surname.Equals(query, StringComparison.InvariantCultureIgnoreCase));
 
-            return dbUsers.Select(x => x.ToDTO());
+            return dbUsers.Select(x => x.ToImgDTO());
         }
 
         public static void CreateUpdateAvatar(this GeoContext ctx, int userId, byte[] content, string mime)
@@ -118,6 +118,15 @@ namespace GeoService.BLL.Actions
                 Login = user.Login,
                 Name = user.Name,
                 SurName = user.Surname,
+                IsLeader = user.Role == RoleEnum.Leader
+            };
+
+        internal static UserWithImgDTO ToImgDTO(this User user) =>
+            new UserWithImgDTO
+            {
+                Login = user.Login,
+                Name = user.Name,
+                SurName = user.Surname,
                 AvatarSrc = user.GetAvatarSrc(),
                 IsLeader = user.Role == RoleEnum.Leader                
             };
@@ -134,7 +143,7 @@ namespace GeoService.BLL.Actions
                 Team = user.Team is Team team ? team.ToDTO() : null
             };
 
-        private static string GetAvatarSrc(this User user) =>
+        internal static string GetAvatarSrc(this User user) =>
             user.Avatar is Avatar _ava ? $"data:{_ava.MimeType};base64,{Convert.ToBase64String(_ava.FileContent)}" : string.Empty;
     }
 }

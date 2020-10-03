@@ -48,7 +48,7 @@ namespace GeoService.API.Controllers
         public IActionResult Update(ProfileModel model) => TryAction(() =>
         {
             var id = User.Identity.GetUserId();
-            var user = _mapper.Map<UserDTO>(model);
+            var user = _mapper.Map<UserWithImgDTO>(model);
             var updateUser = _context.UpdateProfile(id, user);
 
             return Ok(updateUser);

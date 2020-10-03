@@ -3,7 +3,6 @@ using GeoService.API.Auth.JwtExtension;
 using GeoService.API.Models;
 using GeoService.BLL.Actions;
 using GeoService.DAL;
-using GeoService.DAL.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -75,5 +74,20 @@ namespace GeoService.API.Controllers
             AvatarSrc = _context.GetAvatar(User.Identity.GetUserId()),
             Expiration = User.Identity.GetExpirationToken()
         }));
+
+
+
+        ///// <summary> Продление жизни токена </summary>
+        //[HttpPost]
+        //public IActionResult Extend() => TryAction(() =>
+        //{
+        //    if (User.Identity.GetExpirationToken().Subtract(DateTime.Now).TotalHours is double _h
+        //        && _h > 0 && _h < 1)
+        //    {
+
+        //    }
+
+        //    return Ok();
+        //});
     }
 }

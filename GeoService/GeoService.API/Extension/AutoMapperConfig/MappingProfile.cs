@@ -9,7 +9,8 @@ namespace GeoService.API.Extension
         public MappingProfile()
         {
             CreateMap<ProfileModel, UserDTO>();
-            CreateMap<FixPointModel, GeoParameterDTO>();
+            CreateMap<FixPointModel, PointDTO>();
+            CreateMap<FixPointModel, SavePointDTO>();
         }
     }
 }

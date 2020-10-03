@@ -155,7 +155,11 @@ namespace GeoService.BLL.Actions
                 Title = team.Title,
                 Color = team.Color, 
                 IsActive = team.IsActive,
-                Participants = team.Users.Select(x => x.ToDTO()).OrderByDescending(x => x.IsLeader).ThenBy(x => x.Login).ToList(),
+                Participants = team.Users
+                    .Select(x => x.ToImgDTO())
+                    .OrderByDescending(x => x.IsLeader)
+                    .ThenBy(x => x.Login)
+                    .ToList(),
                 Polygon = team.Polygon.HasValue ? team.Polygon.Value.ToPolygon() : null
             };
     }
