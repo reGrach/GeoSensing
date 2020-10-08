@@ -12,8 +12,8 @@ const TeamApi = {
   leave() {
     return ApiService.post(`${prefix}removeMe`);
   },
-  exclude(userLogin) {
-    return ApiService.post(`${prefix}removeUser`, { userLogin });
+  exclude(login) {
+    return ApiService.post(`${prefix}removeUser`, { login });
   },
   getAll(isAdmin) {
     const route = isAdmin ? 'getAll' : 'getActive';

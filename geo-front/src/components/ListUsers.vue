@@ -73,8 +73,7 @@ export default {
     },
     removeUser(login) {
       const userLogin = this.isLeader ? login : null;
-      this.$store.dispatch(LEAVE_TEAM, userLogin)
-        .then(() => this.$router.go());
+      this.$store.dispatch(LEAVE_TEAM, userLogin);
     },
   },
 };
