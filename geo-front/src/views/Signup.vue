@@ -104,7 +104,7 @@ export default {
           login: this.login,
           password: this.password,
         })
-        .then(() => this.$router.push('/signin'));
+        .then(() => this.$router.push('/profile'));
     },
     validateField() {
       this.$refs.form.validate();

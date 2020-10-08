@@ -58,9 +58,9 @@ namespace GeoService.API.Controllers
         /// <summary> Выйти из команды </summary>
         [HttpPost]
         [Authorize(LeaderPolicy)]
-        public IActionResult RemoveUser([Bind("UserId")] UserInTeam model) => TryAction(() =>
+        public IActionResult RemoveUser([Bind("Login")] UserInTeam model) => TryAction(() =>
         {
-            _context.RemoveUserFromTeam(model.UserId);
+            _context.RemoveUserFromTeam(model.Login);
             return Ok();
         });
 
@@ -85,7 +85,8 @@ namespace GeoService.API.Controllers
         public IActionResult RemoveMe() => TryAction(() =>
         {
             var id = User.Identity.GetUserId();
-            _context.RemoveUserFromTeam(id);
+            var login = User.Identity.GetUserLogin();
+            _context.RemoveUserFromTeam(login);
             UpdateClaimsAndToken(id, role: RoleEnum.NonDefined);
             return Ok();
         });

@@ -2,7 +2,7 @@
 {
     public class UserInTeam
     {
-        public int UserId { get; set; }
+        public string Login { get; set; }
         public int TeamId { get; set; }
     }
 }

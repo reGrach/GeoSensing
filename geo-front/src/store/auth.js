@@ -25,7 +25,7 @@ const actions = {
       AuthApi.signin(credentials)
         .then(({ data }) => {
           commit(SET_AUTH, data);
-          resolve(data);
+          resolve();
         })
         .catch(({ response }) => {
           console.log(response);
@@ -41,24 +41,25 @@ const actions = {
     commit(SET_PROCESSING, true);
     return new Promise((resolve, reject) => {
       AuthApi.signup(credentials)
-        .then(() => { resolve(); })
-        .catch(({ response }) => {
-          console.log(response);
-          commit(SET_ERROR, response);
-          reject(response);
-        })
-        .finally(() => {
-          commit(SET_PROCESSING, false);
-        });
+      .then(({ data }) => {
+        commit(SET_AUTH, data);
+        resolve();
+      })
+      .catch(({ response }) => {
+        console.log(response);
+        commit(SET_ERROR, response);
+        reject(response);
+      })
+      .finally(() => {
+        commit(SET_PROCESSING, false);
+      });
     });
   },
   [SIGN_OUT]({ commit }) {
     commit(PURGE_AUTH);
     return new Promise((resolve, reject) => {
       AuthApi.signout()
-        .then(() => {
-          resolve();
-        })
+        .then(() => { resolve();})
         .catch(({ response }) => {
           console.log(response);
           reject(response);

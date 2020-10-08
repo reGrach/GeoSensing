@@ -100,9 +100,9 @@ namespace GeoService.BLL.Actions
                 throw new ApiException(ConstMsg.UserNotFound, nameof(AddUserToTeam), 404);
         }
 
-        public static void RemoveUserFromTeam(this GeoContext ctx, int userId)
+        public static void RemoveUserFromTeam(this GeoContext ctx, string login)
         {
-            if (ctx.Users.Find(userId) is User dbUser)
+            if (ctx.Users.SingleOrDefault(x => x.Login == login) is User dbUser)
             {
                 if (!dbUser.TeamId.HasValue)
                     throw new ApiException("Пользователь не состоит в команде", nameof(RemoveUserFromTeam), 400);
