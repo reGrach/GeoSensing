@@ -73,12 +73,10 @@ export default {
       ],
     },
   }),
-
-  // watch: {
-  //   password: 'validateField',
-  //   confirmPassword: 'validateField'
-  // },
-
+  watch: {
+    password: 'validateField',
+    confirmPassword: 'validateField',
+  },
   computed: {
     ...mapGetters(['getError', 'getProcessing']),
     showError() {
