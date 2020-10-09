@@ -179,6 +179,9 @@
 import modes from '@/common/modePoint';
 
 export default {
+  props: {
+    cExpId: Number,
+  },
   data: () => ({
     modes,
     tab: null,
@@ -280,6 +283,8 @@ export default {
       try {
         this.gettingLocation = false;
         this.location = await this.getLocation();
+
+        console.log(this.location)
       } catch (e) {
         this.gettingLocation = false;
         this.errorStr = e.message;
@@ -297,6 +302,9 @@ export default {
     change() {
       this.isNewPoint = !this.isNewPoint;
     },
+    submit() {
+      console.log(this.mode, this.cExpId, this.location)
+    }    
   },
 };
 </script>

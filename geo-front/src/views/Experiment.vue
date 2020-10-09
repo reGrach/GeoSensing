@@ -14,7 +14,7 @@
       <v-col cols="11">
         <v-select
           v-model="currentExp"
-          :items="expirement"
+          :items="getListExperiments"
           item-value="id"
           item-text="title"
           label="Выберите эксперимент"
@@ -37,24 +37,22 @@ export default {
   components: { Fixations, CreateExp },
   data: () => ({
     dialog: false,
-    expirement: [],
     currentExp: null,
   }),
 
   computed: {
-    ...mapGetters(["isEasyUser", "getProcessing"]),
+    ...mapGetters(["isEasyUser", "getProcessing", "getListExperiments"]),
     canFixPoint() {
-      return this.expirement.length > 0 && !this.isEasyUser;
+      return this.currentExp && !this.isEasyUser;
     },
   },
 
   created() {
     if (!this.isEasyUser) {
-      this.$store.dispatch(GET_LIST_EXP).then((list) => {
-        this.expirement = list;
-      });
+      this.$store.dispatch(GET_LIST_EXP);
     }
   },
+
   methods: {
     close(){
       this.dialog = false
