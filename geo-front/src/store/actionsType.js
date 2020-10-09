@@ -16,3 +16,4 @@ export const LEAVE_TEAM = 'LEAVE_TEAM';
 export const NEW_EXP = 'NEW_EXP';
 export const GET_LIST_EXP = 'GET_LIST_EXP';
 export const POINT = 'POINT';
+export const GET_LIST_POINTS = 'GET_LIST_POINTS';
