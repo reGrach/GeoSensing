@@ -11,3 +11,6 @@ export const UPLOAD_IMG = 'UPLOAD_IMG';
 export const SET_AVA = 'SET_AVA';
 
 export const SET_EXP = 'SET_EXP';
+
+export const SET_TEAM = 'SET_TEAM';
+export const REMOVE_TEAM = 'REMOVE_TEAM';

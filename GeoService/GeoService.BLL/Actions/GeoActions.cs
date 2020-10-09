@@ -113,28 +113,29 @@ namespace GeoService.BLL.Actions
         {
             if (ctx.Users.Find(userId) is User dbUser)
             {
-                var points = ctx.GeoParameters
-                    .Include(x => x.Experiment).ThenInclude(x => x.Team)
-                    .Where(x => x.Experiment.TeamId == dbUser.TeamId)
-                    .GroupBy(x => x.Experiment)
+                var points = ctx.Experiments
+                    .Include(x => x.Coordinates)
+                    .Where(x => x.TeamId == dbUser.TeamId)
                     .Select(x => new ListPointsDTO
                     {
-                        ExperimentId = x.Key.Id,
-                        ExperimentTitle = x.Key.Title,
-                        Points = x.Select(x => new UserPointDTO
-                        {
-                            Accuracy = x.Accuracy,
-                            Altitude = x.Altitude,
-                            AltitudeAccuracy = x.AltitudeAccuracy,
-                            Speed = x.Speed,
-                            CreateTime = x.CreateTime,
-                            Heading = x.Heading,
-                            Latitude = x.Latitude,
-                            Longitude = x.Longitude,
-                            Mode = x.Mode,
-                            User = ctx.Users.FirstOrDefault(y => y.Id == x.CreatorUserId).ToDTO()
-                        }).ToList()
+                        ExperimentId = x.Id,
+                        ExperimentTitle = x.Title,
+                        Points = x.Coordinates
+                            .Select(x => new UserPointDTO
+                            {
+                                Accuracy = x.Accuracy,
+                                Altitude = x.Altitude,
+                                AltitudeAccuracy = x.AltitudeAccuracy,
+                                Speed = x.Speed,
+                                CreateTime = x.CreateTime,
+                                Heading = x.Heading,
+                                Latitude = x.Latitude,
+                                Longitude = x.Longitude,
+                                Mode = x.Mode,
+                                User = ctx.Users.FirstOrDefault(y => y.Id == x.CreatorUserId).ToDTO()
+                            }).ToList()
                     }).ToList();
+
 
                 var logins = points.SelectMany(x => x.Points.Select(y => y.User.Login)).Distinct().ToArray();
 
