@@ -10,6 +10,8 @@ export const SET_PROFILE = 'SET_PROFILE';
 export const UPLOAD_IMG = 'UPLOAD_IMG';
 export const SET_AVA = 'SET_AVA';
 
+export const FILL_EXP = 'FILL_EXP';
+
 export const SET_EXP = 'SET_EXP';
 
 export const SET_TEAM = 'SET_TEAM';

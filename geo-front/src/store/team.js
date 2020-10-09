@@ -120,8 +120,8 @@ const mutations = {
     if(payload){
       state.currentTeam = {
         color: payload.color, 
-        title: payload.title,
-        createDate: payload.createDate
+        title: payload.title, 
+        createDate: payload.createDate 
       };
       state.participants = payload.participants;
     }
