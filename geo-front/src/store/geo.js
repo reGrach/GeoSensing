@@ -1,6 +1,6 @@
 /* eslint-disable */
 import GeoApi from '../api/geo';
-import { NEW_EXP, GET_LIST_EXP, POINT } from './actionsType';
+import { NEW_EXP, GET_LIST_EXP, POINT, GET_LIST_POINTS } from './actionsType';
 import { SET_ERROR, SET_PROCESSING, SET_EXP, FILL_EXP } from './mutationsType';
 const state = {
   experiments: [],
@@ -58,6 +58,24 @@ const actions = {
     return new Promise((resolve, reject) => {
       GeoApi.FixCoords(point)
         .then(() => resolve())
+        .catch(({ response }) => {
+          console.log(response);
+          commit(SET_ERROR, response);
+          reject(response);
+        })
+        .finally(() => {
+          commit(SET_PROCESSING, false);
+        });
+    });
+
+  },
+  [GET_LIST_POINTS]({ commit }) {
+    commit(SET_PROCESSING, true);
+    return new Promise((resolve, reject) => {
+      GeoApi.GetMyPoints()
+        .then(({ data }) => {
+          resolve(data);
+        })
         .catch(({ response }) => {
           console.log(response);
           commit(SET_ERROR, response);

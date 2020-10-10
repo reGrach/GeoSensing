@@ -15,6 +15,9 @@ const GeoApi = {
   CloseExperiment(id) {
     return ApiService.post(`${prefix}CloseExperiment?id=${id}`);
   },
+  GetMyPoints() {
+    return ApiService.get(`${prefix}GetMyPoints`);
+  },
 };
 
 export default GeoApi;
