@@ -251,10 +251,10 @@ export default {
   }),
   computed: {
     currentBtnColor() {
-      return this.isDefinedLocation ? 'primary' : 'success';
+      return this.isDefinedLocation && this.formPoint.auto.altitude ? 'success' : 'primary';
     },
     currentBtnTitle() {
-      return this.isDefinedLocation ? 'Отправить' : 'Определить';
+      return this.isDefinedLocation && this.formPoint.auto.altitude ? 'Отправить' : 'Определить';
     },
     isExtension() {
       return this.show ? 'простые' : 'подробные';
@@ -323,7 +323,15 @@ export default {
       };
       console.log(point);
       this.$store.dispatch(POINT, point)
-        .then(() => this.resetAuto());
+        .then(() => {
+          if (this.getCurrentMode === 'auto') {
+            this.resetAuto();
+          }
+          if (this.getCurrentMode === 'manual') {
+            this.resetManual();
+          }
+          this.$emit('showNotify');
+        });
     },
   },
 };

@@ -1,5 +1,15 @@
 <template>
   <v-container fluid>
+    <v-snackbar
+      v-model="notify"
+      :timeout="2000"
+      absolute
+      top
+      right
+      color="success"
+    >
+      Успех
+    </v-snackbar>
     <v-row align="center" justify="center">
       <v-col cols="1">
         <v-dialog v-model="dialog" persistent max-width="600px">
@@ -24,7 +34,7 @@
       </v-col>
     </v-row>
     <v-divider></v-divider>
-    <fixations v-if="canFixPoint" :cExpId="currentExp"></fixations>
+    <fixations v-if="canFixPoint" :cExpId="currentExp" @showNotify="notify = true"></fixations>
   </v-container>
 </template>
 
@@ -38,6 +48,7 @@ export default {
   components: { Fixations, CreateExp },
   data: () => ({
     dialog: false,
+    notify: false,
     currentExp: null,
   }),
 
