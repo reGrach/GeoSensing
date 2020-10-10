@@ -46,7 +46,7 @@
                         :class="'rounded-r-lg'"
                         style="font-size: 15px; letter-spacing: 0px"
                         tile
-                        @click="submit" 
+                        @click="submit"
                         :disabled="!validManual"
                         width="130px"
                         color="primary"
@@ -74,26 +74,26 @@
                     @click="show = !show"
                   >
                     <div style="font-size: 20px; letter-spacing: 0px">
-                      {{ showBtnTitle }}
+                      {{ isExtension }}
                     </div>
                   </v-btn>
                 </v-card-title>
                 <v-card-text>
-                  <v-form ref="formAuto" :v-model="valid" id="demo">
+                  <v-form ref="formAuto" :v-model="valid">
                     <v-text-field
                       disabled
                       label="Широта"
-                      :value="formPoint.auto.latitude"
+                      v-model="formPoint.auto.latitude"
                     />
                     <v-text-field
                       disabled
                       label="Долгота"
-                      :value="formPoint.auto.longitude"
+                      v-model="formPoint.auto.longitude"
                     />
                     <v-text-field
                       disabled
                       label="Высота"
-                      :value="formPoint.auto.altitude"
+                      v-model="formPoint.auto.altitude"
                     />
                     <transition name="fade">
                       <v-layout>
@@ -102,25 +102,25 @@
                             v-if="show"
                             disabled
                             label="Точность высоты"
-                            :value="formPoint.auto.altitudeAccuracy"
+                            v-model="formPoint.auto.altitudeAccuracy"
                           />
                           <v-text-field
                             v-if="show"
                             disabled
                             label="Точность координат"
-                            :value="formPoint.auto.accuracy"
+                            v-model="formPoint.auto.accuracy"
                           />
                           <v-text-field
                             v-if="show"
                             disabled
                             label="Направление"
-                            :value="formPoint.auto.heading"
+                            v-model="formPoint.auto.heading"
                           />
                           <v-text-field
                             v-if="show"
                             disabled
                             label="Скорость "
-                            :value="formPoint.auto.speed"
+                            v-model="formPoint.auto.speed"
                           />
                         </v-flex>
                       </v-layout>
@@ -148,14 +148,6 @@
                         dark
                         >{{ currentBtnTitle }}</v-btn
                       >
-                      <!-- для дебага, ес чо -->
-                      <!-- <div v-if="gettingLocation">
-                        <i>Getting your location...</i>
-                      </div>
-                      <div v-if="errorStr">
-                        Sorry, but the following error
-                        occurred: {{errorStr}}
-                      </div>-->
                     </v-layout>
                   </v-form>
                 </v-card-text>
@@ -201,8 +193,9 @@
 </template>
 
 <script>
-import { POINT } from "../../store/actionsType";
 import modes from '@/common/modePoint';
+import { POINT } from '../../store/actionsType';
+
 export default {
   props: {
     cExpId: Number,
@@ -224,9 +217,10 @@ export default {
         altitude: null,
         latitude: null,
         longitude: null,
-      }
+      },
     },
     errorStr: '',
+    isDefinedLocation: false,
     gettingLocation: false,
     rules: {
       fillCoords: [
@@ -254,32 +248,16 @@ export default {
     },
     show: false,
     isNewPoint: true,
-    btn: {
-      save: {
-        color: 'primary',
-        title: 'Сохранить',
-      },
-      determine: {
-        color: 'success',
-        title: 'Определить',
-      },
-      show: {
-        title: 'простые',
-      },
-      hide: {
-        title: 'подробные',
-      },
-    },
   }),
   computed: {
     currentBtnColor() {
-      return this.isNewPoint ? this.btn.determine.color : this.btn.save.color;
+      return this.isDefinedLocation ? 'primary' : 'success';
     },
     currentBtnTitle() {
-      return this.isNewPoint ? this.btn.determine.title : this.btn.save.title;
+      return this.isDefinedLocation ? 'Отправить' : 'Определить';
     },
-    showBtnTitle() {
-      return this.show ? this.btn.hide.title : this.btn.show.title;
+    isExtension() {
+      return this.show ? 'простые' : 'подробные';
     },
     getCurrentMode() {
       return this.modes[this.tab].key;
@@ -304,15 +282,29 @@ export default {
       });
     },
     async locateMe() {
-      this.gettingLocation = true;
-      try {
-        const { coords } = await this.getLocation(); 
-        this.formPoint.auto = coords
-        this.gettingLocation = false;
-      } catch (e) {
-        this.gettingLocation = false;
-        this.errorStr = e.message;
+      if (this.isDefinedLocation) {
+        this.submit();
+        this.isDefinedLocation = false;
+      } else {
+        try {
+          const { coords } = await this.getLocation();
+          this.formPoint.auto = this.parseLocation(coords);
+          this.isDefinedLocation = true;
+        } catch (e) {
+          this.errorStr = e.message;
+        }
       }
+    },
+    parseLocation(coords) {
+      return {
+        accuracy: coords.accuracy,
+        altitude: coords.altitude,
+        altitudeAccuracy: coords.altitudeAccuracy,
+        heading: coords.heading,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        speed: coords.speed,
+      };
     },
     resetManual() {
       this.$refs.formManual.reset();
@@ -325,14 +317,14 @@ export default {
     },
     submit() {
       const point = {
-      ...this.formPoint[this.getCurrentMode],
+        ...this.formPoint[this.getCurrentMode],
         mode: this.getCurrentMode,
         experimentId: this.cExpId,
-      }
-      console.log(point)
+      };
+      console.log(point);
       this.$store.dispatch(POINT, point)
-    }    
+        .then(() => this.resetAuto());
+    },
   },
 };
 </script>
- 
