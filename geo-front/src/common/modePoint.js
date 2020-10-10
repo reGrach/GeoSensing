@@ -1,14 +1,14 @@
 export default [
   {
-    key: 'Manual',
+    key: 'manual',
     name: 'Ручной',
   },
   {
-    key: 'GPS',
+    key: 'auto',
     name: 'Авто',
   },
   {
-    key: 'StreamGPS',
+    key: 'stream',
     name: 'Слежение',
   },
 ];
