@@ -1,6 +1,12 @@
 <template>
   <v-container style="padding: unset" fluid>
-    <yandex-map ref="ymap" :style="sizes" :coords="coords" :zoom="10" :controls =  "['zoomControl', 'typeSelector',  'fullscreenControl']">
+    <yandex-map
+      ref="ymap"
+      :style="sizes"
+      :coords="coords"
+      :zoom="10"
+      :controls="['zoomControl', 'typeSelector', 'fullscreenControl']"
+    >
       <ymap-marker
         v-for="point in mapPoint"
         :key="point.number"

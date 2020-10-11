@@ -52,13 +52,7 @@ const actions = {
     });
   },
 
-  [POINT]({ commit }, coords, mode, cExpId) {
-    commit(SET_PROCESSING, true);
-    const point = {
-      ...coords,
-      experimentId: cExpId,
-      mode: mode
-    }
+  [POINT]({ commit }, point) {
     return new Promise((resolve, reject) => {
       GeoApi.FixCoords(point)
         .then(() => resolve())
@@ -66,9 +60,6 @@ const actions = {
           console.log(response);
           commit(SET_ERROR, response);
           reject(response);
-        })
-        .finally(() => {
-          commit(SET_PROCESSING, false);
         });
     });
 

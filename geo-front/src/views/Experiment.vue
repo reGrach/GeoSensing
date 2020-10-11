@@ -1,5 +1,15 @@
 <template>
   <v-container fluid>
+    <v-snackbar
+      v-model="notify"
+      :timeout="2000"
+      absolute
+      top
+      right
+      color="success"
+    >
+      Успех
+    </v-snackbar>
     <v-row align="center" justify="center">
       <v-col cols="1">
         <v-dialog v-model="dialog" persistent max-width="600px">
@@ -21,27 +31,29 @@
           required
           :loading="getProcessing"
         ></v-select>
-        <fixations v-if="canFixPoint"></fixations>
       </v-col>
     </v-row>
+    <v-divider></v-divider>
+    <fixations v-if="canFixPoint" :cExpId="currentExp" @showNotify="notify = true"></fixations>
   </v-container>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import CreateExp from "../components/cards/CreateExp.vue";
-import Fixations from "../components/cards/Fixations.vue";
-import { GET_LIST_EXP } from "../store/actionsType";
+import { mapGetters } from 'vuex';
+import CreateExp from '../components/cards/CreateExp.vue';
+import Fixations from '../components/cards/Fixations.vue';
+import { GET_LIST_EXP } from '../store/actionsType';
 
 export default {
   components: { Fixations, CreateExp },
   data: () => ({
     dialog: false,
+    notify: false,
     currentExp: null,
   }),
 
   computed: {
-    ...mapGetters(["isEasyUser", "getProcessing", "getListExperiments"]),
+    ...mapGetters(['isEasyUser', 'getProcessing', 'getListExperiments']),
     canFixPoint() {
       return this.currentExp && !this.isEasyUser;
     },
@@ -54,9 +66,9 @@ export default {
   },
 
   methods: {
-    close(){
-      this.dialog = false
+    close() {
+      this.dialog = false;
     },
-  }
+  },
 };
 </script>

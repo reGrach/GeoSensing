@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using GeoService.API.Auth.JwtExtension;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.IO;
@@ -40,7 +41,7 @@ namespace GeoService.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddCors();
 
             services.AddDbContext<GeoContext>(opt =>

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <h1 v-if="!canShowMap">Вы никто</h1>
     <div v-else>
       <v-select
@@ -11,7 +11,6 @@
         required
         :loading="getProcessing"
       ></v-select>
-
       <v-card tile class="elevation-0">
         <v-tabs v-model="tab" color="indigo" flat grow>
           <v-tab>Карта</v-tab>
@@ -45,7 +44,7 @@ export default {
     experimentsPoints: [],
   }),
   computed: {
-    ...mapGetters(["isEasyUser", "getProcessing", "getListExperiments"]),
+    ...mapGetters(['isEasyUser', 'getProcessing', 'getListExperiments']),
     canShowMap() {
       return this.getListExperiments.length > 0 && !this.isEasyUser;
     },

@@ -92,7 +92,7 @@ namespace GeoService.BLL.Actions
                         Altitude = model.Altitude,
                         AltitudeAccuracy = model.AltitudeAccuracy,
                         Speed = model.Speed,
-                        CreateTime = model.CreateTime,
+                        CreateTime = TimeSpan.FromMilliseconds(DateTime.Now.Millisecond),
                         ExperimentId = model.ExperimentId,
                         Heading = model.Heading,
                         Latitude = model.Latitude,

@@ -23,18 +23,21 @@
 </template>
 
 <script>
-import { NEW_EXP } from "../../store/actionsType";
+import { NEW_EXP } from '@/store/actionsType';
+
 export default {
   data: () => ({
-    title: "",
+    title: '',
   }),
   methods: {
     closeDialog() {
-      this.$emit("close");
+      this.$emit('close');
     },
     createExp() {
       console.log(this.title);
-      this.$store.dispatch(NEW_EXP, this.title).then(this.closeDialog, this.title='');
+      this.$store
+        .dispatch(NEW_EXP, this.title)
+        .then(this.closeDialog, (this.title = ''));
     },
   },
 };
