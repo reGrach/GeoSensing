@@ -21,7 +21,7 @@
           required
           :loading="getProcessing"
         ></v-select>
-        <fixations v-if="canFixPoint"></fixations>
+        <fixations v-if="canFixPoint" :cExpId="currentExp"></fixations>
       </v-col>
     </v-row>
   </v-container>
