@@ -8,7 +8,7 @@
       :controls="['zoomControl', 'typeSelector', 'fullscreenControl']"
     >
       <ymap-marker
-        v-for="point in points"
+        v-for="point in mapPoint"
         :key="point.number"
         :markerId="point.number"
         :coords="point.coords"
@@ -43,6 +43,17 @@ export default {
         height: `${height - this.positionMap.top - 36}px`,
       };
     },
+
+    mapPoint() {
+      let i = 1;
+      return this.points.map(item => {
+
+        return{
+          number: i++,
+          coords: [item.longitude, item.latitude]
+        }
+      })
+    }
   },
   mounted() {
     this.updatePosition();
