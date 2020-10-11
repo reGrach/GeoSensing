@@ -17,7 +17,7 @@
           <v-tab>Карта</v-tab>
           <v-tab>Таблица</v-tab>
         </v-tabs>
-        <v-tabs-items v-model="tab">
+        <v-tabs-items v-model="tab" touchless>
           <v-tab-item>
             <MapData :points="points"> </MapData>
           </v-tab-item>
@@ -34,49 +34,48 @@
 import MapData from "../components/cards/MapData.vue";
 import TableData from "../components/cards/TableData.vue";
 import { GET_LIST_EXP } from "../store/actionsType";
+import { GET_LIST_POINTS } from "../store/actionsType";
 import { mapGetters } from "vuex";
-
 export default {
   components: { MapData, TableData },
-  
+
   data: () => ({
     tab: null,
     currentExp: null,
-    points: [
-      {
-        number: 1,
-        author: "Дима",
-        x: 60.44906,
-        y: 30.289094,
-        coords: [60.44906, 30.289094],
-      },
-      {
-        number: 2,
-        author: "Миша",
-        x: 60.448902,
-        y: 30.28967,
-        coords: [60.448902, 30.28967],
-      },
-      {
-        number: 3,
-        author: "Юля",
-        x: 60.449111,
-        y: 30.290246,
-        coords: [60.449111, 30.290246],
-      },
-    ],
+    experimentsPoints: [],
   }),
   computed: {
     ...mapGetters(["isEasyUser", "getProcessing", "getListExperiments"]),
     canShowMap() {
-      return this.getListExperiments.length > 0  && !this.isEasyUser;
+      return this.getListExperiments.length > 0 && !this.isEasyUser;
     },
-
+    points() {
+      let points = [];
+      this.experimentsPoints.forEach((item) => {
+        if (item.experimentId == this.currentExp) {
+          points = item.points;
+        }
+      });
+      return points;
+    },
   },
   created() {
     if (!this.isEasyUser) {
       this.$store.dispatch(GET_LIST_EXP);
+      this.$store.dispatch(GET_LIST_POINTS).then((data) => {
+        this.experimentsPoints = data.listPoint;
+      });
     }
+  },
+
+  methods: {
+    // changeExp() {
+    //   this.experimentsPoints.forEach((item) => {
+    //     if (item.experimentId == this.currentExp) {
+    //       return item.points;
+    //     }
+    //   });
+    // }
   },
 };
 </script>
