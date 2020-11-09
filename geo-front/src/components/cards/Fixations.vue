@@ -13,20 +13,22 @@
                 <v-card-text>
                   <v-form v-model="validManual" ref="formManual">
                     <v-text-field
-                      :rules="rules.fillCoords"
-                      v-model="formPoint.manual.latitude"
+                      autocomplete="off"
+                      :rules="rules.fillCoords.latitude"
+                      v-model="formPoint.latitude"
                       label="Широта"
                       required
                     />
                     <v-text-field
-                      :rules="rules.fillCoords"
-                      v-model="formPoint.manual.longitude"
+                      autocomplete="off"
+                      :rules="rules.fillCoords.longitude"
+                      v-model="formPoint.longitude"
                       label="Долгота"
                       required
                     />
                     <v-text-field
-                      :rules="rules.fillHeight"
-                      v-model="formPoint.manual.altitude"
+                      :rules="rules.fillCoords.height"
+                      v-model="formPoint.altitude"
                       label="Высота"
                       required
                     />
@@ -46,10 +48,11 @@
                         :class="'rounded-r-lg'"
                         style="font-size: 15px; letter-spacing: 0px"
                         tile
-                        @click="submit" 
+                        @click="submit"
                         :disabled="!validManual"
                         width="130px"
                         color="primary"
+                        depressed
                         >Отправить</v-btn
                       >
                     </v-layout>
@@ -81,19 +84,19 @@
                 <v-card-text>
                   <v-form ref="formAuto" :v-model="valid" id="demo">
                     <v-text-field
-                      disabled
+                      
                       label="Широта"
-                      :value="formPoint.auto.latitude"
+                      :value="formPoint.latitude"
                     />
                     <v-text-field
                       disabled
                       label="Долгота"
-                      :value="formPoint.auto.longitude"
+                      :value="formPoint.longitude"
                     />
                     <v-text-field
                       disabled
                       label="Высота"
-                      :value="formPoint.auto.altitude"
+                      :value="formPoint.altitude"
                     />
                     <transition name="fade">
                       <v-layout>
@@ -102,25 +105,25 @@
                             v-if="show"
                             disabled
                             label="Точность высоты"
-                            :value="formPoint.auto.altitudeAccuracy"
+                            :value="formPoint.altitudeAccuracy"
                           />
                           <v-text-field
                             v-if="show"
                             disabled
                             label="Точность координат"
-                            :value="formPoint.auto.accuracy"
+                            :value="formPoint.accuracy"
                           />
                           <v-text-field
                             v-if="show"
                             disabled
                             label="Направление"
-                            :value="formPoint.auto.heading"
+                            :value="formPoint.heading"
                           />
                           <v-text-field
                             v-if="show"
                             disabled
                             label="Скорость "
-                            :value="formPoint.auto.speed"
+                            :value="formPoint.speed"
                           />
                         </v-flex>
                       </v-layout>
@@ -202,7 +205,7 @@
 
 <script>
 import { POINT } from "../../store/actionsType";
-import modes from '@/common/modePoint';
+import modes from "@/common/modePoint";
 export default {
   props: {
     cExpId: Number,
@@ -211,63 +214,65 @@ export default {
     modes,
     tab: null,
     formPoint: {
-      auto: {
-        accuracy: null,
-        altitude: null,
-        altitudeAccuracy: null,
-        heading: null,
-        latitude: null,
-        longitude: null,
-        speed: null,
-      },
-      manual: {
-        altitude: null,
-        latitude: null,
-        longitude: null,
-      }
+      accuracy: null,
+      altitude: null,
+      altitudeAccuracy: null,
+      heading: null,
+      latitude: null,
+      longitude: null,
+      speed: null,
     },
-    errorStr: '',
+    errorStr: "",
     gettingLocation: false,
     rules: {
-      fillCoords: [
-        (v) => !!v || 'Обязательное поле',
-        (v) => {
-          const pattern = /^(-?\d{1,3}([.|,]\d{1,8})?)$/;
-          return pattern.test(v) || 'Неверный формат ввода координат';
-        },
-      ],
-      fillHeight: [
-        (v) => !!v || 'Обязательное поле',
-        (v) => {
-          const pattern = /^\d{1,3}$/;
-          return pattern.test(v) || 'Неверный формат ввода координат';
-        },
-      ],
+      fillCoords: {
+        latitude: [
+          (v) => !!v || "Обязательное поле",
+          (v) => {
+            const pattern = /^([0-9]|[1-8][0-9])([.|,])(\d{1,50})$/;
+            return pattern.test(v) || "Неверный формат ввода координат";
+          },
+        ],
+        longitude: [
+          (v) => !!v || "Обязательное поле",
+          (v) => {
+            const pattern = /^([0-9]|[1-8][0-9]|9[0-9]|1[0-6][0-9]|17[0-9])([.|,])(\d{1,50})$/;
+            return pattern.test(v) || "Неверный формат ввода координат";
+          },
+        ],
+        height: [
+          (v) => !!v || "Обязательное поле",
+          (v) => {
+            const pattern = /^\d{1,5}$/;
+            return pattern.test(v) || "Неверный формат высоты";
+          },
+        ],
+      },
     },
 
     valid: true,
     validManual: false,
     SHBtnStyle: {
-      color: 'cyan',
-      fontSize: '22px',
-      texttransform: 'lowercase',
+      color: "cyan",
+      fontSize: "22px",
+      texttransform: "lowercase",
     },
     show: false,
     isNewPoint: true,
     btn: {
       save: {
-        color: 'primary',
-        title: 'Сохранить',
+        color: "primary",
+        title: "Сохранить",
       },
       determine: {
-        color: 'success',
-        title: 'Определить',
+        color: "success",
+        title: "Определить",
       },
       show: {
-        title: 'простые',
+        title: "простые",
       },
       hide: {
-        title: 'подробные',
+        title: "подробные",
       },
     },
   }),
@@ -285,12 +290,11 @@ export default {
       return this.modes[this.tab].key;
     },
   },
-  //  Сделать единый метод отправки данных
   methods: {
     async getLocation() {
       return new Promise((resolve, reject) => {
-        if (!('geolocation' in navigator)) {
-          reject(new Error('Geolocation is not available.'));
+        if (!("geolocation" in navigator)) {
+          reject(new Error("Geolocation is not available."));
         }
 
         navigator.geolocation.getCurrentPosition(
@@ -299,15 +303,15 @@ export default {
           },
           (err) => {
             reject(err);
-          },
+          }
         );
       });
     },
     async locateMe() {
       this.gettingLocation = true;
       try {
-        const { coords } = await this.getLocation(); 
-        this.formPoint.auto = coords
+        const { coords } = await this.getLocation();
+        this.formPoint = coords;
         this.gettingLocation = false;
       } catch (e) {
         this.gettingLocation = false;
@@ -325,13 +329,13 @@ export default {
     },
     submit() {
       const point = {
-      ...this.formPoint[this.getCurrentMode],
+        ...this.formPoint[this.getCurrentMode],
         mode: this.getCurrentMode,
         experimentId: this.cExpId,
-      }
-      console.log(point)
-      this.$store.dispatch(POINT, point)
-    }    
+      };
+      console.log(point);
+      this.$store.dispatch(POINT, point);
+    },
   },
 };
 </script>

@@ -1,17 +1,15 @@
 <template>
-  <v-container fluid>
-    <v-row align="center" justify="center">
-      <v-col cols="1">
-        <v-dialog v-model="dialog" persistent max-width="600px">
+  <v-container fluid class="mt-n3">
+    <v-row justify="center" align="center">
+        <v-dialog v-model="dialog" persistent>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn color="primary" dark v-bind="attrs" v-on="on">
+            <v-btn class="ml-3" color="primary" dark v-bind="attrs" v-on="on">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
           </template>
           <create-exp @close="close"></create-exp>
         </v-dialog>
-      </v-col>
-      <v-col cols="11">
+      <v-col style="max-width">
         <v-select
           v-model="currentExp"
           :items="getListExperiments"
@@ -20,10 +18,11 @@
           label="Выберите эксперимент"
           required
           :loading="getProcessing"
-        ></v-select>
-        <fixations v-if="canFixPoint" :cExpId="currentExp"></fixations>
+        >
+        </v-select>
       </v-col>
     </v-row>
+  <fixations v-if="canFixPoint" :cExpId="currentExp"></fixations>
   </v-container>
 </template>
 
