@@ -103,8 +103,7 @@ export default {
         .dispatch(SIGN_UP, {
           login: this.login,
           password: this.password,
-        })
-        .then(() => this.$router.push('/profile'));
+        });
     },
     validateField() {
       this.$refs.form.validate();

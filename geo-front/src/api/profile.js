@@ -3,11 +3,9 @@ import ApiService from './index';
 const prefix = 'profile/';
 
 const ProfileApi = {
-  GetById(id) {
-    return ApiService.get(`${prefix}getbyid/${id}`);
-  },
-  Get() {
-    return ApiService.get(`${prefix}get`);
+  Get(id) {
+    const route = id ? `getById/${id}` : 'get';
+    return ApiService.get(`${prefix}${route}`);
   },
   Search(query) {
     return ApiService.query(`${prefix}search`, query);

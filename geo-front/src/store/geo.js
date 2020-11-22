@@ -1,31 +1,23 @@
 /* eslint-disable */
 import GeoApi from '../api/geo';
 import { NEW_EXP, GET_LIST_EXP, POINT, GET_LIST_POINTS } from './actionsType';
-import { SET_ERROR, SET_PROCESSING, SET_EXP, FILL_EXP } from './mutationsType';
+import { SET_PROCESSING, FILL_EXP, UPDATE_NOTIFY } from './mutationsType';
 const state = {
   experiments: [],
 };
 const actions = {
   [GET_LIST_EXP]({ commit }) {
     commit(SET_PROCESSING, true);
-    return new Promise((resolve, reject) => {
-      GeoApi.GetMy()
-        .then(({ data }) => {
-          const payload = {
-            list: data,
-            add: false
-          };
-          commit(FILL_EXP, payload)
-          resolve();
-        })
-        .catch(({ response }) => {
-          console.log(response);
-          commit(SET_ERROR, response);
-          reject(response);
-        })
-        .finally(() => {
-          commit(SET_PROCESSING, false);
-        });
+    GeoApi.GetMy()
+    .then(({ data }) => {
+      const payload = {
+        list: data,
+        add: false
+      };
+      commit(FILL_EXP, payload)
+    })
+    .finally(() => {
+      commit(SET_PROCESSING, false);
     });
   },
 
@@ -41,11 +33,7 @@ const actions = {
           commit(FILL_EXP, payload)
           resolve();
         })
-        .catch(({ response }) => {
-          console.log(response);
-          commit(SET_ERROR, response);
-          reject(response);
-        })
+        .catch(() => reject())
         .finally(() => {
           commit(SET_PROCESSING, false);
         });
@@ -54,34 +42,28 @@ const actions = {
 
   [POINT]({ commit }, point) {
     return new Promise((resolve, reject) => {
-      GeoApi.FixCoords(point)
-        .then(() => resolve())
-        .catch(({ response }) => {
-          console.log(response);
-          commit(SET_ERROR, response);
-          reject(response);
-        });
+      GeoApi.FixCoords(point).then(() => {
+        commit(UPDATE_NOTIFY, {isError: false, msg: 'Точка записана'})
+        resolve();
+      })
+      .catch(() => {
+        commit(UPDATE_NOTIFY, {isError: true, msg: 'Ошибка при записи точки'})
+        reject();
+      })
     });
-
   },
+
   [GET_LIST_POINTS]({ commit }) {
     commit(SET_PROCESSING, true);
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       GeoApi.GetMyPoints()
-        .then(({ data }) => {
-          resolve(data);
-        })
-        .catch(({ response }) => {
-          console.log(response);
-          commit(SET_ERROR, response);
-          reject(response);
-        })
+        .then(({ data }) => resolve(data))
+        .catch(() => {})
         .finally(() => {
           commit(SET_PROCESSING, false);
         });
     });
   },
-
 };
 
 const mutations = {

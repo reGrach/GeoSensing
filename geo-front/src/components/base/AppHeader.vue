@@ -41,8 +41,7 @@
           <template v-slot:activator="{ on }">
             <v-btn v-on="on" icon>
               <v-avatar color="primary" item>
-                <v-img v-if="useAvatarImg" :src="getAvatar"></v-img>
-                <span v-else class="white--text headline">{{getLoginToIcon}}</span>
+                <v-img :src="setAvatar" alt="Avatar"></v-img>
               </v-avatar>
             </v-btn>
           </template>
@@ -74,6 +73,7 @@
 import { SIGN_OUT } from '@/store/actionsType';
 import { mapGetters } from 'vuex';
 import { menu, adminMenu } from '../../common/navigateMenu';
+import placeholder from '../../assets/placeholder.png';
 
 export default {
   props: {
@@ -94,19 +94,16 @@ export default {
       'getAvatar',
       'isAdmin',
     ]),
-    useAvatarImg() {
-      return !!this.getAvatar;
-    },
     navigateMenu() {
       return this.isAdmin ? adminMenu : menu;
     },
-    getLoginToIcon() {
-      return this.currentLogin[0];
+    setAvatar() {
+      return this.getAvatar ? this.getAvatar : placeholder;
     },
   },
   methods: {
     signout() {
-      this.$store.dispatch(SIGN_OUT).then(() => this.$router.push('/signin'));
+      this.$store.dispatch(SIGN_OUT);
     },
   },
 };

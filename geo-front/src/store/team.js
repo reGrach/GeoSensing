@@ -1,7 +1,7 @@
 /* eslint-disable */
 import TeamApi from '../api/team';
 import { GET_ALL_TEAMS, CREATE_TEAM, JOIN_TEAM, CHECK_AUTH, GET_TEAM, LEAVE_TEAM } from './actionsType';
-import { SET_ERROR, SET_PROCESSING, SHOW_PRELOADER, HIDE_PRELOADER, SET_TEAM, REMOVE_TEAM } from './mutationsType';
+import { SET_PROCESSING, SHOW_PRELOADER, HIDE_PRELOADER, SET_TEAM, REMOVE_TEAM } from './mutationsType';
 
 const state = {
   currentTeam: {},
@@ -11,15 +11,10 @@ const state = {
 const actions = {
   [GET_ALL_TEAMS]({ commit, getters }) {
     commit(SHOW_PRELOADER);
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       TeamApi.getAll(getters.isAdmin)
         .then(({ data }) => {
           resolve(data);
-        })
-        .catch(({ response }) => {
-          console.log(response);
-          commit(SET_ERROR, response.data);
-          reject(response);
         })
         .finally(() => {
           commit(HIDE_PRELOADER);
@@ -28,16 +23,11 @@ const actions = {
   },
   [GET_TEAM]({ commit }, id) {
     commit(SHOW_PRELOADER);
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       TeamApi.get(id)
         .then(({ data }) => {
           commit(SET_TEAM, data);
           resolve();
-        })
-        .catch(({ response }) => {
-          console.log(response);
-          commit(SET_ERROR, response.data);
-          reject(response);
         })
         .finally(() => {
           commit(HIDE_PRELOADER);
@@ -46,66 +36,46 @@ const actions = {
   },
   [CREATE_TEAM]({ commit, dispatch }, team) {
     commit(SET_PROCESSING, true);
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       TeamApi.create(team)
         .then(() => {
           dispatch(CHECK_AUTH);
           dispatch(GET_TEAM);
           resolve();
         })
-        .catch(({ response }) => {
-          console.log(response);
-          commit(SET_ERROR, response);
-          reject(response);
-        })
         .finally(() => {
           commit(SET_PROCESSING, false);
         });
     });
   },
-  [JOIN_TEAM]({ commit, dispatch }, TeamId) {
-    return new Promise((resolve, reject) => {
+  [JOIN_TEAM]({ dispatch }, TeamId) {
+    return new Promise((resolve) => {
       TeamApi.join(TeamId)
         .then(() => {
           dispatch(CHECK_AUTH);
           dispatch(GET_TEAM);
           resolve();
         })
-        .catch(({ response }) => {
-          console.log(response);
-          commit(SET_ERROR, response);
-          reject(response);
-        })
     });
   },
 
   [LEAVE_TEAM]({ commit, dispatch }, userLogin) {
     if(userLogin) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         TeamApi.exclude(userLogin)
           .then(() => { 
             dispatch(GET_TEAM);
             resolve(); 
           })
-          .catch(({ response }) => {
-            console.log(response);
-            commit(SET_ERROR, response);
-            reject(response);
-          })
       });
     } else {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         commit(SHOW_PRELOADER);
         TeamApi.leave()
           .then(() => {
             dispatch(CHECK_AUTH);
             commit(REMOVE_TEAM);
             resolve();
-          })
-          .catch(({ response }) => {
-            console.log(response);
-            commit(SET_ERROR, response);
-            reject(response);
           })
           .finally(() => {
             commit(SET_PROCESSING, false);

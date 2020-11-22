@@ -84,8 +84,7 @@ export default {
           login: this.login,
           password: this.password,
           rememberMe: this.rememberMe,
-        })
-        .then(() => this.$router.push('/'));
+        });
     },
   },
 };

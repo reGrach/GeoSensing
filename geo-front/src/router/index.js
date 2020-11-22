@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import store from '../store/index';
+import { CLEAR_ALL } from '../store/mutationsType';
 
 Vue.use(VueRouter);
 
@@ -20,6 +21,11 @@ const routes = [
   {
     path: '*',
     redirect: '/data',
+  },
+  {
+    path: '/error',
+    name: 'Ошибка',
+    component: () => import('@/views/ErrorPage'),
   },
   {
     path: '/experiment',
@@ -69,6 +75,11 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  store.commit(CLEAR_ALL);
+  next();
 });
 
 export default router;

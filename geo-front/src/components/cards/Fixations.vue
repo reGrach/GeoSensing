@@ -330,8 +330,8 @@ export default {
           if (this.getCurrentMode === 'manual') {
             this.resetManual();
           }
-          this.$emit('showNotify');
-        });
+        })
+        .catch(() => {});
     },
   },
 };

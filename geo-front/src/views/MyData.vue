@@ -30,11 +30,11 @@
 </template>
 
 <script>
-import MapData from "../components/cards/MapData.vue";
-import TableData from "../components/cards/TableData.vue";
-import { GET_LIST_EXP } from "../store/actionsType";
-import { GET_LIST_POINTS } from "../store/actionsType";
-import { mapGetters } from "vuex";
+import { mapGetters } from 'vuex';
+import MapData from '../components/cards/MapData.vue';
+import TableData from '../components/cards/TableData.vue';
+import { GET_LIST_EXP, GET_LIST_POINTS } from '../store/actionsType';
+
 export default {
   components: { MapData, TableData },
 
@@ -51,7 +51,7 @@ export default {
     points() {
       let points = [];
       this.experimentsPoints.forEach((item) => {
-        if (item.experimentId == this.currentExp) {
+        if (item.experimentId === this.currentExp) {
           points = item.points;
         }
       });
@@ -63,7 +63,8 @@ export default {
       this.$store.dispatch(GET_LIST_EXP);
       this.$store.dispatch(GET_LIST_POINTS).then((data) => {
         this.experimentsPoints = data.listPoint;
-      });
+      })
+        .catch(() => {});
     }
   },
 

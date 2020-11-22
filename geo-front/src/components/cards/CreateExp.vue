@@ -27,17 +27,19 @@ import { NEW_EXP } from '@/store/actionsType';
 
 export default {
   data: () => ({
-    title: '',
+    title: null,
   }),
   methods: {
     closeDialog() {
+      this.title = null;
       this.$emit('close');
     },
     createExp() {
       console.log(this.title);
       this.$store
         .dispatch(NEW_EXP, this.title)
-        .then(this.closeDialog, (this.title = ''));
+        .then(() => this.closeDialog())
+        .catch(() => {});
     },
   },
 };

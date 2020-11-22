@@ -143,7 +143,8 @@ export default {
         .then(() => {
           this.show = false;
           this.$emit('uploaded');
-        });
+        })
+        .catch(() => {});
     },
   },
 };

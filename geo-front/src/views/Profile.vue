@@ -1,5 +1,6 @@
 <template>
   <v-container fill-height fluid>
+    <v-btn color="success" class="mr-0" @click="check">Проверка</v-btn>
     <v-row justify-center>
       <v-col cols="12" md="4">
         <v-card>
@@ -44,7 +45,7 @@
 import AvatarLoader from '@/components/modals/AvatarLoader.vue';
 import { GET_PROFILE, UPDATE_PROFILE } from '@/store/actionsType';
 import { mapGetters } from 'vuex';
-import placeholder from '../assets/placeholder.png';
+import placeholder from '@/assets/placeholder.png';
 
 export default {
   components: { AvatarLoader },
@@ -72,6 +73,9 @@ export default {
   },
 
   methods: {
+    check() {
+      this.$store.dispatch(GET_PROFILE, 1);
+    },
     openAvatarLoader() {
       this.showAvatarLoader = true;
     },

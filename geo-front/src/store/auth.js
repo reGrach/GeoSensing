@@ -1,12 +1,12 @@
 /* eslint-disable */
 import AuthApi from '../api/auth';
+import router from '../router'
 import roles from '../common/roles'
 import { SIGN_IN, SIGN_UP, SIGN_OUT, CHECK_AUTH } from './actionsType';
 import
 {
   SET_AUTH,
   PURGE_AUTH,
-  SET_ERROR,
   SET_PROCESSING,
   SET_AVA,
 } from './mutationsType';
@@ -21,62 +21,48 @@ const state = {
 const actions = {
   [SIGN_IN]({ commit }, credentials) {
     commit(SET_PROCESSING, true);
-    return new Promise((resolve, reject) => {
-      AuthApi.signin(credentials)
-        .then(({ data }) => {
-          commit(SET_AUTH, data);
-          resolve();
-        })
-        .catch(({ response }) => {
-          console.log(response);
-          commit(SET_ERROR, response.data);
-          reject(response);
-        })
-        .finally(() => {
-          commit(SET_PROCESSING, false);
-        });
+    AuthApi.signin(credentials)
+    .then(({ data }) => {
+      commit(SET_AUTH, data);
+      router.push('/')
+    })
+    .catch(() => {})
+    .finally(() => {
+      commit(SET_PROCESSING, false);
     });
+
   },
+
   [SIGN_UP]({ commit }, credentials) {
     commit(SET_PROCESSING, true);
-    return new Promise((resolve, reject) => {
-      AuthApi.signup(credentials)
-      .then(({ data }) => {
-        commit(SET_AUTH, data);
-        resolve();
-      })
-      .catch(({ response }) => {
-        console.log(response);
-        commit(SET_ERROR, response);
-        reject(response);
-      })
-      .finally(() => {
-        commit(SET_PROCESSING, false);
-      });
+    AuthApi.signup(credentials)
+    .then(({ data }) => {
+      commit(SET_AUTH, data);
+      router.push('/profile');
+    })
+    .catch(() => {})
+    .finally(() => {
+      commit(SET_PROCESSING, false);
     });
   },
+
   [SIGN_OUT]({ commit }) {
     commit(PURGE_AUTH);
-    return new Promise((resolve, reject) => {
-      AuthApi.signout()
-        .then(() => { resolve();})
-        .catch(({ response }) => {
-          console.log(response);
-          reject(response);
-        })
-    });
+    AuthApi.signout()
+    .then(() => router.push('/signin'))
+    .catch(() => {});
   },
+
   [CHECK_AUTH]({ commit }) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       AuthApi.check()
       .then(({ data }) => {
         commit(SET_AUTH, data);
-        resolve();
       })
       .catch(() => {
         commit(PURGE_AUTH);
-        reject();
       })
+      .finally(() => resolve())
     });
   },
 };
