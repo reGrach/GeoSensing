@@ -14,7 +14,7 @@ namespace GeoService.BLL.Actions
             if (ctx.Users.Find(userId) is User dbUser)
             {
                 if (dbUser.Team is null)
-                    throw new ApiException("Чтобы начать эксперимент, необходимо быть участником команды", nameof(InitExperiment), 400);
+                    throw new ApiException("Чтобы начать эксперимент, необходимо быть участником команды", nameof(InitExperiment), 403);
 
                 var now = DateTime.Now;
                 var newExp = ctx.Experiments.Add(new Experiment
@@ -45,7 +45,7 @@ namespace GeoService.BLL.Actions
             if (ctx.Users.Find(userId) is User dbUser)
             {
                 if (dbUser.Team is null)
-                    throw new ApiException("Чтобы закрыть эксперимент, необходимо быть участником команды", nameof(CloseExperiment), 400);
+                    throw new ApiException("Чтобы закрыть эксперимент, необходимо быть участником команды", nameof(CloseExperiment), 403);
 
                 if (dbUser.Team.Experiments.SingleOrDefault(x => x.Id == experimentId) is Experiment dbExp)
                 {
@@ -64,7 +64,7 @@ namespace GeoService.BLL.Actions
             if (ctx.Users.Find(userId) is User dbUser)
             {
                 if (dbUser.Team is null)
-                    throw new ApiException("Чтобы получить эксперименты, необходимо быть участником команды", nameof(GetExperimentsByUserId), 400);
+                    throw new ApiException("Чтобы получить эксперименты, необходимо быть участником команды", nameof(GetExperimentsByUserId), 403);
 
                 return dbUser.Team.Experiments.Where(x => x.IsActive)
                     .Select(x =>
@@ -103,7 +103,7 @@ namespace GeoService.BLL.Actions
                     ctx.SaveChanges();
                 }
                 else
-                    throw new ApiException("Нельзя добавить точку. Пользователь должен состоять в команде, с выбранным экспериментом", nameof(AddPoint), 400);
+                    throw new ApiException("Нельзя добавить точку. Пользователь должен состоять в команде, с выбранным экспериментом", nameof(AddPoint), 403);
             }
             else
                 throw new ApiException(ConstMsg.UserNotFound, nameof(AddPoint), 404);

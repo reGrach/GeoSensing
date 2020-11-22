@@ -72,7 +72,7 @@ namespace GeoService.BLL.Actions
                 if (dbUser.Team is Team dbTeam)
                     return dbUser.Team.ToExtensionDTO();
                 else
-                    throw new ApiException("Вы еще не вступили ни в одну из команд", nameof(GetTeamByUser), 400);
+                    throw new ApiException("Вы еще не вступили ни в одну из команд", nameof(GetTeamByUser), 403);
             }
             else
                 throw new ApiException(ConstMsg.UserNotFound, nameof(GetTeamByUser), 404);

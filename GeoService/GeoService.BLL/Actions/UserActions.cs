@@ -54,6 +54,14 @@ namespace GeoService.BLL.Actions
             else
                 throw new ApiException("Пользователя с таким логином не существует", nameof(AuthenticationUser), 400);
         }
+        
+        public static RoleEnum GetUserRole(this GeoContext ctx, int id)
+        {
+            if (ctx.Users.Find(id) is User userDb)            
+                return userDb.Role;
+            else
+                throw new ApiException(ConstMsg.UserNotFound, nameof(AuthenticationUser), 404);
+        }
 
         public static UserWithImgDTO UpdateProfile(this GeoContext ctx, int id, UserWithImgDTO model)
         {

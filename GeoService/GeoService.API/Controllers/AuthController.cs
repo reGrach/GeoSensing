@@ -67,13 +67,21 @@ namespace GeoService.API.Controllers
 
         /// <summary> Проверка того, что пользователь авторизован, если да - возвращаем данные </summary>
         [HttpGet]
-        public IActionResult Check() => TryAction(() => Ok(new AuthInfoModel
+        public IActionResult Check() => TryAction(() =>
         {
-            Login = User.Identity.GetUserLogin(),
-            Role = User.Identity.GetUserRole().ToString(),
-            AvatarSrc = _context.GetAvatar(User.Identity.GetUserId()),
-            Expiration = User.Identity.GetExpirationToken()
-        }));
+            var id = User.Identity.GetUserId();
+            var role = _context.GetUserRole(id);
+            if (User.Identity.GetUserRole() != role)
+                UpdateClaimsAndToken(id, role: role);
+
+            return Ok(new AuthInfoModel
+            {
+                Login = User.Identity.GetUserLogin(),
+                Role = User.Identity.GetUserRole().ToString(),
+                AvatarSrc = _context.GetAvatar(id),
+                Expiration = User.Identity.GetExpirationToken()
+            });
+        });
 
 
 
