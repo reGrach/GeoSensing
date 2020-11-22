@@ -1,6 +1,5 @@
 <template>
   <v-container fill-height fluid>
-    <v-btn color="success" class="mr-0" @click="check">Проверка</v-btn>
     <v-row justify-center>
       <v-col cols="12" md="4">
         <v-card>
@@ -73,9 +72,6 @@ export default {
   },
 
   methods: {
-    check() {
-      this.$store.dispatch(GET_PROFILE, 1);
-    },
     openAvatarLoader() {
       this.showAvatarLoader = true;
     },
@@ -84,7 +80,8 @@ export default {
         this.form.name = data.name;
         this.form.surName = data.surName;
         this.avatar = data.avatarSrc;
-      });
+      })
+        .catch(() => {});
     },
     onSubmit() {
       this.$store.dispatch(UPDATE_PROFILE, {

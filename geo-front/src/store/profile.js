@@ -6,13 +6,13 @@ import { SET_PROCESSING, UPLOAD_IMG, SET_AVA, SHOW_PRELOADER, HIDE_PRELOADER, UP
 const actions = {
   [GET_PROFILE]({ commit }, id) {
     commit(SHOW_PRELOADER);
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       ProfileApi.Get(id)
         .then(({ data }) => {
           commit(SET_AVA, data.avatarSrc)
           resolve(data);
         })
-        .catch(() => commit(UPDATE_NOTIFY, {isError: true, msg: 'Ошибка'}))
+        .catch(() => reject())
         .finally(() => {
           commit(HIDE_PRELOADER);
         });
